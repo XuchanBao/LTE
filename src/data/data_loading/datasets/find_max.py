@@ -27,10 +27,8 @@ class FindMax(Dataset):
 
     def __getitem__(self, idx):
         length = np.random.randint(1, self.max_len + 1)
-        x = np.random.randint(1, self.max_value, (
-            self.batch_size,
-            length,
-        ))[..., None]
+        x = np.random.randint(1, self.max_value, (self.batch_size, length, 1))
+
         if self.num_pad_zeros > 0:
             (bs, length, _) = x.shape
             new_x = np.zeros((bs, length, self.num_pad_zeros + 1))
