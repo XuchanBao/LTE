@@ -19,6 +19,6 @@ setup(name='LTE',
       long_description_content_type='text/markdown',
       packages=find_packages(exclude=['tests/*']),
       setup_requires=["numpy", "torch", "torchvision"],
-      install_requires=["numpy", "scipy", "matplotlib", "test_tube", "tqdm", "munch", "imgaug", "librosa", "imageio",
+      install_requires=["numpy", "scipy", "matplotlib", "test_tube", "tqdm", "munch", "imageio",
                         "pytorch_lightning", "jupyter", "notebook"],
       )

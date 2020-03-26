@@ -8,7 +8,7 @@ Learning to Elect - Using Neural Networks to Represent Voting Rules
     conda activate lte
     ```
     
-* Install PyTorch, following instructions in `https://pytorch.org`. 
+* Install PyTorch, following instructions in [Pytorch website](https://pytorch.org). 
 
 * Navigate to the root of the project. Install the package, along with requirements:
     ```
@@ -30,11 +30,6 @@ nbdev_install_git_hooks
     ```
     export PYTHONPATH="${PYTHONPATH}:`pwd`"
     ``` 
-  
-* Set up aliases.
-``` 
-goto_audiocaps="cd <path-to-project>"
-```
   
 ## Training
 ### Step 1: Config

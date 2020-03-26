@@ -134,3 +134,6 @@ dmypy.json
 tf
 media
 .DS_Store
+
+# Experiment results
+default/
