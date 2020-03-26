@@ -55,7 +55,7 @@ system:
   optimizer:
     <type>: Adam
     <init>: false
-    lr: 0.0001
+    lr: 0.00001
   # Loss functions.
   loss_fn:
     <type>: L1Loss
