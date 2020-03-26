@@ -20,7 +20,7 @@ Learning to Elect - Using Neural Networks to Represent Voting Rules
 pip install git+https://github.com/cemanil/spaghetti.git@master
 ```
 
-* Instapp nbdev, to make sure ipython notebooks are commitable. 
+* Install nbdev, to make sure ipython notebooks are commitable. 
 ``` 
 pip install nbdev
 nbdev_install_git_hooks
@@ -36,3 +36,9 @@ nbdev_install_git_hooks
 goto_audiocaps="cd <path-to-project>"
 ```
   
+## Training
+``` 
+EXP_DIR="runs/001_find_max"
+python -m src.mains.train --cfg ${EXP_DIR}/template.yaml
+
+```

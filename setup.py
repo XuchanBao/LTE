@@ -20,5 +20,5 @@ setup(name='LTE',
       packages=find_packages(exclude=['tests/*']),
       setup_requires=["numpy", "torch", "torchvision"],
       install_requires=["numpy", "scipy", "matplotlib", "test_tube", "tqdm", "munch", "imgaug", "librosa", "imageio",
-                        "pytorch_lightning", "jupyter", "spaghettini", "notebook"],
+                        "pytorch_lightning", "jupyter", "notebook"],
       )

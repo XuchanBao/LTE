@@ -1,0 +1,77 @@
+<type>: Munch
+<init>: true
+# PyTorch Lightning System.
+system:
+  <type>: MimickingClassification
+  <init>: true
+  # Lawyers.
+  model:
+    <type>: SetTransformer
+    <init>: true
+    encoder:
+      <type>: SetTransformerEncoder
+      <init>: true
+      num_heads: 4
+      dim_elements: 1
+      dim_hidden: 64
+      dim_out: 64
+    decoder:
+      <type>: SetTransformerDecoder
+      <init>: true
+      num_heads: 4
+      num_seed_vectors: 1
+      dim_elements: 64
+      dim_hidden1: 64
+      dim_hidden2: 64
+      dim_out: 1
+  # Data loaders.
+  train_loader:
+    <type>: DataLoader
+    <init>: true
+    dataset:
+      <type>: FindMax
+      <init>: true
+      max_value: 100
+      max_len: 10
+      num_pad_zeros: 0
+      batch_size: 100
+      epoch_length: 1000
+    batch_size: 1
+    shuffle: true
+    num_workers: 0
+  valid_loader:
+    <type>: DataLoader
+    <init>: true
+    dataset:
+      <type>: FindMax
+      <init>: true
+      max_value: 100
+      max_len: 10
+      num_pad_zeros: 0
+      batch_size: 100
+    batch_size: 1
+    shuffle: true
+    num_workers: 0
+  optimizer:
+    <type>: Adam
+    <init>: false
+    lr: 0.0001
+  # Loss functions.
+  loss_fn:
+    <type>: L1Loss
+    <init>: true
+
+# TestTube experiment.
+logger:
+  <type>: TestTubeLogger
+  <init>: false
+
+trainer:
+  <type>: Trainer
+  <init>: false
+  show_progress_bar: true
+  early_stop_callback: false
+  max_nb_epochs: 5
+
+# Seed.
+seed: 0
