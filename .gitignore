@@ -135,5 +135,7 @@ tf
 media
 .DS_Store
 
-# Experiment results
+# Experiment results/configs
 default/
+results/
+batch_run.sh

@@ -1,8 +1,8 @@
 import argparse
 import os
 
-CONDA_ENV = "audiocaps"
-ROOT = "/h/anilcem/Workspace/audio_related/source_separation/audiocaps"
+CONDA_ENV = "lte"
+ROOT = "/Users/cemanil/Workspace/LTE"
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(

@@ -48,6 +48,24 @@ cd ${EXP_DIR}
 tensorboard --logdir=.
 ```
 
+### Step 4: Generating batch experiments. 
+* Create a new experiment directory (i.e. `EXP_DIR="./runs/003_fixing_plurality_training"`)
+* Copy a previous config in new experiment directory and modify it for a batched experiment. This template has to be
+called "template". 
+* Run:
+```
+PROJECT_ROOT="<path_to_project_root>"
+EXP_DIR="./runs/003_fixing_plurality_training"
+cd ${PROJECT_ROOT}
+bash ./src/mains/generate_experiments.sh ${EXP_DIR}
+cd ./runs/${EXP_DIR}
+sbatch batch_run.sh
+
+```
+
+* IMPORTANT: Make sure to check out src/experiments/generate_sbatch_script.py to use the appropriate global variables. 
+
+
 ## Experiments
 ### Approximating Plurality. 
 ``` 

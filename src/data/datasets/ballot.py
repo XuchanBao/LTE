@@ -44,7 +44,7 @@ class Ballot(Dataset):
         rankings = np.argsort(utilities, axis=2)[:, :, ::-1]
 
         # Pick the winner.
-        winner = self.voting_rule(rankings)
+        winner = self.voting_rule(rankings, utilities=None)
 
         # Add "dummy" rankings to make sure all rankings have the same dimensionality (i.e. max_num_candidates).
         rankings_full = np.zeros((rankings.shape[0], rankings.shape[1], self.max_num_candidates))
