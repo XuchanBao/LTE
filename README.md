@@ -47,3 +47,10 @@ python -m src.mains.train --cfg ${EXP_DIR}/template.yaml
 cd ${EXP_DIR}
 tensorboard --logdir=.
 ```
+
+## Experiments
+### Approximating Plurality. 
+``` 
+EXP_DIR="runs/002_mimic_plurality"
+python -m src.mains.train --cfg ${EXP_DIR}/template.yaml
+```

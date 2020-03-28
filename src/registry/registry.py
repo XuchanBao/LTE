@@ -11,7 +11,7 @@ from pytorch_lightning.logging import TestTubeLogger
 from torchvision.datasets import MNIST
 from torchvision.datasets import DatasetFolder
 from torch.nn.functional import mse_loss
-from torch.nn import L1Loss
+from torch.nn import L1Loss, CrossEntropyLoss
 from torch.nn.functional import relu, softplus
 from torch import sigmoid, tanh
 from torch.optim.lr_scheduler import StepLR
@@ -39,6 +39,7 @@ quick_register(StepLR)
 quick_register(CrossEntropyLoss)
 quick_register(mse_loss)
 quick_register(L1Loss)
+quick_register(CrossEntropyLoss)
 
 # Activations.
 quick_register(relu)

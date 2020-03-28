@@ -5,3 +5,4 @@ import src.mains
 import src.registry
 import src.tasks
 import src.utils
+import src.voting

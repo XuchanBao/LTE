@@ -52,8 +52,12 @@ class MimickingClassification(pl.LightningModule, ABC):
         # ____ Make predictions. ____
         preds, model_logs = self.forward(xs)
 
+        # Since we have a logit per candidate in the end, we have to remove the last dimension.
+        assert preds.shape[2] == 1
+        preds = preds.squeeze(2)
+
         # ____ Compute loss. ____
-        loss = self.loss_fn(ys, preds)
+        loss = self.loss_fn(preds, ys)
 
         # ____ Log the metrics computed. ____
         logs = self.log_forward_stats(loss, prepend_key)
