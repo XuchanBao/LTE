@@ -15,6 +15,7 @@ system:
       dim_elements: 1
       dim_hidden: 64
       dim_out: 64
+      add_layer_norm: false
     decoder:
       <type>: SetTransformerDecoder
       <init>: true
@@ -24,6 +25,7 @@ system:
       dim_hidden1: 64
       dim_hidden2: 64
       dim_out: 1
+      add_layer_norm: false
   # Data loaders.
   train_loader:
     <type>: DataLoader

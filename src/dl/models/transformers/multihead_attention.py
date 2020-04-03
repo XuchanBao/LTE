@@ -60,7 +60,7 @@ class MultiHeadAttentionBlock(nn.Module):
         return output
 
 class PMA(nn.Module):
-    def __init__(self, num_heads, num_seed_vectors, dim_elements, dim_out):
+    def __init__(self, num_heads, num_seed_vectors, dim_elements, dim_out, add_layer_norm):
         super().__init__()
         assert dim_out == dim_elements, print(
             "Different output shape not supported yet")
@@ -76,7 +76,8 @@ class PMA(nn.Module):
             dim_values=dim_elements,
             dim_transformed_keys_queries=dim_elements // num_heads,
             dim_transformed_values=dim_elements // num_heads,
-            attention_layer_dim_out=dim_elements)
+            attention_layer_dim_out=dim_elements,
+            add_layer_norm=add_layer_norm)
 
     def _initialize_seed_vectors(self):
         xavier_uniform_(self.S)
