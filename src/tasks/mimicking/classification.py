@@ -4,6 +4,8 @@ from spaghettini import quick_register
 import pytorch_lightning as pl
 
 from src.utils.misc import *
+from src.dl.metrics.metrics import compute_accuracy
+from src.dl.metrics.metrics import compute_distortion_ratios
 
 
 @quick_register
@@ -47,7 +49,7 @@ class MimickingClassification(pl.LightningModule, ABC):
         assert (self.training and (prepend_key == "training/")) or \
                (not self.training and (prepend_key == "validation/"))
         # ____ Unpack the data batch. ____
-        xs, ys = self.unpack_data_batch(data_batch)
+        xs, ys, utilities = self.unpack_data_batch(data_batch)
 
         # ____ Make predictions. ____
         preds, model_logs = self.forward(xs)
@@ -60,26 +62,34 @@ class MimickingClassification(pl.LightningModule, ABC):
         loss = self.loss_fn(preds, ys)
 
         # ____ Log the metrics computed. ____
-        logs = self.log_forward_stats(loss, prepend_key)
+        logs = self.log_forward_stats(xs, ys, preds, utilities, loss, prepend_key)
 
         # ____ Return. ____
         return loss, logs
 
-    def log_forward_stats(self, loss, prepend_key):
+    def log_forward_stats(self, xs, ys, preds, utilities, loss, prepend_key):
         logs = dict()
 
         # ____ Log losses. ____
         logs["{}/loss".format(prepend_key)] = float(loss)
 
+        # ____ Log the accuracies. ____
+        acc = compute_accuracy(logits=preds, scalar_targets=ys)
+        logs["{}/acc".format(prepend_key)] = float(acc)
+
+        # ____ Log the distortion ratios. ____
+        inv_distortion_ratios = compute_distortion_ratios(logits=preds, utilities=utilities)
+        self.logger.experiment.add_histogram(tag="inv_dist_ratios", values=inv_distortion_ratios)
+
         return logs
 
     def unpack_data_batch(self, data_batch):
-        xs, ys = data_batch
+        xs, ys, utilities = data_batch
         # The first dimensions is added automatically by the data loaders. In this implementation, we're generating
         # our own batch dimension, so we have to get rid of the first dimension added by the loader.
-        xs, ys = xs.squeeze(0), ys.squeeze(0)
+        xs, ys, utilities = xs.squeeze(0), ys.squeeze(0), utilities.squeeze(0)
 
-        return xs, ys
+        return xs, ys, utilities
 
     def configure_optimizers(self):
         return [self.optimizer(self.model.parameters())]

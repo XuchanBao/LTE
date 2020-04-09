@@ -5,9 +5,10 @@ from scipy.stats import mode
 
 @quick_register
 def get_plurality():
-    def plurality(votes, utilities):
+    def plurality(votes, utilities=None):
         # Don't use utilities.
-        assert utilities is None, "Plurality should not use utilities. "
+        utilities = None
+
         # votes: (batch_size, # of voters, # of candidates)
         # TODO: Decide how to handle ties.
         # Select the top votes of the voters.
@@ -22,7 +23,10 @@ def get_plurality():
 
 @quick_register
 def get_borda():
-    def borda(votes, utilites):
+    def borda(votes, utilites=None):
+        # Don't use utilities.
+        utilities = None
+
         raise NotImplementedError
 
     return borda
@@ -31,6 +35,15 @@ def get_borda():
 @quick_register
 def get_oracle():
     def oracle(votes, utilities):
-        raise NotImplementedError
+        # Don't use votes.
+        votes = None
+
+        # Get the total amount of utility assigned to each candidate.
+        candidate_utilities = utilities.sum(axis=1)
+
+        # Declare as winner the candidate that got the most utility points.
+        winner = np.argmax(candidate_utilities, axis=1)
+
+        return winner
 
     return oracle
