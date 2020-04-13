@@ -14,4 +14,4 @@ class SetTransformer(nn.Module):
         zs = self.encoder(xs)
         outputs = self.decoder(zs)
 
-        return outputs, dict()
+        return outputs

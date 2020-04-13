@@ -67,6 +67,18 @@ system:
   loss_fn:
     <type>: CrossEntropyLoss
     <init>: true
+  # Other rules to benchmark against.
+  benchmark_rules:
+    <type>: Munch
+    <init>: true
+    plurality:
+      <type>: get_plurality
+      <init>: true
+      one_hot: true
+    borda:
+      <type>: get_borda
+      <init>: true
+      one_hot: true
 
 # TestTube experiment.
 logger:
