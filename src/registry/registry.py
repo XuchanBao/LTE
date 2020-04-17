@@ -39,7 +39,6 @@ quick_register(StepLR)
 quick_register(CrossEntropyLoss)
 quick_register(mse_loss)
 quick_register(L1Loss)
-quick_register(CrossEntropyLoss)
 
 # Activations.
 quick_register(relu)
