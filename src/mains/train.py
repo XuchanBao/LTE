@@ -15,7 +15,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Load the config.
-    cfg = load(args.cfg)
+    cfg = load(args.cfg, record_config=False)
 
     # Set the seed.
     set_seed(cfg.seed)

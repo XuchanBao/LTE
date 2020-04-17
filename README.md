@@ -3,17 +3,17 @@ Learning to Elect - Using Neural Networks to Represent Voting Rules
 
 ## Installation
 * Create a new conda environment and activate it:
-    ```
-    conda create -n lte python=3.7
-    conda activate lte
-    ```
+```
+conda create -n lte python=3.7
+conda activate lte
+```
     
 * Install PyTorch, following instructions in [Pytorch website](https://pytorch.org). 
 
 * Navigate to the root of the project. Install the package, along with requirements:
-    ```
-    python setup.py install
-    ```
+```
+python setup.py install
+```
   
 * Install spaghettini. 
 ```
@@ -27,9 +27,9 @@ nbdev_install_git_hooks
 ```
 
 * Add project root to PYTHONPATH. One way to do this: 
-    ```
-    export PYTHONPATH="${PYTHONPATH}:`pwd`"
-    ``` 
+```
+export PYTHONPATH="${PYTHONPATH}:`pwd`"
+``` 
   
 ## Training
 ### Step 1: Config
@@ -69,6 +69,6 @@ sbatch batch_run.sh
 ## Experiments
 ### Approximating Plurality. 
 ``` 
-EXP_DIR="runs/002_mimic_plurality"
+EXP_DIR="runs/005_approx_oracle"
 python -m src.mains.train --cfg ${EXP_DIR}/template.yaml
 ```

@@ -44,19 +44,24 @@ class Ballot(Dataset):
         rankings = np.argsort(utilities, axis=2)[:, :, ::-1]
 
         # Pick the winner.
-        winner = self.voting_rule(rankings, utilities=None)
+        winner = self.voting_rule(rankings, utilities=utilities)
 
         # Add "dummy" rankings to make sure all rankings have the same dimensionality (i.e. max_num_candidates).
         rankings_full = np.zeros((rankings.shape[0], rankings.shape[1], self.max_num_candidates))
         rankings_full[:, :, :num_candidates] = rankings
         rankings_full[:, :, num_candidates:] = self.empty_token
 
+        # Add "dummy" utilities to maek sure all utilities have the same dimensionality.
+        utilities_full = np.zeros((utilities.shape[0], utilities.shape[1], self.max_num_candidates))
+        utilities_full[:, :, :num_candidates] = utilities
+        utilities_full[:, :, num_candidates:] = 0.0
+
         # Move to torch tensors.
         xs_torch = torch.tensor(rankings_full).float()
         ys_torch = torch.tensor(winner).long()
 
         # Return the rankings and the winners.
-        return xs_torch, ys_torch
+        return xs_torch, ys_torch, utilities_full
 
 
 if __name__ == "__main__":
