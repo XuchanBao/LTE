@@ -87,7 +87,8 @@ class MimickingClassification(pl.LightningModule, ABC):
 
         # ____ Log the distortion ratios. ____
         inv_distortion_ratios = compute_distortion_ratios(logits=preds, utilities=utilities)
-        self.logger.experiment.add_histogram(tag="inv_dist_ratios", values=inv_distortion_ratios)
+        self.logger.experiment.add_histogram(tag="inv_dist_ratios", values=inv_distortion_ratios,
+                                             global_step=self.current_epoch)
 
         return logs
 

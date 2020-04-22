@@ -15,7 +15,8 @@ def get_plurality(one_hot=False):
         # votes: (batch_size, # of voters, # of candidates)
         # TODO: Decide how to handle ties.
         # ____Select the top votes of the voters. ____
-        top_votes = votes[:, :, 0]
+        top_votes = votes[:, :, 0].detach().cpu().numpy()
+        # top_votes = votes[:, :, 0]
 
         # ____ Pick the most popular candidate. ____
         winner = mode(top_votes, axis=1).mode
@@ -23,10 +24,11 @@ def get_plurality(one_hot=False):
 
         # ____ Cast back to torch tensor, if votes was a torch tensor. ____
         if isinstance(votes, torch.Tensor):
-            winner = torch.Tensor(winner).type_as(votes)
+            winner = torch.from_numpy(winner).type_as(votes)
+            # winner = torch.Tensor(winner).type_as(votes)
 
         # ____ Optionally turn to one hot representation. ____
-        num_candidates = votes.shape[1]
+        num_candidates = votes.shape[2]
         winner = get_one_hot(winner, num_candidates) if one_hot_repr else winner
 
         return winner

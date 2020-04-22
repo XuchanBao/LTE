@@ -52,6 +52,7 @@ system:
       max_num_voters: 20
       max_num_candidates: 10
       batch_size: 64
+     epoch_length: 64
       voting_rule:
         <type>: get_oracle
         <init>: true
@@ -75,10 +76,10 @@ system:
       <type>: get_plurality
       <init>: true
       one_hot: true
-    borda:
-      <type>: get_borda
-      <init>: true
-      one_hot: true
+#    borda:
+#      <type>: get_borda
+#      <init>: true
+#      one_hot: true
 
 # TestTube experiment.
 logger:
