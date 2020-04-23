@@ -51,8 +51,8 @@ system:
       <init>: true
       max_num_voters: 20
       max_num_candidates: 10
-      batch_size: 16
-      epoch_length: 16
+      batch_size: 512
+      epoch_length: 512
       voting_rule:
         <type>: get_oracle
         <init>: true
@@ -85,6 +85,7 @@ system:
 logger:
   <type>: TestTubeLogger
   <init>: false
+  version: 0
 
 trainer:
   <type>: Trainer

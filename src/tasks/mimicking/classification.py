@@ -6,6 +6,10 @@ import pytorch_lightning as pl
 from src.utils.misc import *
 from src.dl.metrics.metrics import compute_accuracy
 from src.dl.metrics.metrics import compute_distortion_ratios
+from src.visualizations import histogram_overlayer
+
+
+INV_DISTORTION_KEY = "inv_dist_ratios"
 
 
 @quick_register
@@ -68,6 +72,12 @@ class MimickingClassification(pl.LightningModule, ABC):
         for k, v in concat_hist_metrics.items():
             self.logger.experiment.add_histogram(tag=k, values=v, global_step=self.current_epoch)
 
+        # ___ Run manual histogram plotter. ____
+        inv_distortion_values_dict = {k: v for k, v in concat_hist_metrics.items() if INV_DISTORTION_KEY in k}
+        save_dir = os.path.join(self.logger.save_dir, self.logger._name, "version_" + str(self.logger._version),
+                                "inv_dist_histograms", f"epoch_{self.current_epoch}")
+        histogram_overlayer(inv_distortion_values_dict, save_dir=save_dir)
+
         # TODO: Find a way to avoid this solution.
         return {"val_loss": torch.tensor(self.trainer.total_batches)}
 
@@ -103,7 +113,7 @@ class MimickingClassification(pl.LightningModule, ABC):
 
         # ____ Log the distortion ratios. ____
         inv_distortion_ratios = compute_distortion_ratios(logits=preds, utilities=utilities)
-        hist_logs[f"{prepend_key}/inv_dist_ratios"] = inv_distortion_ratios
+        hist_logs[f"{prepend_key}/{INV_DISTORTION_KEY}"] = inv_distortion_ratios
 
         return metric_logs, hist_logs
 
