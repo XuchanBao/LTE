@@ -26,32 +26,47 @@ class MimickingClassification(pl.LightningModule, ABC):
         return self.model(inputs, **kwargs)
 
     def training_step(self, data_batch, batch_nb, *args, **kwargs):
-        loss, logs = self.common_step(self.forward, data_batch, prepend_key="training/model")
+        loss, metric_logs, hist_logs = self.common_step(self.forward, data_batch, prepend_key="training/model")
 
         # ____ Log metrics. ____
-        self.logger.log_metrics(logs, step=self.trainer.total_batch_idx)
+        self.logger.log_metrics(metric_logs, step=self.trainer.total_batch_idx)
 
         return {"loss": loss}
 
     def validation_step(self, data_batch, batch_nb):
-        logs = dict()
+        metric_logs = dict()
+        hist_logs = dict()
 
         # Run validation for the trained model.
-        _, logs_model = self.common_step(self.forward, data_batch, prepend_key="validation/model")
-        logs.update(logs_model)
+        _, logs_model, hist_logs_model = self.common_step(self.forward, data_batch, prepend_key="validation/model")
+        metric_logs.update(logs_model)
+        hist_logs.update(hist_logs_model)
 
         # Run the validation for other voting rules for benchmarking.
         for rule_name, rule_fn in self.benchmark_rules.items():
-            _, logs_bnchmk = self.common_step(rule_fn, data_batch, prepend_key="validation/{}".format(rule_name))
-            logs.update(logs_bnchmk)
+            _, logs_bnchmk, hist_logs_bnchmk = self.common_step(rule_fn, data_batch,
+                                                                prepend_key="validation/{}".format(rule_name))
+            metric_logs.update(logs_bnchmk)
+            hist_logs.update(hist_logs_bnchmk)
 
-        return logs
+        return metric_logs, hist_logs
 
     def validation_end(self, outputs):
-        averaged_metrics = average_values_in_list_of_dicts(outputs)
+        # ____ Break down the outputs collected during validation. ____)
+        # First argument returned by validation_step is the dict of metrics.
+        metrics_dicts_list = [collected_tuple[0] for collected_tuple in outputs]
 
-        # ____ Log the averaged metrics. ____
+        # Second argument returned by validation_step is the dict of histogram metrics.
+        hist_dicts_list = [collected_tuple[1] for collected_tuple in outputs]
+
+        # ____ Average metrics and concatenate histogram metrics. ____
+        averaged_metrics = average_values_in_list_of_dicts(metrics_dicts_list)
+        concat_hist_metrics = concatenate_values_in_list_of_dicts(hist_dicts_list)
+
+        # ____ Log the averaged metrics and histogram metrics. ____
         self.logger.log_metrics(averaged_metrics, step=self.trainer.total_batch_idx)
+        for k, v in concat_hist_metrics.items():
+            self.logger.experiment.add_histogram(tag=k, values=v, global_step=self.current_epoch)
 
         # TODO: Find a way to avoid this solution.
         return {"val_loss": torch.tensor(self.trainer.total_batches)}
@@ -70,27 +85,27 @@ class MimickingClassification(pl.LightningModule, ABC):
         loss = self.loss_fn(preds, ys)
 
         # ____ Log the metrics computed. ____
-        logs = self.log_forward_stats(xs, ys, preds, utilities, loss, prepend_key)
+        metric_logs, histogram_logs = self.log_forward_stats(xs, ys, preds, utilities, loss, prepend_key)
 
         # ____ Return. ____
-        return loss, logs
+        return loss, metric_logs, histogram_logs
 
     def log_forward_stats(self, xs, ys, preds, utilities, loss, prepend_key):
-        logs = dict()
+        metric_logs = dict()
+        hist_logs = dict()
 
         # ____ Log losses. ____
-        logs["{}/loss".format(prepend_key)] = float(loss)
+        metric_logs["{}/loss".format(prepend_key)] = float(loss)
 
         # ____ Log the accuracies. ____
         acc = compute_accuracy(logits=preds, scalar_targets=ys)
-        logs["{}/acc".format(prepend_key)] = float(acc)
+        metric_logs["{}/acc".format(prepend_key)] = float(acc)
 
         # ____ Log the distortion ratios. ____
         inv_distortion_ratios = compute_distortion_ratios(logits=preds, utilities=utilities)
-        self.logger.experiment.add_histogram(tag="inv_dist_ratios", values=inv_distortion_ratios,
-                                             global_step=self.current_epoch)
+        hist_logs[f"{prepend_key}/inv_dist_ratios"] = inv_distortion_ratios
 
-        return logs
+        return metric_logs, hist_logs
 
     def unpack_data_batch(self, data_batch):
         xs, ys, utilities = data_batch

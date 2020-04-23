@@ -39,6 +39,20 @@ def average_values_in_list_of_dicts(list_of_dicts):
     return averaged_values_dict
 
 
+def concatenate_values_in_list_of_dicts(list_of_dicts):
+    concat_values_dict = dict()
+    for k, v in list_of_dicts[0].items():
+        curr_metrics_list = list()
+        try:
+            for curr_output_dict in list_of_dicts:
+                curr_metrics_list += list(curr_output_dict[k])
+            concat_values_dict[k] = np.array(curr_metrics_list)
+        except Exception as e:
+            continue
+
+    return concat_values_dict
+
+
 def prepend_string_to_dict_keys(prepend_key, dictinary):
     return {"{}{}".format(prepend_key, k): v for k, v in dictinary.items()}
 
