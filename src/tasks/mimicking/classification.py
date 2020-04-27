@@ -89,12 +89,14 @@ class MimickingClassification(pl.LightningModule, ABC):
         # ____ Unpack the data batch. ____
         xs, ys, utilities = self.unpack_data_batch(data_batch)
 
-        # ____ Make predictions. ____
-        preds = forward_fn(xs)
-
-        # TODO: make this less hacky
-        if isinstance(preds, tuple):
-            preds = preds[0]
+        if forward_fn == self.forward:
+            # ____ Make predictions. ____
+            preds = forward_fn(xs)
+        else:
+            # ____ Evaluate baseline. ____
+            rankings = torch.argsort(utilities, axis=2, descending=True)
+            preds, _ = forward_fn(rankings)
+            preds = preds.type_as(xs)
 
         # Since we have a logit per candidate in the end, we have to remove the last dimension.
         preds = preds.squeeze(2) if (len(preds.shape) == 3) else preds
