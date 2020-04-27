@@ -23,7 +23,11 @@ class MimickingClassification(pl.LightningModule, ABC):
         self.optimizer = optimizer
         self.loss_fn = loss_fn
 
-        self.benchmark_rules = benchmark_rules
+        if benchmark_rules is None:
+            self.benchmark_rules = dict()
+        else:
+            self.benchmark_rules = benchmark_rules
+
         self.save_checkpoint = save_checkpoint
 
     def forward(self, inputs, **kwargs):
@@ -74,7 +78,7 @@ class MimickingClassification(pl.LightningModule, ABC):
 
         # ___ Run manual histogram plotter. ____
         inv_distortion_values_dict = {k: v for k, v in concat_hist_metrics.items() if INV_DISTORTION_KEY in k}
-        save_dir = os.path.join(self.logger.save_dir, self.logger._name, "version_" + str(self.logger._version),
+        save_dir = os.path.join(self.logger.save_dir, self.logger.name, "version_" + str(self.logger.version),
                                 "inv_dist_histograms", f"epoch_{self.current_epoch}")
         histogram_overlayer(inv_distortion_values_dict, save_dir=save_dir)
 
@@ -87,6 +91,10 @@ class MimickingClassification(pl.LightningModule, ABC):
 
         # ____ Make predictions. ____
         preds = forward_fn(xs)
+
+        # TODO: make this less hacky
+        if isinstance(preds, tuple):
+            preds = preds[0]
 
         # Since we have a logit per candidate in the end, we have to remove the last dimension.
         preds = preds.squeeze(2) if (len(preds.shape) == 3) else preds
