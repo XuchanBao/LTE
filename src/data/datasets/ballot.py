@@ -15,9 +15,13 @@ class Ballot(Dataset):
                  epoch_length=256,
                  voting_rule=get_plurality(),
                  utility_distribution="uniform",
-                 one_hot_candidates=False):
+                 one_hot_candidates=False,
+                 min_num_voters=1,
+                 min_num_candidates=1):
         self.max_num_voters = max_num_voters
         self.max_num_candidates = max_num_candidates
+        self.min_num_voters = min_num_voters
+        self.min_num_candidates = min_num_candidates
         self.batch_size = batch_size
         self.epoch_length = epoch_length
         self.utility_distribution = utility_distribution
@@ -31,8 +35,8 @@ class Ballot(Dataset):
 
     def __getitem__(self, idx):
         # Sample number of voters and candidates.
-        num_voters = np.random.randint(1, self.max_num_voters + 1)
-        num_candidates = np.random.randint(1, self.max_num_candidates + 1)
+        num_voters = np.random.randint(self.min_num_voters, self.max_num_voters + 1)
+        num_candidates = np.random.randint(self.min_num_candidates, self.max_num_candidates + 1)
 
         # Sample utility profiles.
         if self.utility_distribution == "uniform":

@@ -13,7 +13,6 @@ def get_plurality(one_hot=False):
         utilities = None
 
         # votes: (batch_size, # of voters, # of candidates)
-        # TODO: Decide how to handle ties.
         # ____Select the top votes of the voters. ____
         if isinstance(votes, torch.Tensor):
             top_votes = votes[:, :, 0].detach().cpu().numpy()
@@ -44,16 +43,33 @@ def get_plurality(one_hot=False):
 
 @quick_register
 def get_borda(one_hot=False):
-    def borda(votes, utilites=None, one_hot_repr=one_hot):
-        breakpoint()
-
+    def borda(votes, utilities=None, one_hot_repr=one_hot):
         # Don't use utilities.
         utilities = None
 
         # ____ Compute borda scores for each candidate. ____
-        winner = None
-        unique = None
-        pass
+
+        if isinstance(votes, torch.Tensor):
+            votes_np = votes.detach().cpu().numpy()
+        else:
+            votes_np = votes
+
+        bs, n_voters, n_cands = votes_np.shape
+
+        # borda_scores: (batch_size, # of candidates)
+        borda_scores = np.sum((n_cands - 1 - np.argsort(votes_np, axis=2)), axis=1)
+
+        # compute borda winner
+        winner = np.argmax(borda_scores, axis=1)
+        if isinstance(votes, torch.Tensor):
+            winner = torch.from_numpy(winner).type_as(votes)
+
+        winner = get_one_hot(winner, n_cands) if one_hot_repr else winner
+
+        # check ties and compute # of unique cases in batch
+        borda_diff = borda_scores - np.max(borda_scores, axis=1)[..., None]
+        tie_counts = np.sum(np.maximum(borda_diff + 0.5, 0) * 2, axis=1) - 1
+        unique = (tie_counts == 0)
 
         return winner, unique
 
