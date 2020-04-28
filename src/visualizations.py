@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-COLORS = ["orange", "forestgreen"]
+COLORS = ["orange", "forestgreen", 'blue']
 
 
 def histogram_overlayer(inv_distortion_values_dict, save_dir):
@@ -15,7 +15,7 @@ def histogram_overlayer(inv_distortion_values_dict, save_dir):
     plt.figure(figsize=(10, 5))
     # ____ Plot the histograms. ____
     for i, (k, v) in enumerate(inv_distortion_values_dict.items()):
-        plt.hist(x=v, bins=50, color=COLORS[i], density=True, label=k)
+        plt.hist(x=v, bins=50, color=COLORS[i], density=True, label=k, alpha=0.3)
 
     # Add the min, max and mean.
     for i, (k, v) in enumerate(inv_distortion_values_dict.items()):
@@ -25,6 +25,8 @@ def histogram_overlayer(inv_distortion_values_dict, save_dir):
 
     plt.legend(bbox_to_anchor=(1.05, 1.0), loc='upper left')
     plt.tight_layout()
+    plt.xlim(-0.05, 1.05)
+    plt.yscale('log')
     plt.savefig(os.path.join(save_dir, "ovelaid_histogram.png"))
 
 
