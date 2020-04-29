@@ -28,7 +28,7 @@ class Ballot(Dataset):
             self.voter_num_list = []
             for interval_i in range(len(self.min_num_voters)):
                 self.voter_num_list.extend(list(range(self.min_num_voters[interval_i],
-                                                      self.max_num_voters[interval_i])))
+                                                      self.max_num_voters[interval_i] + 1)))
         else:
             self.voter_num_list = list(range(self.min_num_voters, self.max_num_voters))
         self.min_num_candidates = min_num_candidates
