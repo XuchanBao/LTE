@@ -18,24 +18,36 @@ class Ballot(Dataset):
                  one_hot_candidates=False,
                  min_num_voters=1,
                  min_num_candidates=1):
-        self.max_num_voters = max_num_voters
-        self.max_num_candidates = max_num_candidates
         self.min_num_voters = min_num_voters
+        self.max_num_voters = max_num_voters
+
+        if isinstance(self.min_num_voters, list):
+            assert isinstance(self.max_num_voters, list)
+            assert len(self.min_num_voters) == len(self.max_num_voters), \
+                "Length for min_num_voters must match max_num_voters"
+            self.voter_num_list = []
+            for interval_i in range(len(self.min_num_voters)):
+                self.voter_num_list.extend(list(range(self.min_num_voters[interval_i],
+                                                      self.max_num_voters[interval_i])))
+        else:
+            self.voter_num_list = list(range(self.min_num_voters, self.max_num_voters))
         self.min_num_candidates = min_num_candidates
+        self.max_num_candidates = max_num_candidates
         self.batch_size = batch_size
         self.epoch_length = epoch_length
         self.utility_distribution = utility_distribution
         self.one_hot_candidates = one_hot_candidates
         self.voting_rule = voting_rule
 
-        self.empty_token = -1
+        self.empty_token = 0
 
     def __len__(self):
         return self.epoch_length
 
     def __getitem__(self, idx):
         # Sample number of voters and candidates.
-        num_voters = np.random.randint(self.min_num_voters, self.max_num_voters + 1)
+        # num_voters = np.random.randint(self.min_num_voters, self.max_num_voters + 1)
+        num_voters = np.random.choice(self.voter_num_list)
         num_candidates = np.random.randint(self.min_num_candidates, self.max_num_candidates + 1)
 
         # Sample utility profiles.
