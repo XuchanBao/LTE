@@ -121,6 +121,10 @@ class MimickingClassification(pl.LightningModule, ABC):
         acc = compute_accuracy(logits=preds, scalar_targets=ys)
         metric_logs["{}/acc".format(prepend_key)] = float(acc)
 
+        n_voters = utilities.shape[1]
+        metric_logs['{}/{}0s/acc'.format(prepend_key, n_voters // 10)] = float(acc)
+        metric_logs['{}/{}0s/loss'.format(prepend_key, n_voters // 10)] = float(loss)
+
         # ____ Log the distortion ratios. ____
         inv_distortion_ratios = compute_distortion_ratios(logits=preds, utilities=utilities)
         hist_logs[f"{prepend_key}/{INV_DISTORTION_KEY}"] = inv_distortion_ratios

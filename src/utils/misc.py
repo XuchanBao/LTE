@@ -27,14 +27,14 @@ def set_seed(seed):
 
 def average_values_in_list_of_dicts(list_of_dicts):
     averaged_values_dict = dict()
-    for k, v in list_of_dicts[0].items():
-        curr_metric_list = list()
-        try:
-            for curr_output_dict in list_of_dicts:
-                curr_metric_list.append(float(curr_output_dict[k]))
-            averaged_values_dict[k] = np.array(curr_metric_list).mean()
-        except Exception as e:
-            continue
+    for curr_output_dict in list_of_dicts:
+        for k, v in curr_output_dict.items():
+            if k not in averaged_values_dict:
+                averaged_values_dict[k] = [v]
+            else:
+                averaged_values_dict[k].append(v)
+    for k, v in averaged_values_dict.items():
+        averaged_values_dict[k] = np.array(v).mean()
 
     return averaged_values_dict
 
