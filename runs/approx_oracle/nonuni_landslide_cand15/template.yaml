@@ -1,0 +1,104 @@
+<type>: Munch
+<init>: true
+# PyTorch Lightning System.
+system:
+  <type>: MimickingClassification
+  <init>: true
+  # Lawyers.
+  model:
+    <type>: SetTransformer
+    <init>: true
+    encoder:
+      <type>: SetTransformerEncoder
+      <init>: true
+      num_heads: 20
+      dim_elements: 225   # max_candidates^2 for one-hot
+      dim_hidden: 400
+      dim_out: 400
+      add_layer_norm: true
+    decoder:
+      <type>: SetTransformerDecoder
+      <init>: true
+      num_heads: 20
+      num_seed_vectors: 15
+      dim_elements: 400
+      dim_hidden1: 400
+      dim_hidden2: 400
+      dim_out: 1
+      add_layer_norm: true
+  # Data loaders.
+  train_loader:
+    <type>: DataLoader
+    <init>: true
+    dataset:
+      <type>: Ballot
+      <init>: true
+      max_num_voters: 79
+      min_num_voters: 50
+      max_num_candidates: 15
+      min_num_candidates: 10
+      batch_size: 128
+      epoch_length: 2048
+      voting_rule:
+        <type>: get_oracle
+        <init>: true
+      utility_distribution: "landslide"
+      one_hot_candidates: true
+    batch_size: 1
+    shuffle: true
+    num_workers: 0
+  valid_loader:
+    <type>: DataLoader
+    <init>: true
+    dataset:
+      <type>: Ballot
+      <init>: true
+      max_num_voters: 79
+      min_num_voters: 50
+      max_num_candidates: 15
+      min_num_candidates: 10
+      batch_size: 32
+      epoch_length: 1024
+      voting_rule:
+        <type>: get_oracle
+        <init>: true
+      utility_distribution: "landslide"
+      one_hot_candidates: true
+    batch_size: 1
+    shuffle: true
+    num_workers: 0
+  optimizer:
+    <type>: Adam
+    <init>: false
+    lr: 0.0001
+  # Loss functions.
+  loss_fn:
+    <type>: CrossEntropyLoss
+    <init>: true
+  # Other rules to benchmark against.
+  benchmark_rules:
+    <type>: Munch
+    <init>: true
+    plurality:
+      <type>: get_plurality
+      <init>: true
+      one_hot: true
+    borda:
+      <type>: get_borda
+      <init>: true
+      one_hot: true
+
+# TestTube experiment.
+logger:
+  <type>: TestTubeLogger
+  <init>: false
+
+trainer:
+  <type>: Trainer
+  <init>: false
+  show_progress_bar: true
+  early_stop_callback: false
+  max_nb_epochs: 100
+
+# Seed.
+seed: 0

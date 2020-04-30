@@ -51,12 +51,24 @@ class Ballot(Dataset):
         num_candidates = np.random.randint(self.min_num_candidates, self.max_num_candidates + 1)
 
         # Sample utility profiles.
+        # uniform, indecisive, landslide, polarized, skewed
         if self.utility_distribution == "uniform":
             dirichlet_alphas = np.ones(num_candidates)
-            utilities = np.random.dirichlet(alpha=dirichlet_alphas, size=(self.batch_size, num_voters))
+        elif self.utility_distribution == "indecisive":
+            dirichlet_alphas = 2.0 * np.ones(num_candidates)
+        elif self.utility_distribution == "landslide":
+            dirichlet_alphas = np.ones(num_candidates)
+            preferred_cand = np.random.choice(num_candidates)
+            dirichlet_alphas[preferred_cand] = 3.0
+        elif self.utility_distribution == "polarized":
+            dirichlet_alphas = 0.5 * np.ones(num_candidates)
+        elif self.utility_distribution == "skewed":
+            dirichlet_alphas = np.random.choice([2., 3.], size=(num_candidates, ))
         else:
             raise ValueError("Please specify a valid distribution over utilities. "
-                             "Currently only 'uniform' is supported.")
+                             "Must be one of ('uniform', 'indecisive', 'landslide', 'polarized', 'skewed')")
+
+        utilities = np.random.dirichlet(alpha=dirichlet_alphas, size=(self.batch_size, num_voters))
 
         # Get the rankings of the voters (descending order).
         rankings = np.argsort(utilities, axis=2)[:, :, ::-1]
