@@ -6,6 +6,12 @@ import torch
 from src.utils.voting_utils import get_one_hot
 
 
+def winner_uniqueness_given_scores(scores):
+    score_diff = scores - np.max(scores, axis=1)[..., None]
+    tie_counts = np.sum(np.maximum(score_diff + 0.5, 0) * 2, axis=1) - 1
+    return tie_counts == 0
+
+
 @quick_register
 def get_plurality(one_hot=False):
     def plurality(votes, utilities=None, one_hot_repr=one_hot):
@@ -67,13 +73,84 @@ def get_borda(one_hot=False):
         winner = get_one_hot(winner, n_cands) if one_hot_repr else winner
 
         # check ties and compute # of unique cases in batch
-        borda_diff = borda_scores - np.max(borda_scores, axis=1)[..., None]
-        tie_counts = np.sum(np.maximum(borda_diff + 0.5, 0) * 2, axis=1) - 1
-        unique = (tie_counts == 0)
+        unique = winner_uniqueness_given_scores(borda_scores)
 
         return winner, unique
 
     return borda
+
+
+@quick_register
+def get_copeland(one_hot=False):
+    def copeland(votes, utilities=None, one_hot_repr=one_hot):
+
+        if isinstance(votes, torch.Tensor):
+            votes_np = votes.detach().cpu().numpy()
+        else:
+            votes_np = votes
+
+        bs, n_voters, n_cands = votes_np.shape
+
+        # compute copeland winner
+        pref_thres = n_voters * 0.5
+
+        cand_position = np.argsort(votes_np, axis=2)
+
+        pairwise_wins = np.zeros((bs, n_cands))
+        for cand_a in range(n_cands):
+            for cand_b in range(cand_a + 1, n_cands):
+                num_a_win_b = np.sum(cand_position[:, :, cand_a] < cand_position[:, :, cand_b], axis=1)
+
+                pairwise_wins[:, cand_a] += (num_a_win_b > pref_thres)
+                pairwise_wins[:, cand_b] += (num_a_win_b < pref_thres)
+
+        winner = np.argmax(pairwise_wins, axis=1)
+
+        if isinstance(votes, torch.Tensor):
+            winner = torch.from_numpy(winner).type_as(votes)
+        winner = get_one_hot(winner, n_cands) if one_hot_repr else winner
+
+        unique = winner_uniqueness_given_scores(pairwise_wins)
+
+        return winner, unique
+    return copeland
+
+
+@quick_register
+def get_maximin(one_hot=False):
+    def maximin(votes, utilities=None, one_hot_repr=one_hot):
+
+        if isinstance(votes, torch.Tensor):
+            votes_np = votes.detach().cpu().numpy()
+        else:
+            votes_np = votes
+
+        bs, n_voters, n_cands = votes_np.shape
+
+        # compute the maximin winner
+
+        cand_position = np.argsort(votes_np, axis=2)
+        pairwise_pref = np.ones((bs, n_cands, n_cands)) * n_voters
+
+        for cand_a in range(n_cands):
+            for cand_b in range(cand_a + 1, n_cands):
+                num_a_win_b = np.sum(cand_position[:, :, cand_a] < cand_position[:, :, cand_b], axis=1)
+
+                pairwise_pref[:, cand_a, cand_b] = num_a_win_b
+                pairwise_pref[:, cand_b, cand_a] = n_voters - num_a_win_b
+
+        pairwise_min = np.min(pairwise_pref, axis=2)
+
+        winner = np.argmax(pairwise_min, axis=1)
+
+        if isinstance(votes, torch.Tensor):
+            winner = torch.from_numpy(winner).type_as(votes)
+        winner = get_one_hot(winner, n_cands) if one_hot_repr else winner
+
+        unique = winner_uniqueness_given_scores(pairwise_min)
+
+        return winner, unique
+    return maximin
 
 
 @quick_register
