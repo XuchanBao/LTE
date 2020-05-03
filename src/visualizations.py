@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-COLORS = ["orange", "forestgreen", 'blue']
+COLORS = ["orange", "forestgreen", 'blue', 'red', 'cyan']
 
 
 def histogram_overlayer(inv_distortion_values_dict, save_dir):

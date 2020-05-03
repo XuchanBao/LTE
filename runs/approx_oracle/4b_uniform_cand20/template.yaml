@@ -12,7 +12,7 @@ system:
       <type>: SetTransformerEncoder
       <init>: true
       num_heads: 20
-      dim_elements: 225   # max_candidates^2 for one-hot
+      dim_elements: 400   # max_candidates^2 for one-hot
       dim_hidden: 400
       dim_out: 400
       add_layer_norm: true
@@ -20,7 +20,7 @@ system:
       <type>: SetTransformerDecoder
       <init>: true
       num_heads: 20
-      num_seed_vectors: 15
+      num_seed_vectors: 20
       dim_elements: 400
       dim_hidden1: 400
       dim_hidden2: 400
@@ -33,9 +33,9 @@ system:
     dataset:
       <type>: Ballot
       <init>: true
-      max_num_voters: 79
+      max_num_voters: 99
       min_num_voters: 50
-      max_num_candidates: 15
+      max_num_candidates: 20
       min_num_candidates: 10
       batch_size: 128
       epoch_length: 2048
@@ -53,9 +53,9 @@ system:
     dataset:
       <type>: Ballot
       <init>: true
-      max_num_voters: 79
+      max_num_voters: 99
       min_num_voters: 50
-      max_num_candidates: 15
+      max_num_candidates: 20
       min_num_candidates: 10
       batch_size: 32
       epoch_length: 1024
@@ -70,10 +70,7 @@ system:
   optimizer:
     <type>: Adam
     <init>: false
-    lr|lr_0_0001: 0.0001
-    lr|lr_0_0003: 0.0003
-    lr|lr_0_00003: 0.00003
-    lr|lr_0_00001: 0.00001
+    lr: 0.0001
   # Loss functions.
   loss_fn:
     <type>: CrossEntropyLoss
@@ -90,7 +87,14 @@ system:
       <type>: get_borda
       <init>: true
       one_hot: true
-
+    copeland:
+      <type>: get_copeland
+      <init>: true
+      one_hot: true
+    maximin:
+      <type>: get_maximin
+      <init>: true
+      one_hot: true
 # TestTube experiment.
 logger:
   <type>: TestTubeLogger
@@ -101,7 +105,7 @@ trainer:
   <init>: false
   show_progress_bar: true
   early_stop_callback: false
-  max_nb_epochs: 50
+  max_nb_epochs: 100
 
 # Seed.
 seed: 0
