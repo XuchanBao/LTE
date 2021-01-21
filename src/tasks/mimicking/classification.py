@@ -133,10 +133,6 @@ class MimickingClassification(pl.LightningModule, ABC):
 
     def unpack_data_batch(self, data_batch):
         xs, ys, utilities = data_batch
-        # The first dimensions is added automatically by the data loaders. In this implementation, we're generating
-        # our own batch dimension, so we have to get rid of the first dimension added by the loader.
-        xs, ys, utilities = xs.squeeze(0), ys.squeeze(0), utilities.squeeze(0)
-
         return xs, ys, utilities
 
     def configure_optimizers(self):

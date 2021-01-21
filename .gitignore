@@ -139,3 +139,6 @@ media
 default/
 results/
 batch_run.sh
+
+# wandb
+wandb/

@@ -27,7 +27,7 @@ if __name__ == "__main__":
     system = cfg.system
     logger = cfg.logger(save_dir=save_dir)
     if torch.cuda.is_available():
-        trainer = cfg.trainer(logger=logger, gpus=1, default_save_path=save_dir)
+        trainer = cfg.trainer(logger=logger, gpus=1)
     else:
         trainer = cfg.trainer(logger=logger)
 

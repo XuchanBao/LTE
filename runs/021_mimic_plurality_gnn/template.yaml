@@ -1,0 +1,83 @@
+<type>: Munch
+<init>: true
+# PyTorch Lightning System.
+system:
+  <type>: MimickingClassification
+  <init>: true
+  # Lawyers.
+  model:
+    <type>: GIN
+    <init>: true
+    num_layers: 5
+    num_mlp_layers: 2
+    input_dim: 10
+    hidden_dim: 512
+    output_dim: 10
+    final_dropout: 0.0  # tunable
+    learn_eps: true
+    neighbor_pooling_type: "sum"
+    graph_pooling_type: "sum"
+  # Data loaders.
+  train_loader:
+    <type>: DataLoader
+    <init>: true
+    dataset:
+      <type>: Ballot
+      <init>: true
+      max_num_voters: 20
+      max_num_candidates: 10
+      batch_size: 1
+      voting_rule:
+        <type>: get_plurality
+        <init>: true
+      utility_distribution: "uniform"
+      return_graph: true
+    batch_size: 32
+    shuffle: true
+    num_workers: 10
+    collate_fn:
+      <type>: dgl_ballot_collate
+      <init>: false
+  valid_loader:
+    <type>: DataLoader
+    <init>: true
+    dataset:
+      <type>: Ballot
+      <init>: true
+      max_num_voters: 20
+      max_num_candidates: 10
+      batch_size: 1
+      voting_rule:
+        <type>: get_plurality
+        <init>: true
+      utility_distribution: "uniform"
+      return_graph: true
+    batch_size: 32
+    shuffle: true
+    num_workers: 10
+    collate_fn:
+      <type>: dgl_ballot_collate
+      <init>: false
+  optimizer:
+    <type>: Adam
+    <init>: false
+    lr: 0.0001
+  # Loss functions.
+  loss_fn:
+    <type>: CrossEntropyLoss
+    <init>: true
+
+# TestTube experiment.
+logger:
+  <type>: WandbLogger
+  <init>: false
+  project: "lte"
+  tags: ["dev"]
+
+trainer:
+  <type>: Trainer
+  <init>: false
+  max_epochs: 1000
+
+# Seed.
+seed: 0

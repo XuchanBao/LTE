@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader
 from torchvision.transforms import ToTensor, Normalize, Compose
 from test_tube import Experiment
 from pytorch_lightning import Trainer
-from pytorch_lightning.logging import TestTubeLogger
+from pytorch_lightning.loggers import WandbLogger
 from torchvision.datasets import MNIST
 from torchvision.datasets import DatasetFolder
 from torch.nn.functional import mse_loss
@@ -49,4 +49,4 @@ quick_register(tanh)
 # ____Pytorch Lightning Related___ #
 quick_register(Experiment)
 quick_register(Trainer)
-quick_register(TestTubeLogger)
+quick_register(WandbLogger)

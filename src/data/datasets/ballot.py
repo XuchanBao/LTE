@@ -1,5 +1,7 @@
 import numpy as np
 import torch
+import dgl
+import itertools
 from torch.utils.data import Dataset
 from spaghettini import quick_register
 
@@ -17,7 +19,10 @@ class Ballot(Dataset):
                  utility_distribution="uniform",
                  one_hot_candidates=False,
                  min_num_voters=1,
-                 min_num_candidates=1):
+                 min_num_candidates=1,
+                 return_graph=False):
+        if return_graph:
+            assert batch_size == 1
         self.min_num_voters = min_num_voters
         self.max_num_voters = max_num_voters
 
@@ -38,6 +43,7 @@ class Ballot(Dataset):
         self.utility_distribution = utility_distribution
         self.one_hot_candidates = one_hot_candidates
         self.voting_rule = voting_rule
+        self.return_graph = return_graph
 
         self.empty_token = 0
 
@@ -68,19 +74,25 @@ class Ballot(Dataset):
             raise ValueError("Please specify a valid distribution over utilities. "
                              "Must be one of ('uniform', 'indecisive', 'landslide', 'polarized', 'skewed')")
 
-        utilities = np.random.dirichlet(alpha=dirichlet_alphas, size=(self.batch_size, num_voters))
+        success = False
+        while not success:
+            utilities = np.random.dirichlet(alpha=dirichlet_alphas, size=(self.batch_size, num_voters))
 
-        # Get the rankings of the voters (descending order).
-        rankings = np.argsort(utilities, axis=2)[:, :, ::-1]
+            # Get the rankings of the voters (descending order).
+            rankings = np.argsort(utilities, axis=2)[:, :, ::-1]
 
-        # Pick the winner.
-        winner, unique = self.voting_rule(rankings, utilities=utilities)
+            # Pick the winner.
+            winner, unique = self.voting_rule(rankings, utilities=utilities)
 
-        # remove rows with ties
-        tied_rows = np.argwhere(unique == False).squeeze()
-        winner = np.delete(winner, tied_rows, 0)
-        rankings = np.delete(rankings, tied_rows, 0)
-        utilities = np.delete(utilities, tied_rows, 0)
+            # remove rows with ties
+            tied_rows = np.argwhere(unique == False).squeeze()
+            winner = np.delete(winner, tied_rows, 0)
+            rankings = np.delete(rankings, tied_rows, 0)
+            utilities = np.delete(utilities, tied_rows, 0)
+
+            # Declare success when not returning graph, or when the data point doesn't contain ties.
+            if unique or not self.return_graph:
+                success = True
 
         if not self.one_hot_candidates:
             # Add "dummy" rankings to make sure all rankings have the same dimensionality (i.e. max_num_candidates).
@@ -97,11 +109,31 @@ class Ballot(Dataset):
         # Add "dummy" utilities to make sure all utilities have the same dimensionality.
         utilities_full = np.zeros((utilities.shape[0], utilities.shape[1], self.max_num_candidates))
         utilities_full[:, :, :num_candidates] = utilities
-        utilities_full[:, :, num_candidates:] = 0.0
 
         # Move to torch tensors.
         xs_torch = torch.tensor(rankings_full).float().view(rankings.shape[0], rankings.shape[1], -1)
         ys_torch = torch.tensor(winner).long()
+
+        # Build a graph.
+        if self.return_graph:
+            # Build edges (2, n_voters * n_voters).
+            edges = np.array(list(itertools.product(np.arange(num_voters), np.arange(num_voters)))).T
+
+            # Build graph
+            graph = dgl.graph((edges[0], edges[1]))
+
+            # Add node features (n_voters, n_cand).
+            graph.ndata['feat'] = xs_torch.squeeze(0)
+
+            # Should remove self edges.
+            dgl.to_simple(graph, copy_ndata=True)
+
+            xs_torch = graph
+
+            # Pad the utilities_full (num_voters, max_num_cand) --> (max_num_voters, max_num_cand)
+            utilities_fuller = np.zeros((utilities_full.shape[0], self.max_num_voters, self.max_num_candidates))
+            utilities_fuller[:, :num_voters, :] = utilities_full
+            utilities_full = utilities_fuller
 
         # Return the rankings and the winners.
         return xs_torch, ys_torch, utilities_full
