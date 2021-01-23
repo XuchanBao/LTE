@@ -30,7 +30,7 @@ system:
       min_num_candidates: 10
       batch_size: 1
       voting_rule:
-        <type>: get_borda
+        <type>: get_maximin
         <init>: true
       utility_distribution: "uniform"
       return_graph: true
@@ -52,7 +52,7 @@ system:
       min_num_candidates: 10
       batch_size: 1
       voting_rule:
-        <type>: get_borda
+        <type>: get_maximin
         <init>: true
       utility_distribution: "uniform"
       return_graph: true
@@ -65,8 +65,6 @@ system:
   optimizer:
     <type>: Adam
     <init>: false
-    lr|lr_0_01: 0.01
-    lr|lr_0_003: 0.003
     lr|lr_0_001: 0.001
     lr|lr_0_0003: 0.0003
     lr|lr_0_0001: 0.0001
@@ -80,7 +78,7 @@ logger:
   <init>: false
   project: "lte"
   entity: "byol"
-  tags: ["gin", "mimic_borda"]
+  tags: ["gin", "mimic_maximin"]
 
 trainer:
   <type>: Trainer
