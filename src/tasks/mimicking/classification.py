@@ -59,7 +59,7 @@ class MimickingClassification(pl.LightningModule, ABC):
 
         return metric_logs, hist_logs
 
-    def validation_end(self, outputs):
+    def validation_epoch_end(self, outputs):
         # ____ Break down the outputs collected during validation. ____)
         # First argument returned by validation_step is the dict of metrics.
         metrics_dicts_list = [collected_tuple[0] for collected_tuple in outputs]
@@ -73,17 +73,15 @@ class MimickingClassification(pl.LightningModule, ABC):
 
         # ____ Log the averaged metrics and histogram metrics. ____
         self.logger.log_metrics(averaged_metrics, step=self.trainer.total_batch_idx)
-        for k, v in concat_hist_metrics.items():
-            self.logger.experiment.add_histogram(tag=k, values=v, global_step=self.current_epoch)
+        # TODO: make this work with wandb logger
+        # for k, v in concat_hist_metrics.items():
+        #     self.logger.experiment.add_histogram(tag=k, values=v, global_step=self.current_epoch)
 
         # ___ Run manual histogram plotter. ____
         inv_distortion_values_dict = {k: v for k, v in concat_hist_metrics.items() if INV_DISTORTION_KEY in k}
         save_dir = os.path.join(self.logger.save_dir, self.logger.name, "version_" + str(self.logger.version),
                                 "inv_dist_histograms", f"epoch_{self.current_epoch}")
         histogram_overlayer(inv_distortion_values_dict, save_dir=save_dir)
-
-        # TODO: Find a way to avoid this solution.
-        return {"val_loss": torch.tensor(self.trainer.total_batches)}
 
     def common_step(self, forward_fn, data_batch, prepend_key=""):
         # ____ Unpack the data batch. ____

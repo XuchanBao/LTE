@@ -68,3 +68,9 @@ def sendline_and_get_response(s, line):
     s.prompt()
     reply = str(s.before.decode("utf-8"))
     pprint(reply)
+
+
+def set_hyperparams(path, wandb_logger):
+    with open(path, 'r') as f:
+        x = yaml.safe_load(f)
+        wandb_logger.log_hyperparams(x)

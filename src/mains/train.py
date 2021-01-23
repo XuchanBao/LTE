@@ -5,6 +5,7 @@ import torch
 
 from spaghettini import load
 from src.utils.seed import set_seed
+from src.utils.misc import set_hyperparams
 
 
 if __name__ == "__main__":
@@ -26,6 +27,9 @@ if __name__ == "__main__":
     # Get the system, experiment (for logging) and trainer.
     system = cfg.system
     logger = cfg.logger(save_dir=save_dir)
+
+    set_hyperparams(args.cfg, logger)
+
     if torch.cuda.is_available():
         trainer = cfg.trainer(logger=logger, gpus=1)
     else:

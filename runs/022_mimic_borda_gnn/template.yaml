@@ -28,7 +28,7 @@ system:
       max_num_candidates: 10
       batch_size: 1
       voting_rule:
-        <type>: get_plurality
+        <type>: get_borda
         <init>: true
       utility_distribution: "uniform"
       return_graph: true
@@ -48,7 +48,7 @@ system:
       max_num_candidates: 10
       batch_size: 1
       voting_rule:
-        <type>: get_plurality
+        <type>: get_borda
         <init>: true
       utility_distribution: "uniform"
       return_graph: true
@@ -73,7 +73,7 @@ logger:
   <init>: false
   project: "lte"
   entity: "byol"
-  tags: ["gin", "mimic_plurality"]
+  tags: ["gin", "mimic_borda"]
 
 trainer:
   <type>: Trainer

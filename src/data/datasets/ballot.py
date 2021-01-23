@@ -133,7 +133,7 @@ class Ballot(Dataset):
             # Pad the utilities_full (num_voters, max_num_cand) --> (max_num_voters, max_num_cand)
             utilities_fuller = np.zeros((utilities_full.shape[0], self.max_num_voters, self.max_num_candidates))
             utilities_fuller[:, :num_voters, :] = utilities_full
-            utilities_full = utilities_fuller
+            utilities_full = utilities_fuller.squeeze(0)    # get rid of the first dummy batch size dimension
 
         # Return the rankings and the winners.
         return xs_torch, ys_torch, utilities_full
