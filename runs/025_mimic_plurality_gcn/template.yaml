@@ -1,0 +1,87 @@
+<type>: Munch
+<init>: true
+# PyTorch Lightning System.
+system:
+  <type>: MimickingClassification
+  <init>: true
+  # Lawyers.
+  model:
+    <type>: GCN
+    <init>: true
+    num_layers: 5
+    input_dim: 20
+    hidden_dim: 512
+    output_dim: 20
+    dropout: 0.5
+  # Data loaders.
+  train_loader:
+    <type>: DataLoader
+    <init>: true
+    dataset:
+      <type>: Ballot
+      <init>: true
+      max_num_voters: 99
+      min_num_voters: 50
+      max_num_candidates: 20
+      min_num_candidates: 10
+      batch_size: 1
+      voting_rule:
+        <type>: get_plurality
+        <init>: true
+      utility_distribution: "uniform"
+      return_graph: true
+    batch_size: 128
+    shuffle: true
+    num_workers: 10
+    collate_fn:
+      <type>: dgl_ballot_collate
+      <init>: false
+  valid_loader:
+    <type>: DataLoader
+    <init>: true
+    dataset:
+      <type>: Ballot
+      <init>: true
+      max_num_voters: 99
+      min_num_voters: 50
+      max_num_candidates: 20
+      min_num_candidates: 10
+      batch_size: 1
+      voting_rule:
+        <type>: get_plurality
+        <init>: true
+      utility_distribution: "uniform"
+      return_graph: true
+    batch_size: 32
+    shuffle: true
+    num_workers: 10
+    collate_fn:
+      <type>: dgl_ballot_collate
+      <init>: false
+  optimizer:
+    <type>: Adam
+    <init>: false
+    lr|lr_0_01: 0.01
+    lr|lr_0_003: 0.003
+    lr|lr_0_001: 0.001
+    lr|lr_0_0003: 0.0003
+    lr|lr_0_0001: 0.0001
+  loss_fn:
+    <type>: CrossEntropyLoss
+    <init>: true
+
+# TestTube experiment.
+logger:
+  <type>: WandbLogger
+  <init>: false
+  project: "lte"
+  entity: "byol"
+  tags: ["gcn", "mimic_plurality"]
+
+trainer:
+  <type>: Trainer
+  <init>: false
+  max_epochs: 1000
+
+# Seed.
+seed: 0
