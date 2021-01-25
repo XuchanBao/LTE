@@ -16,4 +16,5 @@ def dgl_ballot_collate(samples):
 @quick_register
 def batched_ballot_collate(samples):
     assert len(samples) == 1, "Samples should be list of length 1!"
-    return samples[0]
+    rankings, labels, utilities = samples[0]
+    return torch.tensor(rankings), torch.tensor(labels), torch.tensor(utilities)
