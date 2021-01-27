@@ -15,13 +15,16 @@ INV_DISTORTION_KEY = "inv_dist_ratios"
 @quick_register
 class MimickingClassification(pl.LightningModule, ABC):
     def __init__(self, model, train_loader, valid_loader, optimizer, loss_fn, benchmark_rules=None,
-                 save_checkpoint=False, **kwargs):
+                 save_checkpoint=False, scheduler_wrapper=None, log_resolution=10, **kwargs):
         super().__init__()
         self.model = model
         self.train_loader = train_loader
         self.valid_loader = valid_loader
         self.optimizer = optimizer
+        self.optimizer_obj = None
         self.loss_fn = loss_fn
+        self.scheduler_wrapper = scheduler_wrapper
+        self.log_resolution = log_resolution
 
         if benchmark_rules is None:
             self.benchmark_rules = dict()
@@ -38,6 +41,10 @@ class MimickingClassification(pl.LightningModule, ABC):
 
         # ____ Log metrics. ____
         self.logger.log_metrics(metric_logs, step=self.trainer.total_batch_idx)
+
+        # log LR (may be using scheduler)
+        current_lr = self.optimizer_obj.param_groups[0]['lr']
+        self.logger.log_metrics({'lr': current_lr}, step=self.trainer.total_batch_idx)
 
         return {"loss": loss}
 
@@ -120,8 +127,8 @@ class MimickingClassification(pl.LightningModule, ABC):
         metric_logs["{}/acc".format(prepend_key)] = float(acc)
 
         n_voters = utilities.shape[1]
-        metric_logs['{}/{}0s/acc'.format(prepend_key, n_voters // 10)] = float(acc)
-        metric_logs['{}/{}0s/loss'.format(prepend_key, n_voters // 10)] = float(loss)
+        metric_logs['{}/group{}/acc'.format(prepend_key, n_voters // self.log_resolution)] = float(acc)
+        metric_logs['{}/group{}/loss'.format(prepend_key, n_voters // self.log_resolution)] = float(loss)
 
         # ____ Log the distortion ratios. ____
         inv_distortion_ratios = compute_distortion_ratios(logits=preds, utilities=utilities)
@@ -134,7 +141,12 @@ class MimickingClassification(pl.LightningModule, ABC):
         return xs, ys, utilities
 
     def configure_optimizers(self):
-        return [self.optimizer(self.model.parameters())]
+        self.optimizer_obj = self.optimizer(self.model.parameters())
+        if self.scheduler_wrapper is not None:
+            scheduler = self.scheduler_wrapper.get_scheduler(self.optimizer_obj)
+            return [self.optimizer_obj], [scheduler]
+
+        return [self.optimizer_obj]
 
     def train_dataloader(self):
         return self.train_loader

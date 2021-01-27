@@ -19,8 +19,10 @@ class GCN(nn.Module):
                  output_dim,
                  num_layers,
                  dropout,
-                 activation=F.relu):
+                 activation=F.relu,
+                 residual_readout=False):
         super(GCN, self).__init__()
+        self.residual_readout = residual_readout
         self.layers = nn.ModuleList()
 
         for i in range(num_layers):
@@ -29,21 +31,42 @@ class GCN(nn.Module):
                 self.layers.append(GraphConv(input_dim, hidden_dim, activation=activation))
             else:
                 # hidden layers
-                for i in range(num_layers - 1):
-                    self.layers.append(GraphConv(hidden_dim, hidden_dim, activation=activation))
+                self.layers.append(GraphConv(hidden_dim, hidden_dim, activation=activation))
         self.dropout = nn.Dropout(p=dropout)
 
         # output layer
-        self.linear_output_layer = nn.Linear(hidden_dim, output_dim)
+        if self.residual_readout:
+            self.linear_output_layers = nn.ModuleList()
+            for i in range(num_layers + 1):
+                if i == 0:
+                    self.linear_output_layers.append(nn.Linear(input_dim, output_dim))
+                else:
+                    self.linear_output_layers.append(nn.Linear(hidden_dim, output_dim))
+        else:
+            self.linear_output_layer = nn.Linear(hidden_dim, output_dim)
 
     def forward(self, g):
         h = g.ndata['feat']
+
+        hidden_rep = [h]
         for i, layer in enumerate(self.layers):
             if i != 0:
                 h = self.dropout(h)
             h = layer(g, h)
+            hidden_rep.append(h)
+            g.ndata[f'h{i + 1}'] = h
 
-        g.ndata['h'] = h
-        hg = dgl.mean_nodes(g, 'h')
+        if self.residual_readout:
+            score_over_layer = 0
+            for i, hidden in enumerate(hidden_rep):
+                if i == 0:
+                    hidden_pooled = dgl.mean_nodes(g, 'feat')
+                else:
+                    hidden_pooled = dgl.mean_nodes(g, f'h{i}')
+                score_over_layer += self.linear_output_layers[i](hidden_pooled)
+        else:
+            g.ndata['h'] = h
+            hg = dgl.mean_nodes(g, 'h')
 
-        return self.linear_output_layer(hg)
+            score_over_layer = self.linear_output_layer(hg)
+        return score_over_layer
