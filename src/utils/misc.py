@@ -74,3 +74,16 @@ def set_hyperparams(path, wandb_logger):
     with open(path, 'r') as f:
         x = yaml.safe_load(f)
         wandb_logger.log_hyperparams(x)
+
+
+def timeit(method):
+    import time
+
+    def timed(*args, **kw):
+        ts = time.time()
+        result = method(*args, **kw)
+        te = time.time()
+        print(f"Time taken: {(te - ts) * 1000}")
+        return result
+
+    return timed

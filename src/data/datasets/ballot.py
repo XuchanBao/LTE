@@ -20,7 +20,8 @@ class Ballot(Dataset):
                  one_hot_candidates=False,
                  min_num_voters=1,
                  min_num_candidates=1,
-                 return_graph=False):
+                 return_graph=False,
+                 remove_ties=True):
         if return_graph:
             assert batch_size == 1
         self.min_num_voters = min_num_voters
@@ -44,6 +45,7 @@ class Ballot(Dataset):
         self.one_hot_candidates = one_hot_candidates
         self.voting_rule = voting_rule
         self.return_graph = return_graph
+        self.remove_ties = remove_ties
 
         self.empty_token = 0
 
@@ -84,14 +86,15 @@ class Ballot(Dataset):
             # Pick the winner.
             winner, unique = self.voting_rule(rankings, utilities=utilities)
 
-            # remove rows with ties
-            tied_rows = np.argwhere(unique == False).squeeze()
-            winner = np.delete(winner, tied_rows, 0)
-            rankings = np.delete(rankings, tied_rows, 0)
-            utilities = np.delete(utilities, tied_rows, 0)
+            # Remove rows with ties.
+            if self.remove_ties:
+                tied_rows = np.argwhere(unique == False).squeeze()
+                winner = np.delete(winner, tied_rows, 0)
+                rankings = np.delete(rankings, tied_rows, 0)
+                utilities = np.delete(utilities, tied_rows, 0)
 
             # Declare success when not returning graph, or when the data point doesn't contain ties.
-            if unique.all() or not self.return_graph:
+            if unique.all() or not self.return_graph or not self.remove_ties:
                 success = True
 
         if not self.one_hot_candidates:
@@ -133,25 +136,46 @@ class Ballot(Dataset):
             # Pad the utilities_full (num_voters, max_num_cand) --> (max_num_voters, max_num_cand)
             utilities_fuller = np.zeros((utilities_full.shape[0], self.max_num_voters, self.max_num_candidates))
             utilities_fuller[:, :num_voters, :] = utilities_full
-            utilities_full = utilities_fuller.squeeze(0)    # get rid of the first dummy batch size dimension
+            utilities_full = utilities_fuller.squeeze(0)  # get rid of the first dummy batch size dimension
 
         # Return the rankings and the winners.
         return xs_torch, ys_torch, utilities_full
 
 
 if __name__ == "__main__":
-    def test_dirichlet():
+    """
+    Run from root. 
+    python -m src.data.datasets.ballot
+    """
+    test_num = 2
+
+    if test_num == 0:
+        def test_dirichlet():
+            import matplotlib.pyplot as plt
+            samples = np.random.dirichlet([1, 1], size=(100,))
+            plt.scatter(samples[:, 0], samples[:, 1])
+            plt.show()
+
+
+        test_dirichlet()
+
+    if test_num == 1:
+        def test_plurality():
+            plurality_dataset = Ballot()
+            plurality_dataset.__getitem__(0)
+
+
+        test_plurality()
+
+    if test_num == 2:
+        from src.voting.voting_rules import get_plurality
         import matplotlib.pyplot as plt
-        samples = np.random.dirichlet([1, 1], size=(100,))
-        plt.scatter(samples[:, 0], samples[:, 1])
+
+        blt = Ballot(max_num_voters=99, min_num_voters=50, max_num_candidates=20, min_num_candidates=20,
+                     return_graph=False, remove_ties=False, batch_size=2048, epoch_length=256,
+                     voting_rule=get_plurality(), utility_distribution="uniform_on_interval", one_hot_candidates=True)
+        rankings, labels, utilities = blt[0]
+        utils_flt = utilities.reshape(-1)
+        plt.hist(utils_flt, bins=50)
         plt.show()
-
-
-    # test_dirichlet()
-
-    def test_plurality():
-        plurality_dataset = Ballot()
-        plurality_dataset.__getitem__(0)
-
-
-    test_plurality()
+        breakpoint()

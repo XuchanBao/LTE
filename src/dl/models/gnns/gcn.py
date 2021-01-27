@@ -45,7 +45,7 @@ class GCN(nn.Module):
         else:
             self.linear_output_layer = nn.Linear(hidden_dim, output_dim)
 
-    def forward(self, g):
+    def forward(self, g, **kwargs):
         h = g.ndata['feat']
 
         hidden_rep = [h]

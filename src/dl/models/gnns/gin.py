@@ -153,7 +153,7 @@ class GIN(nn.Module):
         else:
             raise NotImplementedError
 
-    def forward(self, g):
+    def forward(self, g, **kwargs):
         h = g.ndata['feat']
 
         # list of hidden representation at each layer (including input)

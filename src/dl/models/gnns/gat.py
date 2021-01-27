@@ -45,7 +45,7 @@ class GAT(nn.Module):
             num_hidden * heads[-2], num_classes, heads[-1],
             feat_drop, attn_drop, negative_slope, residual, None))
 
-    def forward(self, g):
+    def forward(self, g, **kwargs):
         h = g.ndata['feat']
         for l in range(self.num_layers):
             h = self.gat_layers[l](self.g, h).flatten(1)

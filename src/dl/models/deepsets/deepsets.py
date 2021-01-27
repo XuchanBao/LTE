@@ -105,7 +105,7 @@ class DeepSetOriginal(nn.Module):
             nn.ReLU(),
             nn.Linear(dim_hidden, num_outputs * dim_output))
 
-    def forward(self, X):
+    def forward(self, X, **kwargs):
         X = self.enc(X).mean(-2)
         X = self.dec(X).reshape(-1, self.num_outputs, self.dim_output)
         return X.squeeze()
