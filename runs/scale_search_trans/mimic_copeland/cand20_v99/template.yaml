@@ -1,0 +1,106 @@
+<type>: Munch
+<init>: true
+# PyTorch Lightning System.
+system:
+  <type>: MimickingClassification
+  <init>: true
+  # Lawyers.
+  model:
+    <type>: SetTransformer
+    <init>: true
+    encoder:
+      <type>: SetTransformerEncoder
+      <init>: true
+      num_heads: 20
+      dim_elements: 400   # max_candidates^2 for one-hot
+      dim_hidden: 400
+      dim_out: 400
+      add_layer_norm: true
+    decoder:
+      <type>: SetTransformerDecoder
+      <init>: true
+      num_heads: 20
+      num_seed_vectors: 20  # max_candidates
+      dim_elements: 400
+      dim_hidden1: 400
+      dim_hidden2: 400
+      dim_out: 1
+      add_layer_norm: true
+  # Data loaders.
+  train_loader:
+    <type>: DataLoader
+    <init>: true
+    dataset:
+      <type>: Ballot
+      <init>: true
+      max_num_voters: 99
+      min_num_voters: 50
+      max_num_candidates: 20
+      min_num_candidates: 10
+      batch_size: 128
+      epoch_length: 32
+      voting_rule:
+        <type>: get_copeland
+        <init>: true
+      utility_distribution: "uniform"
+      one_hot_candidates: true
+    batch_size: 1
+    shuffle: true
+    num_workers: 10
+    collate_fn:
+      <type>: batched_ballot_collate
+      <init>: false
+  valid_loader:
+    <type>: DataLoader
+    <init>: true
+    dataset:
+      <type>: Ballot
+      <init>: true
+      max_num_voters: 99
+      min_num_voters: 50
+      max_num_candidates: 20
+      min_num_candidates: 10
+      batch_size: 32
+      epoch_length: 8
+      voting_rule:
+        <type>: get_copeland
+        <init>: true
+      utility_distribution: "uniform"
+      one_hot_candidates: true
+    batch_size: 1
+    shuffle: true
+    num_workers: 10
+    collate_fn:
+      <type>: batched_ballot_collate
+      <init>: false
+  optimizer:
+    <type>: Adam
+    <init>: false
+    lr: 0.0001
+  scheduler_wrapper:
+    <type>: TransformerSchedulerWrapper
+    <init>: true
+    get_fn:
+      <type>: get_constant_schedule_with_warmup
+      <init>: false
+    num_warmup_steps: 10 # in epochs
+  # Loss functions.
+  loss_fn:
+    <type>: CrossEntropyLoss
+    <init>: true
+
+# wandb experiment
+logger:
+  <type>: WandbLogger
+  <init>: false
+  project: "lte"
+  entity: "byol"
+  tags: ["set_transformer", "mimic_copeland", "warmup", "scale_test"]
+
+trainer:
+  <type>: Trainer
+  <init>: false
+  max_epochs: 1000
+
+# Seed.
+seed: 0
