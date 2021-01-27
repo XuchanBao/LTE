@@ -36,7 +36,7 @@ class GCN(nn.Module):
         # output layer
         self.linear_output_layer = nn.Linear(hidden_dim, output_dim)
 
-    def forward(self, g):
+    def forward(self, g, **kwargs):
         h = g.ndata['feat']
         for i, layer in enumerate(self.layers):
             if i != 0:

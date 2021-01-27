@@ -10,14 +10,16 @@ conda activate lte
     
 * Install PyTorch, following instructions in [Pytorch website](https://pytorch.org). 
 
-* Navigate to the root of the project. Install the package, along with requirements:
-```
-python setup.py install
-```
-  
+* Install Deep Graph Library (dgl) following instructions on its website. 
+
 * Install spaghettini. 
 ```
 pip install git+https://github.com/cemanil/spaghetti.git@master
+```
+
+* Navigate to the root of the project. Install the package, along with requirements:
+```
+python setup.py install
 ```
 
 * Install nbdev, to make sure ipython notebooks are commitable. 
@@ -38,7 +40,7 @@ Find a sample config in `runs/001_find_max/template.yaml`.
 ### Step 2: Training 
 You can run the following commands to train the model. The logger will automatically log the training progress. 
 ``` 
-EXP_DIR="runs/001_find_max"
+EXP_DIR="runs/027_optimal_utilitarian_uniform"
 python -m src.mains.train --cfg ${EXP_DIR}/template.yaml
 ```
 

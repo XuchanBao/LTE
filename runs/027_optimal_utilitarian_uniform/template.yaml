@@ -1,0 +1,91 @@
+<type>: Munch
+<init>: true
+# PyTorch Lightning System.
+system:
+  <type>: MimickingClassification
+  <init>: true
+  # Lawyers.
+  model:
+    <type>: OptimalUtilitarian
+    <init>: true
+    num_candidates: 20
+
+  # Train Data loader.
+  train_loader:
+    <type>: DataLoader
+    <init>: true
+    dataset:
+      <type>: Ballot
+      <init>: true
+      max_num_voters: 99
+      min_num_voters: 50
+      max_num_candidates: 20
+      min_num_candidates: 20
+      batch_size: 2048
+      voting_rule:
+        <type>: get_oracle
+        <init>: true
+      utility_distribution: "uniform"
+      return_graph: false
+      remove_ties: false
+    batch_size: 1
+    shuffle: true
+    num_workers: 0
+    collate_fn:
+      <type>: batched_ballot_collate
+      <init>: false
+
+  # Valid Data loader.
+  valid_loader:
+    <type>: DataLoader
+    <init>: true
+    dataset:
+      <type>: Ballot
+      <init>: true
+      max_num_voters: 99
+      min_num_voters: 50
+      max_num_candidates: 20
+      min_num_candidates: 20
+      batch_size: 2048
+      voting_rule:
+        <type>: get_oracle
+        <init>: true
+      utility_distribution: "uniform"
+      return_graph: false
+      remove_ties: false
+    batch_size: 1
+    shuffle: true
+    num_workers: 0
+    collate_fn:
+      <type>: batched_ballot_collate
+      <init>: false
+
+  # Optimizer.
+  optimizer:
+    <type>: Adam
+    <init>: false
+    lr : 0.01
+#    lr|lr_0_01: 0.01
+#    lr|lr_0_003: 0.003
+#    lr|lr_0_001: 0.001
+#    lr|lr_0_0003: 0.0003
+#    lr|lr_0_0001: 0.0001
+  loss_fn:
+    <type>: CrossEntropyLoss
+    <init>: true
+
+# TestTube experiment.
+logger:
+  <type>: WandbLogger
+  <init>: false
+  project: "lte"
+  entity: "byol"
+  tags: ["optimal_utilitarian", "uniform"]
+
+trainer:
+  <type>: Trainer
+  <init>: false
+  max_epochs: 1000
+
+# Seed.
+seed: 0

@@ -89,7 +89,8 @@ class MimickingClassification(pl.LightningModule, ABC):
 
         if forward_fn == self.forward:
             # ____ Make predictions. ____
-            preds = forward_fn(xs)
+            # No voting rule uses the utilities argument except for the "optimal" ones.
+            preds = forward_fn(xs, utilities=utilities)
         else:
             # ____ Evaluate baseline. ____
             rankings = torch.argsort(utilities, axis=2, descending=True)
@@ -108,7 +109,8 @@ class MimickingClassification(pl.LightningModule, ABC):
         # ____ Return. ____
         return loss, metric_logs, histogram_logs
 
-    def log_forward_stats(self, xs, ys, preds, utilities, loss, prepend_key):
+    @staticmethod
+    def log_forward_stats(xs, ys, preds, utilities, loss, prepend_key):
         metric_logs = dict()
         hist_logs = dict()
 
@@ -129,7 +131,8 @@ class MimickingClassification(pl.LightningModule, ABC):
 
         return metric_logs, hist_logs
 
-    def unpack_data_batch(self, data_batch):
+    @staticmethod
+    def unpack_data_batch(data_batch):
         xs, ys, utilities = data_batch
         return xs, ys, utilities
 
