@@ -8,12 +8,14 @@ system:
   model:
     <type>: GCN
     <init>: true
-    num_layers: 5
+    num_layers|num_layers_2: 2
+    num_layers|num_layers_5: 5
     input_dim: 20
     hidden_dim: 512
     output_dim: 20
     dropout: 0.5
-    residual_readout: true
+    residual_readout|residual_readout_true: true
+    residual_readout|residual_readout_false: false
   # Data loaders.
   train_loader:
     <type>: DataLoader
@@ -27,7 +29,7 @@ system:
       min_num_candidates: 10
       batch_size: 1
       voting_rule:
-        <type>: get_plurality
+        <type>: get_copeland
         <init>: true
       utility_distribution: "uniform"
       return_graph: true
@@ -49,7 +51,7 @@ system:
       min_num_candidates: 10
       batch_size: 1
       voting_rule:
-        <type>: get_plurality
+        <type>: get_copeland
         <init>: true
       utility_distribution: "uniform"
       return_graph: true
@@ -62,7 +64,8 @@ system:
   optimizer:
     <type>: Adam
     <init>: false
-    lr: 0.0003
+    lr|lr_0_001: 0.001
+    lr|lr_0_0003: 0.0003
   loss_fn:
     <type>: CrossEntropyLoss
     <init>: true
@@ -73,7 +76,7 @@ logger:
   <init>: false
   project: "lte"
   entity: "byol"
-  tags: ["gcn", "mimic_plurality"]
+  tags: ["gcn", "mimic_copeland"]
 
 trainer:
   <type>: Trainer
