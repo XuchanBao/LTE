@@ -68,14 +68,14 @@ system:
   optimizer:
     <type>: Adam
     <init>: false
-    lr: 0.01
+    lr: 0.033
   scheduler_wrapper:
     <type>: TransformerSchedulerWrapper
     <init>: true
     get_fn:
       <type>: get_constant_schedule_with_warmup
       <init>: false
-    num_warmup_steps: 10 # in epochs
+    num_warmup_steps: 100 # in epochs
   # Loss functions.
   loss_fn:
     <type>: CrossEntropyLoss
