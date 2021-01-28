@@ -11,7 +11,7 @@ system:
     num_layers: 5
     num_mlp_layers: 2
     input_dim: 1  # This is the candidate feature. Should be 1 if integers used to represent candidates.
-    hidden_dim: 64  # This is feature dim of each candidate of each voter.
+    hidden_dim: 128  # This is feature dim of each candidate of each voter.
     output_dim: 1  # This is the output dim per candidate.
     final_dropout: 0.0  # tunable
     learn_eps: true
@@ -24,8 +24,8 @@ system:
     dataset:
       <type>: Ballot
       <init>: true
-      max_num_voters: 99
-      min_num_voters: 50
+      max_num_voters: 50
+      min_num_voters: 10
       max_num_candidates: 20
       min_num_candidates: 10
       batch_size: 1
@@ -35,7 +35,7 @@ system:
       utility_distribution: "uniform"
       return_graph: true
       remove_ties: false
-    batch_size: 32
+    batch_size: 128
     shuffle: true
     num_workers: 5
     collate_fn:
@@ -64,10 +64,18 @@ system:
     collate_fn:
       <type>: dgl_ballot_collate
       <init>: false
+  # Optimizer.
   optimizer:
     <type>: Adam
     <init>: false
     lr: 0.01
+  scheduler_wrapper:
+    <type>: TransformerSchedulerWrapper
+    <init>: true
+    get_fn:
+      <type>: get_constant_schedule_with_warmup
+      <init>: false
+    num_warmup_steps: 10 # in epochs
   # Loss functions.
   loss_fn:
     <type>: CrossEntropyLoss

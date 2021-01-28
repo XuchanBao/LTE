@@ -44,13 +44,16 @@ EXP_DIR="runs/030_mimic_plurality_nested_gnn"
 python -m src.mains.train --cfg ${EXP_DIR}/template.yaml
 ```
 
-### Step 3: Viewing training progress
+You can remove the results of the experiment using:
 ``` 
 cd ${EXP_DIR}
-tensorboard --logdir=.
+rm -rf lte wandb
+cd -
+
 ```
 
-### Step 4: Generating batch experiments. 
+
+### Step 3: Generating batch experiments. 
 * Create a new experiment directory (i.e. `EXP_DIR="./runs/003_fixing_plurality_training"`)
 * Copy a previous config in new experiment directory and modify it for a batched experiment. This template has to be
 called "template". 
