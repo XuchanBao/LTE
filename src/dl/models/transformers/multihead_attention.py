@@ -59,6 +59,7 @@ class MultiHeadAttentionBlock(nn.Module):
 
         return output
 
+
 class PMA(nn.Module):
     def __init__(self, num_heads, num_seed_vectors, dim_elements, dim_out, add_layer_norm):
         super().__init__()
