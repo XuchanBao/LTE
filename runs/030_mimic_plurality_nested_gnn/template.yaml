@@ -16,7 +16,7 @@ system:
     final_dropout: 0.0  # tunable
     learn_eps: true
     neighbor_pooling_type: "sum"
-    graph_pooling_type: "mean"
+    graph_pooling_type: "sum"
   # Data loaders.
   train_loader:
     <type>: DataLoader
