@@ -29,7 +29,7 @@ system:
       min_num_candidates: 10
       batch_size: 1
       voting_rule:
-        <type>: get_copeland
+        <type>: get_maximin
         <init>: true
       utility_distribution: "uniform"
       return_graph: true
@@ -54,7 +54,7 @@ system:
       min_num_candidates: 10
       batch_size: 1
       voting_rule:
-        <type>: get_copeland
+        <type>: get_maximin
         <init>: true
       utility_distribution: "uniform"
       return_graph: true
