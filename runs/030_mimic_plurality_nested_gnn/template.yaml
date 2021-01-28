@@ -35,6 +35,7 @@ system:
       utility_distribution: "uniform"
       return_graph: true
       remove_ties: false
+      one_hot_candidates: true
     batch_size: 128
     shuffle: true
     num_workers: 5
@@ -58,6 +59,7 @@ system:
       utility_distribution: "uniform"
       return_graph: true
       remove_ties: false
+      one_hot_candidates: true
     batch_size: 32
     shuffle: true
     num_workers: 5
