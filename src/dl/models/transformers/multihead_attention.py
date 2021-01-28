@@ -24,7 +24,7 @@ class MultiHeadAttentionBlock(nn.Module):
                  add_residual_queries=True):
         super().__init__()
         assert attention_layer_dim_out == dim_transformed_values * num_heads, print(
-            'num_head doesnt divide without reminder')
+            'num_head doesnt divide dim out without reminder')
         # Initialize layers.
         self.multihead_attention_layer = MultiHeadAttentionLayer(
             num_heads=num_heads,
