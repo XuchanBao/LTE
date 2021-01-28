@@ -126,7 +126,6 @@ class NestedGIN(nn.Module):
         h = g.ndata['feat']
 
         ####
-        breakpoint()
         bs_nv, dc = h.shape
         nc, dc = int(math.sqrt(dc)), int(math.sqrt(dc))
         h = h.view(bs_nv, nc, dc)
