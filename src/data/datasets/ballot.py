@@ -12,16 +12,16 @@ from src.voting.voting_rules import get_plurality
 class Ballot(Dataset):
     def __init__(self,
                  max_num_voters=20,
-                 max_num_candidates=10,
-                 batch_size=32,
+                 max_num_candidates=20,
+                 batch_size=1,
                  epoch_length=256,
                  voting_rule=get_plurality(),
                  utility_distribution="uniform",
-                 one_hot_candidates=False,
-                 one_hot_candidate_dim=10,
-                 min_num_voters=1,
-                 min_num_candidates=1,
-                 return_graph=False,
+                 one_hot_candidates=True,
+                 one_hot_candidate_dim=20,
+                 min_num_voters=10,
+                 min_num_candidates=10,
+                 return_graph=True,
                  remove_ties=True):
         if return_graph:
             assert batch_size == 1

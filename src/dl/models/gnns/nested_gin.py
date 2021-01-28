@@ -12,6 +12,7 @@ import torch.nn.functional as F
 from dgl.nn.pytorch.conv import GINConv
 from dgl.nn.pytorch.glob import SumPooling, AvgPooling, MaxPooling
 from spaghettini import quick_register
+from dgl.heterograph import DGLHeteroGraph
 
 from src.dl.models.transformers.encoders_decoders import MultiHeadAttentionBlock
 
@@ -51,7 +52,7 @@ class SingleBlockSetTransformerEncoder(nn.Module):
 class NestedGIN(nn.Module):
     """GIN model"""
 
-    def __init__(self, num_layers, num_mlp_layers, input_dim, hidden_dim,
+    def __init__(self, num_layers, input_dim, hidden_dim,
                  output_dim, final_dropout, learn_eps, graph_pooling_type,
                  neighbor_pooling_type):
         """model parameters setting
@@ -124,7 +125,7 @@ class NestedGIN(nn.Module):
             raise NotImplementedError
 
     def forward(self, g, **kwargs):
-        h = g.ndata['feat']
+        h = g.ndata['feat'] if isinstance(g, DGLHeteroGraph) else g
 
         # Reshape the tensor.
         bs_nv, dc = h.shape
@@ -147,3 +148,37 @@ class NestedGIN(nn.Module):
             score_over_layer += self.drop(self.linears_prediction[i](pooled_h).squeeze(-1))
 
         return score_over_layer
+
+
+if __name__ == "__main__":
+    """
+    Run from root. 
+    python -m src.dl.models.gnns.nested_gin
+    """
+    test_num = 0
+
+    if test_num == 0:
+        import random
+        from src.data.datasets.ballot import Ballot
+        # Check if NestedGIN is candidate-equivariant.
+        blt = Ballot(max_num_candidates=20, one_hot_candidate_dim=20)
+        xs, ys, utilities = blt[0]
+        ng = NestedGIN(num_layers=5, input_dim=20, hidden_dim=512, output_dim=1, final_dropout=0., graph_pooling_type="sum", neighbor_pooling_type="sum", learn_eps=True)
+
+        ys = ng(xs)
+
+        # Permute the candidates.
+        xst = xs.ndata['feat']
+        xst = xst.view(-1, 20, 20)
+        reordering = torch.tensor(random.sample(list(range(20)), k=20))
+        xst_reordered = xst[:, reordering, :]
+
+        # Check invariance.
+        xs.ndata['feat'] = xst_reordered.view(-1, 400)
+        ys_reordered = ng(xs)
+        print(ys_reordered)
+        print(ys[:, reordering])
+        print(ys_reordered == ys[:, reordering])
+
+
+
