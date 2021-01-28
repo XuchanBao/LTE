@@ -68,7 +68,7 @@ system:
   optimizer:
     <type>: Adam
     <init>: false
-    lr: 0.033
+    lr: 0.0033
   scheduler_wrapper:
     <type>: TransformerSchedulerWrapper
     <init>: true
