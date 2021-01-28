@@ -18,6 +18,7 @@ class Ballot(Dataset):
                  voting_rule=get_plurality(),
                  utility_distribution="uniform",
                  one_hot_candidates=False,
+                 one_hot_candidate_dim=10,
                  min_num_voters=1,
                  min_num_candidates=1,
                  return_graph=False,
@@ -46,6 +47,8 @@ class Ballot(Dataset):
         self.voting_rule = voting_rule
         self.return_graph = return_graph
         self.remove_ties = remove_ties
+        assert one_hot_candidate_dim >= self.max_num_candidates
+        self.one_hot_candidate_dim = one_hot_candidate_dim
 
         self.empty_token = 0
 
@@ -104,10 +107,9 @@ class Ballot(Dataset):
             rankings_full[:, :, num_candidates:] = self.empty_token
         else:
             # ranking_onehot = np.zeros(rankings.shape + (num_candidates, ))
-            ranking_onehot = np.array(rankings[..., None] == np.arange(num_candidates)[None, ...]).astype(np.float)
-            rankings_full = self.empty_token * np.ones((rankings.shape[0], rankings.shape[1],
-                                                       self.max_num_candidates, self.max_num_candidates))
-            rankings_full[:, :, :num_candidates, :num_candidates] = ranking_onehot
+            ranking_onehot = np.array(rankings[..., None] == np.arange(self.one_hot_candidate_dim)[None, ...]).astype(np.float)
+            rankings_full = self.empty_token * np.ones((rankings.shape[0], rankings.shape[1], self.max_num_candidates, self.one_hot_candidate_dim))
+            rankings_full[:, :, :num_candidates, :self.one_hot_candidate_dim] = ranking_onehot
 
         # Add "dummy" utilities to make sure all utilities have the same dimensionality.
         utilities_full = np.zeros((utilities.shape[0], utilities.shape[1], self.max_num_candidates))

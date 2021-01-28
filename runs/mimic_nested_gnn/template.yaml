@@ -10,7 +10,7 @@ system:
     <init>: true
     num_layers: 5
     num_mlp_layers: 2
-    input_dim: 20  # This is the candidate feature. Should be 1 if integers used to represent candidates.
+    input_dim: 30  # This is the candidate feature. Should be 1 if integers used to represent candidates.
     hidden_dim: 128  # This is feature dim of each candidate of each voter.
     output_dim: 1  # This is the output dim per candidate.
     final_dropout: 0.0  # tunable
@@ -36,6 +36,7 @@ system:
       return_graph: true
       remove_ties: false
       one_hot_candidates: true
+      one_hot_candidate_dim: 30
     batch_size: 128
     shuffle: true
     num_workers: 5
@@ -60,6 +61,7 @@ system:
       return_graph: true
       remove_ties: false
       one_hot_candidates: true
+      one_hot_candidate_dim: 30
     batch_size: 32
     shuffle: true
     num_workers: 5

@@ -81,6 +81,7 @@ class NestedGIN(nn.Module):
         """
         super(NestedGIN, self).__init__()
         assert final_dropout == 0., print("Don't use dropout for now. ")
+        self.input_dim = input_dim
         self.num_layers = num_layers
         self.learn_eps = learn_eps
 
@@ -125,11 +126,9 @@ class NestedGIN(nn.Module):
     def forward(self, g, **kwargs):
         h = g.ndata['feat']
 
-        ####
+        # Reshape the tensor.
         bs_nv, dc = h.shape
-        nc, dc = int(math.sqrt(dc)), int(math.sqrt(dc))
-        h = h.view(bs_nv, nc, dc)
-        ####
+        h = h.view(bs_nv, -1, self.input_dim)
 
         # list of hidden representation at each layer (including input)
         hidden_rep = [h]
