@@ -10,7 +10,7 @@ class SetTransformer(nn.Module):
         self.encoder = encoder
         self.decoder = decoder
 
-    def forward(self, xs):
+    def forward(self, xs, **kwargs):
         zs = self.encoder(xs)
         outputs = self.decoder(zs)
 

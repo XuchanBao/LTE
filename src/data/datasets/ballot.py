@@ -21,7 +21,7 @@ class Ballot(Dataset):
                  one_hot_candidate_dim=None,
                  min_num_voters=10,
                  min_num_candidates=10,
-                 return_graph=True,
+                 return_graph=False,
                  remove_ties=True):
         if return_graph:
             assert batch_size == 1
