@@ -40,11 +40,11 @@ class MimickingClassification(pl.LightningModule, ABC):
         loss, metric_logs, hist_logs = self.common_step(self.forward, data_batch, prepend_key="training/model")
 
         # ____ Log metrics. ____
-        self.logger.log_metrics(metric_logs, step=self.trainer.total_batch_idx)
+        self.logger.log_metrics(metric_logs, step=self._get_sample_size())
 
         # log LR (may be using scheduler)
         current_lr = self.optimizer_obj.param_groups[0]['lr']
-        self.logger.log_metrics({'lr': current_lr}, step=self.trainer.total_batch_idx)
+        self.logger.log_metrics({'lr': current_lr}, step=self._get_sample_size())
 
         return {"loss": loss}
 
@@ -79,7 +79,7 @@ class MimickingClassification(pl.LightningModule, ABC):
         concat_hist_metrics = concatenate_values_in_list_of_dicts(hist_dicts_list)
 
         # ____ Log the averaged metrics and histogram metrics. ____
-        self.logger.log_metrics(averaged_metrics, step=self.trainer.total_batch_idx)
+        self.logger.log_metrics(averaged_metrics, step=self._get_sample_size())
         # TODO: make this work with wandb logger
         # for k, v in concat_hist_metrics.items():
         #     self.logger.experiment.add_histogram(tag=k, values=v, global_step=self.current_epoch)
@@ -161,3 +161,6 @@ class MimickingClassification(pl.LightningModule, ABC):
         if not self.save_checkpoint:
             for key, value in checkpoint.items():
                 checkpoint[key] = None
+
+    def _get_sample_size(self):
+        return self.trainer.total_batch_idx * self.train_loader.batch_size * self.train_loader.dataset.batch_size
