@@ -12,14 +12,15 @@ from src.voting.voting_rules import get_plurality
 class Ballot(Dataset):
     def __init__(self,
                  max_num_voters=20,
-                 max_num_candidates=10,
-                 batch_size=32,
+                 max_num_candidates=20,
+                 batch_size=1,
                  epoch_length=256,
                  voting_rule=get_plurality(),
                  utility_distribution="uniform",
                  one_hot_candidates=False,
-                 min_num_voters=1,
-                 min_num_candidates=1,
+                 one_hot_candidate_dim=None,
+                 min_num_voters=10,
+                 min_num_candidates=10,
                  return_graph=False,
                  remove_ties=True):
         if return_graph:
@@ -46,6 +47,8 @@ class Ballot(Dataset):
         self.voting_rule = voting_rule
         self.return_graph = return_graph
         self.remove_ties = remove_ties
+        self.one_hot_candidate_dim = self.max_num_candidates if one_hot_candidate_dim is None else one_hot_candidate_dim
+        assert self.one_hot_candidate_dim >= self.max_num_candidates
 
         self.empty_token = 0
 
@@ -104,10 +107,9 @@ class Ballot(Dataset):
             rankings_full[:, :, num_candidates:] = self.empty_token
         else:
             # ranking_onehot = np.zeros(rankings.shape + (num_candidates, ))
-            ranking_onehot = np.array(rankings[..., None] == np.arange(num_candidates)[None, ...]).astype(np.float)
-            rankings_full = self.empty_token * np.ones((rankings.shape[0], rankings.shape[1],
-                                                       self.max_num_candidates, self.max_num_candidates))
-            rankings_full[:, :, :num_candidates, :num_candidates] = ranking_onehot
+            ranking_onehot = np.array(rankings[..., None] == np.arange(self.one_hot_candidate_dim)[None, ...]).astype(np.float)
+            rankings_full = self.empty_token * np.ones((rankings.shape[0], rankings.shape[1], self.max_num_candidates, self.one_hot_candidate_dim))
+            rankings_full[:, :, :num_candidates, :self.one_hot_candidate_dim] = ranking_onehot
 
         # Add "dummy" utilities to make sure all utilities have the same dimensionality.
         utilities_full = np.zeros((utilities.shape[0], utilities.shape[1], self.max_num_candidates))

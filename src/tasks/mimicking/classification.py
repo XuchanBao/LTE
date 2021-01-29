@@ -8,7 +8,6 @@ from src.dl.metrics.metrics import compute_accuracy
 from src.dl.metrics.metrics import compute_distortion_ratios
 from src.visualizations import histogram_overlayer
 
-
 INV_DISTORTION_KEY = "inv_dist_ratios"
 
 
@@ -116,8 +115,7 @@ class MimickingClassification(pl.LightningModule, ABC):
         # ____ Return. ____
         return loss, metric_logs, histogram_logs
 
-    @staticmethod
-    def log_forward_stats(xs, ys, preds, utilities, loss, prepend_key):
+    def log_forward_stats(self, xs, ys, preds, utilities, loss, prepend_key):
         metric_logs = dict()
         hist_logs = dict()
 

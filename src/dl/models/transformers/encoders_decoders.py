@@ -58,3 +58,20 @@ class SetTransformerDecoder(nn.Module):
     def forward(self, xs):
         pma_out = self.pma(xs)
         return self.rff(self.sab(pma_out, pma_out, pma_out))
+
+
+if __name__ == "__main__":
+    """
+    Run from root. 
+    python -m src.dl.models.transformers.encoders_decoders
+    """
+    test_num = 0
+
+    if test_num == 0:
+        breakpoint()
+        import torch
+        # Pass random input through encoder.
+        xs = torch.rand(size=(5, 20, 128))
+        enc = SetTransformerEncoder(4, 128, 512, 512, add_layer_norm=True)
+
+        ys = enc(xs)

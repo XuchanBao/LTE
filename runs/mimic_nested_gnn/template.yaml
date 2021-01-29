@@ -1,0 +1,101 @@
+<type>: Munch
+<init>: true
+# PyTorch Lightning System.
+system:
+  <type>: MimickingClassification
+  <init>: true
+  # Lawyers.
+  model:
+    <type>: NestedGIN
+    <init>: true
+    num_layers: 5
+    input_dim: 30  # This is the candidate feature. Should be 1 if integers used to represent candidates.
+    hidden_dim: 128  # This is feature dim of each candidate of each voter.
+    output_dim: 1  # This is the output dim per candidate.
+    final_dropout: 0.0  # tunable
+    learn_eps: true
+    neighbor_pooling_type: "sum"
+    graph_pooling_type: "sum"
+  # Data loaders.
+  train_loader:
+    <type>: DataLoader
+    <init>: true
+    dataset:
+      <type>: Ballot
+      <init>: true
+      max_num_voters: 50
+      min_num_voters: 10
+      max_num_candidates: 20
+      min_num_candidates: 10
+      batch_size: 1
+      voting_rule:
+        <type>: get_maximin
+        <init>: true
+      utility_distribution: "uniform"
+      return_graph: true
+      remove_ties: false
+      one_hot_candidates: true
+      one_hot_candidate_dim: 30
+    batch_size: 128
+    shuffle: true
+    num_workers: 5
+    collate_fn:
+      <type>: dgl_ballot_collate
+      <init>: false
+  valid_loader:
+    <type>: DataLoader
+    <init>: true
+    dataset:
+      <type>: Ballot
+      <init>: true
+      max_num_voters: 50
+      min_num_voters: 10
+      max_num_candidates: 20
+      min_num_candidates: 10
+      batch_size: 1
+      voting_rule:
+        <type>: get_maximin
+        <init>: true
+      utility_distribution: "uniform"
+      return_graph: true
+      remove_ties: false
+      one_hot_candidates: true
+      one_hot_candidate_dim: 30
+    batch_size: 32
+    shuffle: true
+    num_workers: 5
+    collate_fn:
+      <type>: dgl_ballot_collate
+      <init>: false
+  # Optimizer.
+  optimizer:
+    <type>: Adam
+    <init>: false
+    lr: 0.00033
+  scheduler_wrapper:
+    <type>: TransformerSchedulerWrapper
+    <init>: true
+    get_fn:
+      <type>: get_constant_schedule_with_warmup
+      <init>: false
+    num_warmup_steps: 200 # in epochs
+  # Loss functions.
+  loss_fn:
+    <type>: CrossEntropyLoss
+    <init>: true
+
+# TestTube experiment.
+logger:
+  <type>: WandbLogger
+  <init>: false
+  project: "lte"
+  entity: "byol"
+  tags: ["gin", "mimic_plurality", "ca-dev"]
+
+trainer:
+  <type>: Trainer
+  <init>: false
+  max_epochs: 100000
+
+# Seed.
+seed: 0
