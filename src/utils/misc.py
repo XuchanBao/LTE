@@ -1,9 +1,13 @@
+from spaghettini import quick_register
 import os
 import oyaml as yaml
 from pprint import pprint
 import numpy as np
 import random as random
 import torch
+
+from pytorch_lightning import seed_everything
+
 
 USE_GPU = torch.cuda.is_available()
 
@@ -87,3 +91,11 @@ def timeit(method):
         return result
 
     return timed
+
+
+@quick_register
+def seed_workers(worker_id):
+    # Used to make sure Pytorch dataloaders don't return identical random numbers amongst different workers.
+    random.seed()
+    seed = random.randint(0, 255)
+    seed_everything(seed)
