@@ -18,7 +18,7 @@ class Ballot(Dataset):
                  voting_rule=get_plurality(),
                  utility_distribution="uniform",
                  one_hot_candidates=False,
-                 one_hot_candidate_dim=20,
+                 one_hot_candidate_dim=None,
                  min_num_voters=10,
                  min_num_candidates=10,
                  return_graph=True,
@@ -47,8 +47,8 @@ class Ballot(Dataset):
         self.voting_rule = voting_rule
         self.return_graph = return_graph
         self.remove_ties = remove_ties
-        assert one_hot_candidate_dim >= self.max_num_candidates
-        self.one_hot_candidate_dim = one_hot_candidate_dim
+        self.one_hot_candidate_dim = self.max_num_candidates if one_hot_candidate_dim is None else one_hot_candidate_dim
+        assert self.one_hot_candidate_dim >= self.max_num_candidates
 
         self.empty_token = 0
 
