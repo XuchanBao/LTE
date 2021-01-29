@@ -17,7 +17,7 @@ class Ballot(Dataset):
                  epoch_length=256,
                  voting_rule=get_plurality(),
                  utility_distribution="uniform",
-                 one_hot_candidates=True,
+                 one_hot_candidates=False,
                  one_hot_candidate_dim=20,
                  min_num_voters=10,
                  min_num_candidates=10,
