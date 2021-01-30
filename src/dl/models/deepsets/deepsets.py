@@ -92,24 +92,24 @@ class DeepSetOriginal(nn.Module):
         self.dim_hidden = dim_hidden
         self.enc = nn.Sequential(
             nn.Linear(dim_input, dim_hidden),
-            nn.ReLU(),
+            nn.LeakyReLU(),
             nn.LayerNorm(dim_hidden),
             nn.Linear(dim_hidden, dim_hidden),
-            nn.ReLU(),
+            nn.LeakyReLU(),
             nn.LayerNorm(dim_hidden),
             nn.Linear(dim_hidden, dim_hidden),
-            nn.ReLU(),
+            nn.LeakyReLU(),
             nn.LayerNorm(dim_hidden),
             nn.Linear(dim_hidden, dim_hidden))
         self.dec = nn.Sequential(
             nn.Linear(dim_hidden, dim_hidden),
-            nn.ReLU(),
+            nn.LeakyReLU(),
             nn.LayerNorm(dim_hidden),
             nn.Linear(dim_hidden, dim_hidden),
-            nn.ReLU(),
+            nn.LeakyReLU(),
             nn.LayerNorm(dim_hidden),
             nn.Linear(dim_hidden, dim_hidden),
-            nn.ReLU(),
+            nn.LeakyReLU(),
             nn.LayerNorm(dim_hidden),
             nn.Linear(dim_hidden, num_outputs * dim_output))
 
