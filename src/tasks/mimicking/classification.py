@@ -14,7 +14,7 @@ INV_DISTORTION_KEY = "inv_dist_ratios"
 @quick_register
 class MimickingClassification(pl.LightningModule, ABC):
     def __init__(self, model, train_loader, valid_loader, optimizer, loss_fn, benchmark_rules=None,
-                 save_checkpoint=False, scheduler_wrapper=None, log_resolution=10, **kwargs):
+                 save_checkpoint=False, scheduler_wrapper=None, log_resolution=10, lookahead=None, **kwargs):
         super().__init__()
         self.model = model
         self.train_loader = train_loader
@@ -24,6 +24,7 @@ class MimickingClassification(pl.LightningModule, ABC):
         self.loss_fn = loss_fn
         self.scheduler_wrapper = scheduler_wrapper
         self.log_resolution = log_resolution
+        self.lookahead = lookahead
 
         if benchmark_rules is None:
             self.benchmark_rules = dict()
@@ -143,6 +144,12 @@ class MimickingClassification(pl.LightningModule, ABC):
 
     def configure_optimizers(self):
         self.optimizer_obj = self.optimizer(self.model.parameters())
+
+        # Use the lookahead optimizer if asked to do so.
+        if self.lookahead is not None:
+            self.optimizer_obj = self.lookahead(self.optimizer_obj)
+
+        # Get learning rate scheduler.
         if self.scheduler_wrapper is not None:
             scheduler = self.scheduler_wrapper.get_scheduler(self.optimizer_obj)
             return [self.optimizer_obj], [scheduler]
