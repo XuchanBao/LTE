@@ -64,7 +64,7 @@ system:
   optimizer:
     <type>: Adam
     <init>: false
-    lr: 0.001  #|0_01: 0.01
+    lr: 0.01  #|0_01: 0.01
 #    lr|0_001: 0.001
 #    lr|0_0001: 0.0001
 #  lookahead|yes_lookahead:
