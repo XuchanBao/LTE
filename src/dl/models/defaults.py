@@ -4,6 +4,7 @@ from src.dl.models.deepsets.deepsets import DeepSetOriginal
 from src.dl.models.gnns.gin import GIN
 from src.dl.models.transformers.set_transformers import SetTransformer
 from src.dl.models.transformers.encoders_decoders import SetTransformerEncoder, SetTransformerDecoder
+from src.dl.models.gnns.nested_gin import NestedGIN
 
 
 @quick_register
@@ -23,3 +24,9 @@ def get_default_set_transformer():
     decoder = SetTransformerDecoder(num_heads=15, num_seed_vectors=50, dim_elements=480, dim_hidden1=480,
                                     dim_hidden2=480, dim_out=1, add_layer_norm=True)
     return SetTransformer(encoder=encoder, decoder=decoder)
+
+
+@quick_register
+def get_nested_set_network():
+    return NestedGIN(num_layers=10, input_dim=50, hidden_dim=480, output_dim=1, final_dropout=0., learn_eps=True,
+                     neighbor_pooling_type="sum", graph_pooling_type="mean")
