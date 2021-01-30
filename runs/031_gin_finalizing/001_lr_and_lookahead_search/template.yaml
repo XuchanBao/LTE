@@ -22,7 +22,7 @@ system:
       one_hot_candidates: true
       batch_size: 1
       voting_rule:
-        <type>: get_copeland
+        <type>: get_borda
         <init>: true
       utility_distribution: "uniform"
       return_graph: true
@@ -48,7 +48,7 @@ system:
       one_hot_candidates: true
       batch_size: 1
       voting_rule:
-        <type>: get_copeland
+        <type>: get_borda
         <init>: true
       utility_distribution: "uniform"
       return_graph: true

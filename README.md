@@ -72,6 +72,7 @@ cat ${EXP_DIR}/sl
 
 * Clearing results, if needed. 
 ``` 
+echo ${EXP_DIR}
 cd ${EXP_DIR}
 rm -rf batch_run.sh results
 cd -
