@@ -58,7 +58,7 @@ system:
       one_hot_candidates: true
     batch_size: 1
     shuffle: true
-    num_workers: 0
+    num_workers: 5
     collate_fn:
       <type>: batched_ballot_collate
       <init>: false

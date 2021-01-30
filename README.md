@@ -58,11 +58,24 @@ cd -
 called "template". 
 * Run:
 ```
-cd <project root> 
 EXP_DIR="runs/030_deepset_finalizing/tuning_lr"
 bash ./src/mains/generate_experiments.sh ${EXP_DIR}
 cd ${EXP_DIR}
-sbatch batch_run.sh
+sbatch ${EXP_DIR}/batch_run.sh
+
+```
+
+* Inspecting generated slurm files. 
+``` 
+ls ${EXP_DIR}
+cat ${EXP_DIR}/sl
+```
+
+* Clearing results, if needed. 
+``` 
+cd ${EXP_DIR}
+rm -rf batch_run.sh results
+cd -
 
 ```
 
