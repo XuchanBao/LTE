@@ -8,9 +8,9 @@ system:
   model:
     <type>: DeepSetOriginal
     <init>: true
-    dim_input: 400
+    dim_input: 2500
     num_outputs: 1
-    dim_output: 20
+    dim_output: 50
     dim_hidden: 512
   # Data loaders.
   train_loader:
@@ -19,10 +19,10 @@ system:
     dataset:
       <type>: Ballot
       <init>: true
-      max_num_voters: 20
+      max_num_voters: 50
       min_num_voters: 10
-      max_num_candidates: 20
-      min_num_candidates: 10
+      max_num_candidates: 50
+      min_num_candidates: 2
       batch_size: 128
       epoch_length: 32
       voting_rule:
@@ -45,10 +45,10 @@ system:
     dataset:
       <type>: Ballot
       <init>: true
-      max_num_voters: 20
+      max_num_voters: 50
       min_num_voters: 10
-      max_num_candidates: 20
-      min_num_candidates: 10
+      max_num_candidates: 50
+      min_num_candidates: 2
       batch_size: 32
       epoch_length: 8
       voting_rule:
@@ -68,17 +68,18 @@ system:
   optimizer:
     <type>: Adam
     <init>: false
-    lr|lr_0_1: 0.1
-    lr|lr_0_01: 0.01
-    lr|lr_0_001: 0.001
-    lr|lr_0_0001: 0.0001
+    lr: 0.001  # lr|lr_0_1: 0.1
+#    lr|lr_0_01: 0.01
+#    lr|lr_0_001: 0.001
+#    lr|lr_0_0001: 0.0001
   scheduler_wrapper:
     <type>: TransformerSchedulerWrapper
     <init>: true
     get_fn:
-      <type>: get_constant_schedule_with_warmup
+      <type>: get_cosine_schedule_with_warmup
       <init>: false
     num_warmup_steps: 20 # in epochs
+    num_training_steps: 10000
   # Loss functions.
   loss_fn:
     <type>: CrossEntropyLoss
@@ -95,7 +96,7 @@ logger:
 trainer:
   <type>: Trainer
   <init>: false
-  max_epochs: 1000
+  max_epochs: 10000
 
 # Seed.
 seed: 0

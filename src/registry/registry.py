@@ -15,7 +15,7 @@ from torch.nn import L1Loss, CrossEntropyLoss
 from torch.nn.functional import relu, softplus
 from torch import sigmoid, tanh
 from torch.optim.lr_scheduler import StepLR
-from transformers import get_constant_schedule_with_warmup
+from transformers import get_constant_schedule_with_warmup, get_cosine_schedule_with_warmup
 
 
 # Register basic.
@@ -36,6 +36,7 @@ quick_register(SGD)
 quick_register(RMSprop)
 quick_register(StepLR)
 quick_register(get_constant_schedule_with_warmup)
+quick_register(get_cosine_schedule_with_warmup)
 
 # Losses.
 quick_register(CrossEntropyLoss)

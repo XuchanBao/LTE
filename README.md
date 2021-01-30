@@ -60,7 +60,6 @@ called "template".
 ```
 EXP_DIR="runs/030_deepset_finalizing/tuning_lr"
 bash ./src/mains/generate_experiments.sh ${EXP_DIR}
-cd ${EXP_DIR}
 sbatch ${EXP_DIR}/batch_run.sh
 
 ```
