@@ -23,7 +23,7 @@ system:
       min_num_voters: 10
       max_num_candidates: 50
       min_num_candidates: 2
-      batch_size: 1024
+      batch_size: 256
       epoch_length: 32
       voting_rule:
         <type>: get_borda
