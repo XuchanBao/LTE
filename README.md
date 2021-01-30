@@ -40,7 +40,7 @@ Find a sample config in `runs/001_find_max/template.yaml`.
 ### Step 2: Training 
 You can run the following commands to train the model. The logger will automatically log the training progress. 
 ``` 
-EXP_DIR="runs/030_deepset_finalizing/tuning_lr"
+EXP_DIR="runs/030_deepset_finalizing/tuning_size_and_bs"
 python -m src.mains.train --cfg ${EXP_DIR}/template.yaml
 ```
 
