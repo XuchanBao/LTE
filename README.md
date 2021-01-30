@@ -40,7 +40,7 @@ Find a sample config in `runs/001_find_max/template.yaml`.
 ### Step 2: Training 
 You can run the following commands to train the model. The logger will automatically log the training progress. 
 ``` 
-EXP_DIR="runs/033_finalizing_nested_set_network/001_tune_lr_and_lookahead"
+EXP_DIR="runs/031_gin_finalizing/001_lr_and_lookahead_search"
 python -m src.mains.train --cfg ${EXP_DIR}/template.yaml
 ```
 
