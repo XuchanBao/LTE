@@ -58,7 +58,7 @@ cd -
 called "template". 
 * Run:
 ```
-EXP_DIR="runs/030_deepset_finalizing/tuning_lr"
+EXP_DIR="runs/030_deepset_finalizing/tuning_size_and_bs"
 bash ./src/mains/generate_experiments.sh ${EXP_DIR}
 sbatch ${EXP_DIR}/batch_run.sh
 

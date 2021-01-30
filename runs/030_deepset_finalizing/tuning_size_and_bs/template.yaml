@@ -54,8 +54,8 @@ system:
       voting_rule:
         <type>: get_borda
         <init>: true
-      utility_distribution: "uniform"  #|uniform: "uniform"
-#      utility_distribution|polarized: "polarized"
+      utility_distribution|uniform: "uniform"
+      utility_distribution|polarized: "polarized"
       one_hot_candidates: true
     batch_size: 1
     shuffle: true
@@ -69,9 +69,9 @@ system:
   optimizer:
     <type>: Adam
     <init>: false
-    lr: 0.01  #|lr_0_01: 0.01
-#    lr|lr_0_001: 0.001
-#    lr|lr_0_0001: 0.0001
+    lr|lr_0_01: 0.01
+    lr|lr_0_001: 0.001
+    lr|lr_0_0001: 0.0001
   scheduler_wrapper:
     <type>: TransformerSchedulerWrapper
     <init>: true
