@@ -73,7 +73,7 @@ system:
     lr|0_0001: 0.0001
   lookahead|yes_lookahead:
     <type>: Lookahead
-    <init>: true
+    <init>: false
     k: 5
     alpha: 0.5
   lookahead|no_lookahead: null
@@ -96,7 +96,7 @@ logger:
   <init>: false
   project: "lte"
   entity: "byol"
-  tags: ["deepsets", "mimic_borda", "warmup", "ca-dev-3"]
+  tags: ["deepsets", "mimic_borda", "warmup", "ca-dev-4"]
 
 trainer:
   <type>: Trainer
