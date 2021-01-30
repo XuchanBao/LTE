@@ -83,7 +83,7 @@ logger:
   <init>: false
   project: "lte"
   entity: "byol"
-  tags: ["gin", "mimic_borda", "finalizing", "ca-dev-6"]
+  tags: ["gin", "mimic_borda", "finalizing", "ca-debug-1"]
 
 trainer:
   <type>: Trainer

@@ -58,7 +58,7 @@ cd -
 called "template". 
 * Run:
 ```
-EXP_DIR="runs/032_transformer_finalizing/001_lr_tuning_and_lookahead"
+EXP_DIR="runs/031_gin_finalizing/001_lr_and_lookahead_search"
 bash ./src/mains/generate_experiments.sh ${EXP_DIR}
 sbatch ${EXP_DIR}/batch_run.sh
 
