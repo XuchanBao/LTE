@@ -83,12 +83,12 @@ logger:
   <init>: false
   project: "lte"
   entity: "byol"
-  tags: ["gin", "mimic_borda", "finalizing", "ca-dev-5"]
+  tags: ["gin", "mimic_borda", "finalizing", "ca-dev-6"]
 
 trainer:
   <type>: Trainer
   <init>: false
-  max_epochs: 1000
+  max_epochs: 10000
 
 # Seed.
 seed: 0
