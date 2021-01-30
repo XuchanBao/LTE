@@ -2,6 +2,8 @@ from spaghettini import quick_register
 
 from src.dl.models.deepsets.deepsets import DeepSetOriginal
 from src.dl.models.gnns.gin import GIN
+from src.dl.models.transformers.set_transformers import SetTransformer
+from src.dl.models.transformers.encoders_decoders import SetTransformerEncoder, SetTransformerDecoder
 
 
 @quick_register
@@ -15,5 +17,9 @@ def get_default_gin():
                learn_eps=True, graph_pooling_type="mean", neighbor_pooling_type="sum")
 
 
-
-
+@quick_register
+def get_default_set_transformer():
+    encoder = SetTransformerEncoder(num_heads=15, dim_elements=2500, dim_hidden=480, dim_out=480, add_layer_norm=True)
+    decoder = SetTransformerDecoder(num_heads=15, num_seed_vectors=50, dim_elements=480, dim_hidden1=480,
+                                    dim_hidden2=480, dim_out=1, add_layer_norm=True)
+    return SetTransformer(encoder=encoder, decoder=decoder)

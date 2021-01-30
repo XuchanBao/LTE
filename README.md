@@ -40,7 +40,7 @@ Find a sample config in `runs/001_find_max/template.yaml`.
 ### Step 2: Training 
 You can run the following commands to train the model. The logger will automatically log the training progress. 
 ``` 
-EXP_DIR="runs/031_gin_finalizing/001_lr_and_lookahead_search"
+EXP_DIR="runs/032_transformer_finalizing/001_lr_tuning_and_lookahead"
 python -m src.mains.train --cfg ${EXP_DIR}/template.yaml
 ```
 
