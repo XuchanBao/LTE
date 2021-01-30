@@ -1,0 +1,88 @@
+<type>: Munch
+<init>: true
+# PyTorch Lightning System.
+system:
+  <type>: MimickingClassification
+  <init>: true
+  # Lawyers.
+  model:
+    <type>: get_default_gin
+    <init>: true
+  # Data loaders.
+  train_loader:
+    <type>: DataLoader
+    <init>: true
+    dataset:
+      <type>: Ballot
+      <init>: true
+      max_num_voters: 50
+      min_num_voters: 10
+      max_num_candidates: 50
+      min_num_candidates: 2
+      one_hot_candidates: true
+      batch_size: 1
+      voting_rule:
+        <type>: get_copeland
+        <init>: true
+      utility_distribution: "uniform"
+      return_graph: true
+    batch_size: 64
+    shuffle: true
+    num_workers: 10
+    collate_fn:
+      <type>: dgl_ballot_collate
+      <init>: false
+  valid_loader:
+    <type>: DataLoader
+    <init>: true
+    dataset:
+      <type>: Ballot
+      <init>: true
+      max_num_voters: 50
+      min_num_voters: 10
+      max_num_candidates: 50
+      min_num_candidates: 2
+      one_hot_candidates: true
+      batch_size: 1
+      voting_rule:
+        <type>: get_copeland
+        <init>: true
+      utility_distribution: "uniform"
+      return_graph: true
+    batch_size: 32
+    shuffle: true
+    num_workers: 10
+    collate_fn:
+      <type>: dgl_ballot_collate
+      <init>: false
+  optimizer:
+    <type>: Adam
+    <init>: false
+    lr|0_01: 0.01
+    lr|0_001: 0.001
+    lr|0_0001: 0.0001
+  lookahead|yes_lookahead:
+    <type>: Lookahead
+    <init>: false
+    k: 5
+    alpha: 0.5
+  lookahead|no_lookahead: null
+  loss_fn:
+    <type>: CrossEntropyLoss
+    <init>: true
+
+# TestTube experiment.
+logger:
+  <type>: WandbLogger
+  <init>: false
+  project: "lte"
+  entity: "byol"
+  tags: ["gin", "mimic_borda", "finalizing", "ca-dev-5"]
+
+trainer:
+  <type>: Trainer
+  <init>: false
+  max_epochs: 1000
+
+# Seed.
+seed: 0
