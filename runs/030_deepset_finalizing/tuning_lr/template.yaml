@@ -68,6 +68,7 @@ system:
   optimizer:
     <type>: Adam
     <init>: false
+    lr|lr_0_1: 0.1
     lr|lr_0_01: 0.01
     lr|lr_0_001: 0.001
     lr|lr_0_0001: 0.0001

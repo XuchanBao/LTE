@@ -52,18 +52,16 @@ cd -
 
 ```
 
-
 ### Step 3: Generating batch experiments. 
 * Create a new experiment directory (i.e. `EXP_DIR="./runs/003_fixing_plurality_training"`)
 * Copy a previous config in new experiment directory and modify it for a batched experiment. This template has to be
 called "template". 
 * Run:
 ```
-PROJECT_ROOT="<path_to_project_root>"
-EXP_DIR="./runs/003_fixing_plurality_training"
-cd ${PROJECT_ROOT}
+cd <project root> 
+EXP_DIR="runs/030_deepset_finalizing/tuning_lr"
 bash ./src/mains/generate_experiments.sh ${EXP_DIR}
-cd ./runs/${EXP_DIR}
+cd ${EXP_DIR}
 sbatch batch_run.sh
 
 ```
