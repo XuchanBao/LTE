@@ -32,6 +32,9 @@ system:
     collate_fn:
       <type>: dgl_ballot_collate
       <init>: false
+    worker_init_fn:
+      <type>: seed_workers
+      <init>: false
   valid_loader:
     <type>: DataLoader
     <init>: true
@@ -54,6 +57,9 @@ system:
     num_workers: 10
     collate_fn:
       <type>: dgl_ballot_collate
+      <init>: false
+    worker_init_fn:
+      <type>: seed_workers
       <init>: false
   optimizer:
     <type>: Adam
