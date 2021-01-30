@@ -12,7 +12,7 @@ if __name__ == '__main__':
         "--partition", "-p", help="Partition on slurm. ", default="p100"
     )
     parser.add_argument(
-        "--cpu", "-c", help="# of cpus", default=4
+        "--cpu", "-c", help="# of cpus", default=8
     )
     parser.add_argument(
         "--mem", help="amount of memory", default="12G"
