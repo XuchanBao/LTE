@@ -1,0 +1,107 @@
+<type>: Munch
+<init>: true
+# PyTorch Lightning System.
+system:
+  <type>: MimickingClassification
+  <init>: true
+  # Lawyers.
+  model:
+    <type>: DeepSetOriginal
+    <init>: true
+    dim_input: 2500
+    num_outputs: 1
+    dim_output: 50
+    dim_hidden: 970
+  # Data loaders.
+  train_loader:
+    <type>: DataLoader
+    <init>: true
+    dataset:
+      <type>: Ballot
+      <init>: true
+      max_num_voters: 50
+      min_num_voters: 10
+      max_num_candidates: 50
+      min_num_candidates: 2
+      batch_size: 64
+      epoch_length: 32
+      voting_rule:
+        <type>: get_borda
+        <init>: true
+      utility_distribution: "uniform"
+      one_hot_candidates: true
+    batch_size: 1
+    shuffle: true
+    num_workers: 10
+    collate_fn:
+      <type>: batched_ballot_collate
+      <init>: false
+    worker_init_fn:
+      <type>: seed_workers
+      <init>: false
+  valid_loader:
+    <type>: DataLoader
+    <init>: true
+    dataset:
+      <type>: Ballot
+      <init>: true
+      max_num_voters: 50
+      min_num_voters: 10
+      max_num_candidates: 50
+      min_num_candidates: 2
+      batch_size: 32
+      epoch_length: 8
+      voting_rule:
+        <type>: get_borda
+        <init>: true
+      utility_distribution: "uniform"
+      one_hot_candidates: true
+    batch_size: 1
+    shuffle: true
+    num_workers: 5
+    collate_fn:
+      <type>: batched_ballot_collate
+      <init>: false
+    worker_init_fn:
+      <type>: seed_workers
+      <init>: false
+  optimizer:
+    <type>: Adam
+    <init>: false
+    lr|0_01: 0.01
+    lr|0_001: 0.001
+    lr|0_0001: 0.0001
+  lookahead|yes_lookahead:
+    <type>: Lookahead
+    <init>: false
+    k: 5
+    alpha: 0.5
+  lookahead|no_lookahead: null
+  scheduler_wrapper:
+    <type>: TransformerSchedulerWrapper
+    <init>: true
+    get_fn:
+      <type>: get_cosine_schedule_with_warmup
+      <init>: false
+    num_warmup_steps: 20 # in epochs
+    num_training_steps: 10000
+  # Loss functions.
+  loss_fn:
+    <type>: CrossEntropyLoss
+    <init>: true
+
+# wandb experiment
+logger:
+  <type>: WandbLogger
+  <init>: false
+  project: "lte"
+  entity: "byol"
+  tags: ["deepsets", "mimic_borda", "warmup", "ca-dev-4"]
+
+trainer:
+  <type>: Trainer
+  <init>: false
+  max_epochs: 10000
+
+# Seed.
+seed: 0

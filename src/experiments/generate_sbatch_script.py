@@ -12,7 +12,7 @@ if __name__ == '__main__':
         "--partition", "-p", help="Partition on slurm. ", default="p100"
     )
     parser.add_argument(
-        "--cpu", "-c", help="# of cpus", default=2
+        "--cpu", "-c", help="# of cpus", default=8
     )
     parser.add_argument(
         "--mem", help="amount of memory", default="12G"
@@ -57,6 +57,8 @@ if __name__ == '__main__':
     with open(out_dir, "w") as f:
         f.write("""#!/bin/bash
 #SBATCH --partition={}
+#SBATCH --qos="deadline"
+#SBATCH --account="deadline"
 #SBATCH --gres={}
 #SBATCH --mem={}
 #SBATCH --array=0-{}%{}

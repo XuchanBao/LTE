@@ -40,7 +40,7 @@ Find a sample config in `runs/001_find_max/template.yaml`.
 ### Step 2: Training 
 You can run the following commands to train the model. The logger will automatically log the training progress. 
 ``` 
-EXP_DIR="runs/mimic_nested_gnn"
+EXP_DIR="runs/033_finalizing_nested_set_network/001_tune_lr_and_lookahead"
 python -m src.mains.train --cfg ${EXP_DIR}/template.yaml
 ```
 
@@ -52,19 +52,30 @@ cd -
 
 ```
 
-
 ### Step 3: Generating batch experiments. 
 * Create a new experiment directory (i.e. `EXP_DIR="./runs/003_fixing_plurality_training"`)
 * Copy a previous config in new experiment directory and modify it for a batched experiment. This template has to be
 called "template". 
 * Run:
 ```
-PROJECT_ROOT="<path_to_project_root>"
-EXP_DIR="./runs/003_fixing_plurality_training"
-cd ${PROJECT_ROOT}
+EXP_DIR="runs/032_transformer_finalizing/001_lr_tuning_and_lookahead"
 bash ./src/mains/generate_experiments.sh ${EXP_DIR}
-cd ./runs/${EXP_DIR}
-sbatch batch_run.sh
+sbatch ${EXP_DIR}/batch_run.sh
+
+```
+
+* Inspecting generated slurm files. 
+``` 
+ls ${EXP_DIR}
+cat ${EXP_DIR}/sl
+```
+
+* Clearing results, if needed. 
+``` 
+echo ${EXP_DIR}
+cd ${EXP_DIR}
+rm -rf batch_run.sh results
+cd -
 
 ```
 

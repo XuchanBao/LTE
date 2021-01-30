@@ -86,23 +86,37 @@ class DeepSetEncoderBlock(nn.Module):
 class DeepSetOriginal(nn.Module):
     def __init__(self, dim_input, num_outputs, dim_output, dim_hidden=512):
         super(DeepSetOriginal, self).__init__()
+        self.dim_input = dim_input
         self.num_outputs = num_outputs
         self.dim_output = dim_output
+        self.dim_hidden = dim_hidden
         self.enc = nn.Sequential(
             nn.Linear(dim_input, dim_hidden),
-            nn.ReLU(),
+            nn.LeakyReLU(),
+            nn.LayerNorm(dim_hidden),
             nn.Linear(dim_hidden, dim_hidden),
-            nn.ReLU(),
+            nn.LeakyReLU(),
+            nn.LayerNorm(dim_hidden),
             nn.Linear(dim_hidden, dim_hidden),
-            nn.ReLU(),
+            nn.LeakyReLU(),
+            nn.LayerNorm(dim_hidden),
+            nn.Linear(dim_hidden, dim_hidden),
+            nn.LeakyReLU(),
+            nn.LayerNorm(dim_hidden),
             nn.Linear(dim_hidden, dim_hidden))
         self.dec = nn.Sequential(
             nn.Linear(dim_hidden, dim_hidden),
-            nn.ReLU(),
+            nn.LeakyReLU(),
+            nn.LayerNorm(dim_hidden),
             nn.Linear(dim_hidden, dim_hidden),
-            nn.ReLU(),
+            nn.LeakyReLU(),
+            nn.LayerNorm(dim_hidden),
             nn.Linear(dim_hidden, dim_hidden),
-            nn.ReLU(),
+            nn.LeakyReLU(),
+            nn.LayerNorm(dim_hidden),
+            nn.Linear(dim_hidden, dim_hidden),
+            nn.LeakyReLU(),
+            nn.LayerNorm(dim_hidden),
             nn.Linear(dim_hidden, num_outputs * dim_output))
 
     def forward(self, X, **kwargs):

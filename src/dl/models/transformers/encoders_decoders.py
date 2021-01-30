@@ -25,12 +25,32 @@ class SetTransformerEncoder(nn.Module):
             dim_values=dim_hidden,
             dim_transformed_keys_queries=dim_hidden // num_heads,
             dim_transformed_values=dim_hidden // num_heads,
+            attention_layer_dim_out=dim_hidden,
+            add_layer_norm=add_layer_norm)
+
+        self.sab3 = MultiHeadAttentionBlock(
+            num_heads=num_heads,
+            dim_keys_queries=dim_hidden,
+            dim_values=dim_hidden,
+            dim_transformed_keys_queries=dim_hidden // num_heads,
+            dim_transformed_values=dim_hidden // num_heads,
+            attention_layer_dim_out=dim_hidden,
+            add_layer_norm=add_layer_norm)
+
+        self.sab4 = MultiHeadAttentionBlock(
+            num_heads=num_heads,
+            dim_keys_queries=dim_hidden,
+            dim_values=dim_hidden,
+            dim_transformed_keys_queries=dim_hidden // num_heads,
+            dim_transformed_values=dim_hidden // num_heads,
             attention_layer_dim_out=dim_out,
             add_layer_norm=add_layer_norm)
 
     def forward(self, xs):
         zs = self.sab1(xs, xs, xs)
         zs = self.sab2(zs, zs, zs)
+        zs = self.sab3(zs, zs, zs)
+        zs = self.sab4(zs, zs, zs)
 
         return zs
 

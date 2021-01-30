@@ -97,5 +97,5 @@ def timeit(method):
 def seed_workers(worker_id):
     # Used to make sure Pytorch dataloaders don't return identical random numbers amongst different workers.
     random.seed()
-    seed = random.randint(0, 255)
+    seed = random.randint(0, 4294967296)
     seed_everything(seed)
