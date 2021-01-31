@@ -72,7 +72,7 @@ logger:
   <init>: false
   project: "lte"
   entity: "byol"
-  tags: ["ca", "set-transformer", "mimic_borda", "finalizing", "ca-finalize-3", "take-3"]
+  tags: ["ca", "set-transformer", "mimic_borda", "pre-ln", "finalizing", "ca-finalize-3", "take-4"]
 
 trainer:
   <type>: Trainer
