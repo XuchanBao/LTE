@@ -19,11 +19,12 @@ class ApplyNodeFunc(nn.Module):
     def __init__(self, mlp):
         super(ApplyNodeFunc, self).__init__()
         self.mlp = mlp
-        self.bn = nn.BatchNorm1d(self.mlp.output_dim)
+        # self.bn = nn.BatchNorm1d(self.mlp.output_dim)
+        self.ln = nn.LayerNorm(self.mlp.output_dim)
 
     def forward(self, h):
         h = self.mlp(h)
-        h = self.bn(h)
+        h = self.ln(h)
         h = F.relu(h)
         return h
 
@@ -59,7 +60,8 @@ class MLP(nn.Module):
             # Multi-layer model
             self.linear_or_not = False
             self.linears = torch.nn.ModuleList()
-            self.batch_norms = torch.nn.ModuleList()
+            # self.batch_norms = torch.nn.ModuleList()
+            self.layer_norms = torch.nn.ModuleList()
 
             self.linears.append(nn.Linear(input_dim, hidden_dim))
             for layer in range(num_layers - 2):
@@ -67,7 +69,8 @@ class MLP(nn.Module):
             self.linears.append(nn.Linear(hidden_dim, output_dim))
 
             for layer in range(num_layers - 1):
-                self.batch_norms.append(nn.BatchNorm1d((hidden_dim)))
+                # self.batch_norms.append(nn.BatchNorm1d((hidden_dim)))
+                self.layer_norms.append(nn.LayerNorm((hidden_dim)))
 
     def forward(self, x):
         if self.linear_or_not:
@@ -77,7 +80,9 @@ class MLP(nn.Module):
             # If MLP
             h = x
             for i in range(self.num_layers - 1):
-                h = F.relu(self.batch_norms[i](self.linears[i](h)))
+                # h = F.relu(self.batch_norms[i](self.linears[i](h)))
+                h = F.relu(self.layer_norms[i](self.linears[i](h)))
+
             return self.linears[-1](h)
 
 
@@ -118,7 +123,8 @@ class GIN(nn.Module):
 
         # List of MLPs
         self.ginlayers = torch.nn.ModuleList()
-        self.batch_norms = torch.nn.ModuleList()
+        # self.batch_norms = torch.nn.ModuleList()
+        self.layer_norms = torch.nn.ModuleList()
 
         for layer in range(self.num_layers - 1):
             if layer == 0:
@@ -128,7 +134,8 @@ class GIN(nn.Module):
 
             self.ginlayers.append(
                 GINConv(ApplyNodeFunc(mlp), neighbor_pooling_type, 0, self.learn_eps))
-            self.batch_norms.append(nn.BatchNorm1d(hidden_dim))
+            # self.batch_norms.append(nn.BatchNorm1d(hidden_dim))
+            self.layer_norms.append(nn.LayerNorm(hidden_dim))
 
         # Linear function for graph poolings of output of each layer
         # which maps the output of different layers into a prediction score
@@ -161,7 +168,7 @@ class GIN(nn.Module):
 
         for i in range(self.num_layers - 1):
             h = self.ginlayers[i](g, h)
-            h = self.batch_norms[i](h)
+            h = self.layer_norms[i](h)
             h = F.relu(h)
             hidden_rep.append(h)
 
