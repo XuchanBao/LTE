@@ -28,7 +28,7 @@ system:
       <init>: true
     return_graph: false
 
-   Optimizers and schedules.
+  # Optimizers and schedules.
   optimizer:
     <type>: Adam
     <init>: false
