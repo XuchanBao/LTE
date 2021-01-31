@@ -28,26 +28,26 @@ system:
       <init>: true
     return_graph: false
 
-  # Optimizers and schedules.
-#  optimizer:
-#    <type>: Adam
-#    <init>: false
-#    lr|lr_0_1: 0.1
-#    lr|lr_0_01: 0.01
-#    lr|lr_0_001: 0.001
-#
-#  lookahead|yes_lookahead:
-#    <type>: Lookahead
-#    <init>: false
-#    k: 5
-#    alpha: 0.5
-#  lookahead|no_lookahead: null
-
+   Optimizers and schedules.
   optimizer:
     <type>: Adam
     <init>: false
-    lr: 0.1
-  lookahead: null
+    lr|lr_0_1: 0.1
+    lr|lr_0_01: 0.01
+    lr|lr_0_001: 0.001
+
+  lookahead|yes_lookahead:
+    <type>: Lookahead
+    <init>: false
+    k: 5
+    alpha: 0.5
+  lookahead|no_lookahead: null
+
+#  optimizer:
+#    <type>: Adam
+#    <init>: false
+#    lr: 0.1
+#  lookahead: null
 
   # Learning rate scheduler.
   scheduler_wrapper:
