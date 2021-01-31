@@ -154,7 +154,6 @@ class MultiHeadAttentionLayer(nn.Module):
             values=transformed_values)
 
         # Transform the output.
-
         out_values = out_values.transpose(1, 2).transpose(2, 3).reshape(
             (bs, num_queries, self.dim_tv * self.num_heads))
 

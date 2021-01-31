@@ -32,9 +32,9 @@ system:
   optimizer:
     <type>: Adam
     <init>: false
-    lr|lr_0_1: 0.1
     lr|lr_0_01: 0.01
     lr|lr_0_001: 0.001
+    lr|lr_0_0001: 0.0001
 
   lookahead|yes_lookahead:
     <type>: Lookahead
@@ -56,7 +56,7 @@ system:
     get_fn:
       <type>: get_cosine_schedule_with_warmup
       <init>: false
-    num_warmup_steps: 20 # in epochs
+    num_warmup_steps: 200 # in epochs
     num_training_steps: 20000
 
   # Loss functions.
