@@ -46,7 +46,6 @@ class SAB(nn.Module):
                 self.norm1 = LayerNorm(attention_layer_dim_out)
             self.norm2 = LayerNorm(attention_layer_dim_out)
 
-
         self.add_ln = add_layer_norm
         self.add_residual_tokens = add_residual_tokens
         self.pre_ln = pre_ln  # Whether to apply layernorm before the attention and residual or not.

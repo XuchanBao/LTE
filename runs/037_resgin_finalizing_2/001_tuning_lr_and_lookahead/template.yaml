@@ -6,7 +6,7 @@ system:
   <init>: true
   # Model.
   model:
-    <type>: get_default_set_transformer
+    <type>: get_default_residual_gin
     <init>: true
 
   # Data loaders.
@@ -17,7 +17,7 @@ system:
     voting_rule:
       <type>: get_borda
       <init>: true
-    return_graph: false
+    return_graph: true
 
   valid_loader:
     <type>: get_default_mimicking_loader
@@ -26,25 +26,22 @@ system:
     voting_rule:
       <type>: get_borda
       <init>: true
-    return_graph: false
+    return_graph: true
 
   # Optimizers and schedules.
   optimizer:
     <type>: Adam
     <init>: false
-#    lr|lr_0_01: 0.01
+    lr|lr_0_1: 0.1
+    lr|lr_0_01: 0.01
     lr|lr_0_001: 0.001
-    lr|lr_0_0001: 0.0001
-#
-  lookahead: null
+  lookahead|yes_lookahead:
+    <type>: Lookahead
+    <init>: false
+    k: 5
+    alpha: 0.5
+  lookahead|no_lookahead: null
 
-#  lookahead|yes_lookahead:
-#    <type>: Lookahead
-#    <init>: false
-#    k: 5
-#    alpha: 0.5
-#  lookahead|no_lookahead: null
-#
 #  optimizer:
 #    <type>: Adam
 #    <init>: false
@@ -58,7 +55,7 @@ system:
     get_fn:
       <type>: get_cosine_schedule_with_warmup
       <init>: false
-    num_warmup_steps: 200 # in epochs
+    num_warmup_steps: 20 # in epochs
     num_training_steps: 20000
 
   # Loss functions.
@@ -72,16 +69,14 @@ logger:
   <init>: false
   project: "lte"
   entity: "byol"
-  tags: ["ca", "set-transformer", "mimic_borda", "pre-ln", "finalizing", "ca-finalize-3", "take-4"]
+  tags: ["ca", "res-gin", "mimic_borda", "finalizing", "ca-finalize-4", "take-1"]
 
 trainer:
   <type>: Trainer
   <init>: false
   max_epochs: 20000
-  gradient_clip_val|grad_clip_1: 1.
-  gradient_clip_val|grad_clip_0_1: 0.1
-  gradient_clip_val|grad_clip_0_01: 0.01
-#  gradient_clip_val: 1.
+  gradient_clip_val: 1.
+
 
 # Seed.
 seed: 0
