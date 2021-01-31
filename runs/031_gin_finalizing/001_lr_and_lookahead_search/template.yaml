@@ -64,15 +64,15 @@ system:
   optimizer:
     <type>: Adam
     <init>: false
-    lr: 0.01  #|0_01: 0.01
-#    lr|0_001: 0.001
-#    lr|0_0001: 0.0001
-  lookahead:  #|yes_lookahead:
+    lr|0_01: 0.01
+    lr|0_001: 0.001
+    lr|0_0001: 0.0001
+  lookahead|yes_lookahead:
     <type>: Lookahead
     <init>: false
     k: 5
     alpha: 0.5
-#  lookahead: null  #|no_lookahead: null
+  lookahead|no_lookahead: null
   loss_fn:
     <type>: CrossEntropyLoss
     <init>: true
