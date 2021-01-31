@@ -15,11 +15,18 @@ class Lookahead(Optimizer):
         self.optimizer = optimizer
         self.k = k
         self.alpha = alpha
-        self.param_groups = self.optimizer.param_groups
+        self.param_groups = None
         self.state = defaultdict(dict)
+        self.fast_state = None
+
+    # (a bit hacky) to make the interface consistent with other optimizers in classification.configure_optimizers()
+    def __call__(self, param_groups):
+        self.optimizer = self.optimizer(param_groups)
+        self.param_groups = self.optimizer.param_groups
         self.fast_state = self.optimizer.state
         for group in self.param_groups:
             group["counter"] = 0
+        return self
 
     def update(self, group):
         for fast in group["params"]:

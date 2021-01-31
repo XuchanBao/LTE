@@ -124,6 +124,10 @@ class DeepSetOriginal(nn.Module):
         X = self.dec(X).reshape(-1, self.num_outputs, self.dim_output)
         return X.squeeze()
 
+    @property
+    def name(self):
+        return "DeepSetOriginal"
+
 
 if __name__ == "__main__":
     """

@@ -149,6 +149,10 @@ class NestedGIN(nn.Module):
 
         return score_over_layer
 
+    @property
+    def name(self):
+        return "NestedGIN"
+
 
 if __name__ == "__main__":
     """

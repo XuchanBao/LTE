@@ -145,10 +145,6 @@ class MimickingClassification(pl.LightningModule, ABC):
     def configure_optimizers(self):
         self.optimizer_obj = self.optimizer(self.model.parameters())
 
-        # Use the lookahead optimizer if asked to do so.
-        if self.lookahead is not None:
-            self.optimizer_obj = self.lookahead(self.optimizer_obj)
-
         # Get learning rate scheduler.
         if self.scheduler_wrapper is not None:
             scheduler = self.scheduler_wrapper.get_scheduler(self.optimizer_obj)
