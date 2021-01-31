@@ -4,64 +4,37 @@
 system:
   <type>: MimickingClassification
   <init>: true
-  # Lawyers.
+  # Model.
   model:
     <type>: get_default_deepset
     <init>: true
+
   # Data loaders.
   train_loader:
-    <type>: DataLoader
+    <type>: get_default_mimicking_loader
     <init>: true
-    dataset:
-      <type>: get_default_mimicking_loader
+    distribution: "uniform"
+    voting_rule:
+      <type>: get_borda
       <init>: true
-      distribution: "uniform"
-      voting_rule:
-        <type>: get_borda
-        <init>: true
-      batch_size: 64
-      return_graph: false
-    batch_size: 1
-    shuffle: true
-    num_workers: 10
-    collate_fn:
-      <type>: batched_ballot_collate
-      <init>: false
-    worker_init_fn:
-      <type>: seed_workers
-      <init>: false
+    return_graph: false
+
   valid_loader:
-    <type>: DataLoader
+    <type>: get_default_mimicking_loader
     <init>: true
-    dataset:
-      <type>: Ballot
+    distribution: "uniform"
+    voting_rule:
+      <type>: get_borda
       <init>: true
-      max_num_voters: 50
-      min_num_voters: 10
-      max_num_candidates: 50
-      min_num_candidates: 2
-      batch_size: 32
-      epoch_length: 8
-      voting_rule:
-        <type>: get_borda
-        <init>: true
-      utility_distribution: "uniform"
-      one_hot_candidates: true
-    batch_size: 1
-    shuffle: true
-    num_workers: 5
-    collate_fn:
-      <type>: batched_ballot_collate
-      <init>: false
-    worker_init_fn:
-      <type>: seed_workers
-      <init>: false
+    return_graph: false
+
+  # Optimizers and schedules.
   optimizer:
     <type>: Adam
     <init>: false
-    lr|0_01: 0.01
-    lr|0_001: 0.001
-    lr|0_0001: 0.0001
+    lr|lr_0_01: 0.01
+    lr|lr_0_001: 0.001
+    lr|lr_0_0001: 0.0001
   lookahead|yes_lookahead:
     <type>: Lookahead
     <init>: false
@@ -76,6 +49,7 @@ system:
       <init>: false
     num_warmup_steps: 20 # in epochs
     num_training_steps: 10000
+
   # Loss functions.
   loss_fn:
     <type>: CrossEntropyLoss

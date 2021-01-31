@@ -9,7 +9,7 @@ from src.dl.models.gnns.nested_gin import NestedGIN
 
 @quick_register
 def get_default_deepset():
-    return DeepSetOriginal(dim_input=2500, num_outputs=1, dim_output=50, dim_hidden=970)
+    return DeepSetOriginal(dim_input=841, num_outputs=1, dim_output=29, dim_hidden=1065)
 
 
 @quick_register
