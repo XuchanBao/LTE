@@ -78,9 +78,9 @@ trainer:
   <type>: Trainer
   <init>: false
   max_epochs: 20000
-  gradient_clip_vad|grad_clip_1: 1.
-  gradient_clip_vad|grad_clip_0_1: 0.1
-  gradient_clip_vad|grad_clip_0_01: 0.01
+  gradient_clip_val|grad_clip_1: 1.
+  gradient_clip_val|grad_clip_0_1: 0.1
+  gradient_clip_val|grad_clip_0_01: 0.01
 
 # Seed.
 seed: 0
