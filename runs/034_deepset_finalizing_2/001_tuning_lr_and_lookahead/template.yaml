@@ -66,7 +66,7 @@ logger:
 trainer:
   <type>: Trainer
   <init>: false
-  max_epochs: 10000
+  max_epochs: 20000
 
 # Seed.
 seed: 0
