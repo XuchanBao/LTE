@@ -15,3 +15,7 @@ class SetTransformer(nn.Module):
         outputs = self.decoder(zs)
 
         return outputs
+
+    @property
+    def name(self):
+        return "SetTransformer"

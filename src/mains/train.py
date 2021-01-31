@@ -30,10 +30,15 @@ if __name__ == "__main__":
 
     set_hyperparams(args.cfg, logger)
 
+    ckpt_callback = cfg.manage_checkpoint(
+        model_type=system.model.name,
+        voting_rule=system.train_loader.dataset.voting_rule.__name__,
+        template_path=args.cfg)
+
     if torch.cuda.is_available():
-        trainer = cfg.trainer(logger=logger, gpus=1)
+        trainer = cfg.trainer(logger=logger, gpus=1, callbacks=[ckpt_callback])
     else:
-        trainer = cfg.trainer(logger=logger)
+        trainer = cfg.trainer(logger=logger, callbacks=[ckpt_callback])
 
     # Train.
     trainer.fit(system)

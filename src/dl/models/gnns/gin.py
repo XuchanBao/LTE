@@ -180,3 +180,7 @@ class GIN(nn.Module):
             score_over_layer += self.drop(self.linears_prediction[i](pooled_h))
 
         return score_over_layer
+
+    @property
+    def name(self):
+        return "GIN"
