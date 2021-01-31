@@ -49,7 +49,8 @@ class MultiHeadAttentionBlock(nn.Module):
         multihead_out, transformed_queries = self.multihead_attention_layer(
             queries=queries, keys=keys, values=values)
         if self.add_residual_queries:
-            multihead_out = multihead_out + transformed_queries
+            # multihead_out = multihead_out + transformed_queries
+            multihead_out = multihead_out + queries
 
         h = self.norm1(multihead_out) if self.add_ln else multihead_out
 

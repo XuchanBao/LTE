@@ -17,7 +17,8 @@ class SetTransformerEncoder(nn.Module):
             dim_transformed_keys_queries=dim_hidden // num_heads,
             dim_transformed_values=dim_hidden // num_heads,
             attention_layer_dim_out=dim_hidden,
-            add_layer_norm=add_layer_norm)
+            add_layer_norm=add_layer_norm,
+            add_residual_queries=False)
 
         self.sab2 = MultiHeadAttentionBlock(
             num_heads=num_heads,
