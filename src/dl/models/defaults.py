@@ -20,9 +20,13 @@ def get_default_gin():
 
 @quick_register
 def get_default_set_transformer():
-    encoder = SetTransformerEncoder(num_heads=15, dim_elements=2500, dim_hidden=480, dim_out=480, add_layer_norm=True)
-    decoder = SetTransformerDecoder(num_heads=15, num_seed_vectors=50, dim_elements=480, dim_hidden1=480,
-                                    dim_hidden2=480, dim_out=1, add_layer_norm=True)
+    num_heads = 20
+    dim_head = 28
+    hid_dim = num_heads * dim_head
+    encoder = SetTransformerEncoder(num_heads=num_heads, dim_elements=841, dim_hidden=hid_dim, dim_out=hid_dim,
+                                    add_layer_norm=True)
+    decoder = SetTransformerDecoder(num_heads=num_heads, num_seed_vectors=29, dim_elements=hid_dim, dim_hidden1=hid_dim,
+                                    dim_hidden2=hid_dim, dim_out=1, add_layer_norm=True)
     return SetTransformer(encoder=encoder, decoder=decoder)
 
 
