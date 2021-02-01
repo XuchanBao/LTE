@@ -44,11 +44,14 @@ if __name__ == '__main__':
             if args.pattern == fname:
                 fn = os.path.join(dir_name, fname)
                 print('  %s' % (fn))
-                lst.append("\"python -um src.mains.train --cfg " +
-                           fn +
-                           (" --resume" if args.resume else "") +
-                           (" --test" if args.test else "") +
-                           "\"")
+                if args.test:
+                    lst.append(f"\"python -um src.mains.test --cfg " +
+                               fn +
+                               "\"")
+                else:
+                    lst.append(f"\"python -um src.mains.train --cfg " +
+                               fn +
+                               "\"")
     print("Found {} experiments".format(len(lst)))
 
     print("Generating sbatch script....")
