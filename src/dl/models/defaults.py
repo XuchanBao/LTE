@@ -6,6 +6,7 @@ from src.dl.models.transformers.set_transformers import SetTransformer
 from src.dl.models.transformers.encoders_decoders import SetTransformerEncoder, SetTransformerDecoder
 from src.dl.models.gnns.nested_gin import NestedGIN
 from src.dl.models.gnns.gin_residual import ResidualGIN
+from src.dl.models.gnns.nested_residual_gin import NestedResidualGIN
 
 
 @quick_register
@@ -39,5 +40,5 @@ def get_default_set_transformer():
 
 @quick_register
 def get_nested_set_network():
-    return NestedGIN(num_layers=10, input_dim=30, hidden_dim=480, output_dim=1, final_dropout=0., learn_eps=True,
-                     neighbor_pooling_type="sum", graph_pooling_type="mean")
+    return NestedResidualGIN(num_layers=5, input_dim=29, num_heads=20, dim_per_head=38, output_dim=1, final_dropout=0.,
+                             learn_eps=True, neighbor_pooling_type="sum", graph_pooling_type="mean")

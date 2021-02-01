@@ -1,0 +1,100 @@
+<type>: Munch
+<init>: true
+# PyTorch Lightning System.
+system:
+  <type>: MimickingClassification
+  <init>: true
+  # Model.
+  model:
+    <type>: get_nested_set_network
+    <init>: true
+
+  # Data loaders.
+  train_loader:
+    <type>: get_default_mimicking_loader
+    <init>: true
+    distribution: "uniform"
+    voting_rule:
+      <type>: get_borda
+      <init>: true
+    return_graph: true
+
+  valid_loader:
+    <type>: get_default_mimicking_loader
+    <init>: true
+    distribution: "uniform"
+    voting_rule:
+      <type>: get_borda
+      <init>: true
+    return_graph: true
+
+#  optimizer:
+#    <type>: Lookahead
+#    <init>: true
+#    optimizer:
+#      <type>: Adam
+#      <init>: false
+#      lr: 0.01
+#    k: 5
+#    alpha: 0.5
+
+  optimizer|yes_lookahead:
+    <type>: Lookahead
+    <init>: true
+    optimizer:
+      <type>: Adam
+      <init>: false
+      lr|lr_0_01: 0.01
+      lr|lr_0_001: 0.001
+      lr|lr_0_0001: 0.0001
+    k: 5
+    alpha: 0.5
+
+  optimizer|no_lookahead:
+    <type>: Adam
+    <init>: false
+    lr|lr_0_01: 0.01
+    lr|lr_0_001: 0.001
+    lr|lr_0_0001: 0.0001
+
+  # Learning rate scheduler.
+  scheduler_wrapper:
+    <type>: TransformerSchedulerWrapper
+    <init>: true
+    get_fn:
+      <type>: get_cosine_schedule_with_warmup
+      <init>: false
+    num_warmup_steps: 50 # in epochs
+    num_training_steps: 20000
+
+  # Loss functions.
+  loss_fn:
+    <type>: CrossEntropyLoss
+    <init>: true
+
+# wandb experiment
+logger:
+  <type>: WandbLogger
+  <init>: false
+  project: "lte"
+  entity: "byol"
+  tags: ["ca", "nsn", "mimic_borda", "finalizing", "ca-finalize-5", "take-1"]
+
+manage_checkpoint:
+  <type>: manage_checkpoint
+  <init>: true
+#  root_path: "/scratch/hdd001/home/jennybao/projects/LTE"
+  root_path: "./results"
+  experiment_name: "mimic"
+  load_version: null
+  save_checkpoint: null
+
+
+trainer:
+  <type>: Trainer
+  <init>: false
+  max_epochs: 20000
+  gradient_clip_val: 1.
+
+# Seed.
+seed: 0

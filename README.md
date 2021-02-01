@@ -32,7 +32,7 @@ nbdev_install_git_hooks
 ```
 export PYTHONPATH="${PYTHONPATH}:`pwd`"
 ``` 
-  
+ 
 ## Training
 ### Step 1: Config
 Find a sample config in `runs/001_find_max/template.yaml`. 
@@ -40,7 +40,7 @@ Find a sample config in `runs/001_find_max/template.yaml`.
 ### Step 2: Training 
 You can run the following commands to train the model. The logger will automatically log the training progress. 
 ``` 
-EXP_DIR="runs/037_resgin_finalizing_2/001_tuning_lr_and_lookahead"
+EXP_DIR="runs/038_nsn_finalizing_2/001_tuning_lr_and_lookahead"
 python -m src.mains.train --cfg ${EXP_DIR}/template.yaml
 ```
 
