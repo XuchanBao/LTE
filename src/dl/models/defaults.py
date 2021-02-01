@@ -40,5 +40,5 @@ def get_default_set_transformer():
 
 @quick_register
 def get_nested_set_network():
-    return NestedResidualGIN(num_layers=5, input_dim=29, num_heads=20, dim_per_head=38, output_dim=1, final_dropout=0.,
+    return NestedResidualGIN(num_layers=10, input_dim=29, num_heads=20, dim_per_head=24, output_dim=1, final_dropout=0.,
                              learn_eps=True, neighbor_pooling_type="sum", graph_pooling_type="mean")
