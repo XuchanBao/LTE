@@ -1,0 +1,72 @@
+<type>: Munch
+<init>: true
+# PyTorch Lightning System.
+system:
+  <type>: MimickingClassification
+  <init>: true
+  # Model.
+  model:
+    <type>: get_default_deepset
+    <init>: true
+
+  # Data loaders.
+  train_loader:
+    <type>: get_default_mimicking_loader
+    <init>: true
+    distribution: "uniform"
+    voting_rule:
+      <type>: get_borda
+      <init>: true
+    return_graph: false
+
+  valid_loader:
+    <type>: get_default_mimicking_loader
+    <init>: true
+    distribution: "uniform"
+    voting_rule:
+      <type>: get_borda
+      <init>: true
+    return_graph: false
+
+  # Optimizers and schedules.
+  optimizer:
+    <type>: Adam
+    <init>: false
+    lr|lr_0_000333: 0.000333
+    lr|lr_0_0001: 0.0001
+    lr|lr_0_0000333: 0.0000333
+  lookahead|yes_lookahead:
+    <type>: Lookahead
+    <init>: false
+    k: 5
+    alpha: 0.5
+  lookahead|no_lookahead: null
+  scheduler_wrapper:
+    <type>: TransformerSchedulerWrapper
+    <init>: true
+    get_fn:
+      <type>: get_cosine_schedule_with_warmup
+      <init>: false
+    num_warmup_steps: 20 # in epochs
+    num_training_steps: 20000
+
+  # Loss functions.
+  loss_fn:
+    <type>: CrossEntropyLoss
+    <init>: true
+
+# wandb experiment
+logger:
+  <type>: WandbLogger
+  <init>: false
+  project: "lte"
+  entity: "byol"
+  tags: ["ca", "deepsets", "mimic_borda", "warmup", "finalizing", "ca-finalize-1"]
+
+trainer:
+  <type>: Trainer
+  <init>: false
+  max_epochs: 20000
+
+# Seed.
+seed: 0
