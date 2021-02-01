@@ -1,0 +1,100 @@
+<type>: Munch
+<init>: true
+# PyTorch Lightning System.
+
+system:
+  <type>: MimickingClassification
+  <init>: true
+  # Lawyers.
+  model:
+    <type>: get_default_gin
+    <init>: true
+  # Data loaders.
+  train_loader:
+    <type>: DataLoader
+    <init>: true
+    dataset:
+      <type>: Ballot
+      <init>: true
+      max_num_voters: 50
+      min_num_voters: 10
+      max_num_candidates: 50
+      min_num_candidates: 2
+      one_hot_candidates: true
+      batch_size: 1
+      voting_rule:
+        <type>: get_borda
+        <init>: true
+      utility_distribution: "uniform"
+      return_graph: true
+    batch_size: 32
+    shuffle: true
+    num_workers: 0
+    collate_fn:
+      <type>: dgl_ballot_collate
+      <init>: false
+    worker_init_fn:
+      <type>: seed_workers
+      <init>: false
+  valid_loader:
+    <type>: DataLoader
+    <init>: true
+    dataset:
+      <type>: Ballot
+      <init>: true
+      max_num_voters: 50
+      min_num_voters: 10
+      max_num_candidates: 50
+      min_num_candidates: 2
+      one_hot_candidates: true
+      batch_size: 1
+      voting_rule:
+        <type>: get_borda
+        <init>: true
+      utility_distribution: "uniform"
+      return_graph: true
+    batch_size: 32
+    shuffle: true
+    num_workers: 0
+    collate_fn:
+      <type>: dgl_ballot_collate
+      <init>: false
+    worker_init_fn:
+      <type>: seed_workers
+      <init>: false
+  optimizer:
+    <type>: Lookahead
+    <init>: true
+    optimizer:
+      <type>: Adam
+      <init>: false
+      lr: 0.01
+    k: 5
+    alpha: 0.5
+  loss_fn:
+    <type>: CrossEntropyLoss
+    <init>: true
+  save_checkpoint: true
+
+# TestTube experiment.
+logger:
+  <type>: WandbLogger
+  <init>: false
+  project: "lte"
+  entity: "byol"
+  tags: ["gin", "mimic_borda", "logging_freq"]
+
+manage_checkpoint:
+  <type>: manage_checkpoint
+  <init>: true
+  root_path: "/tmp"
+  experiment_name: "mimic"
+  load_version: null
+
+trainer:
+  <type>: Trainer
+  <init>: false
+  max_epochs: 10000
+  log_every_n_steps: 50   # only affects training logging, as validation and testing are logged per epoch
+# Seed.
+seed: 0
