@@ -57,7 +57,7 @@ def get_both_default_mimicking_loaders(distribution, voting_rule, return_graph):
     if return_graph is True:
         dataset = Ballot(max_num_voters=max_num_voters, min_num_voters=min_num_voters,
                          max_num_candidates=max_num_candidates, min_num_candidates=min_num_candidates,
-                         batch_size=1, epoch_length=epoch_len, voting_rule=voting_rule,
+                         batch_size=1, epoch_length=batch_size*epoch_len, voting_rule=voting_rule,
                          utility_distribution=distribution, one_hot_candidates=one_hot_candidates,
                          one_hot_candidate_dim=one_hot_candidate_dim, return_graph=True,
                          remove_ties=remove_ties)
