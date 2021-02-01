@@ -77,6 +77,7 @@ trainer:
   <init>: false
   max_epochs: 20000
   gradient_clip_val: 1.
+save_checkpoint: true
 
 # Seed.
 seed: 0
