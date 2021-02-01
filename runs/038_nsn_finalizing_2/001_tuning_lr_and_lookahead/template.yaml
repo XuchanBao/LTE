@@ -53,9 +53,9 @@ system:
   optimizer|no_lookahead:
     <type>: Adam
     <init>: false
-    lr|lr_0_01: 0.01
-    lr|lr_0_001: 0.001
-    lr|lr_0_0001: 0.0001
+    lr|lr_0_01: 0.001
+    lr|lr_0_001: 0.0001
+    lr|lr_0_0001: 0.00001
 
   # Learning rate scheduler.
   scheduler_wrapper:
@@ -64,7 +64,7 @@ system:
     get_fn:
       <type>: get_cosine_schedule_with_warmup
       <init>: false
-    num_warmup_steps: 50 # in epochs
+    num_warmup_steps: 200 # in epochs
     num_training_steps: 20000
 
   # Loss functions.
