@@ -170,8 +170,8 @@ class MimickingClassification(pl.LightningModule, ABC):
                 return loss, metric_logs, histogram_logs
 
         # TODO: confirm and remove the following
-        # # Since we have a logit per candidate in the end, we have to remove the last dimension.
-        # preds = preds.squeeze(2) if (len(preds.shape) == 3) else preds
+        # Since we have a logit per candidate in the end, we have to remove the last dimension.
+        preds = preds.squeeze(2) if (len(preds.shape) == 3) else preds
 
         # ____ Compute loss. ____
         loss = self.loss_fn(preds, ys)
