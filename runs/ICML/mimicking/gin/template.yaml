@@ -44,7 +44,7 @@ system:
       <type>: get_cosine_schedule_with_warmup
       <init>: false
     num_warmup_steps: 20 # in epochs
-    num_training_steps: 50000
+    num_training_steps: 20000
 
   # Loss functions.
   loss_fn:
@@ -70,7 +70,7 @@ manage_checkpoint:
 trainer:
   <type>: Trainer
   <init>: false
-  max_epochs: 50000
+  max_epochs: 20000
   gradient_clip_val: 1.
 
 # Seed.
