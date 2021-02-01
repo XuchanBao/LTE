@@ -142,3 +142,9 @@ batch_run.sh
 
 # wandb
 wandb/
+
+# datasets
+datasets/
+
+# result files
+test_result.yaml

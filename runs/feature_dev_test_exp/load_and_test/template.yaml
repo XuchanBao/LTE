@@ -1,0 +1,70 @@
+<type>: Munch
+<init>: true
+# PyTorch Lightning System.
+
+system:
+  <type>: MimickingClassification
+  <init>: true
+  model:
+    <type>: get_default_gin
+    <init>: true
+  # No train or validation data loaders at testing time
+  train_loader: null
+  valid_loader: null
+  optimizer: null
+  loss_fn:
+    <type>: CrossEntropyLoss
+    <init>: true
+  save_checkpoint: false
+
+test_loader:
+    <type>: DataLoader
+    <init>: true
+    dataset:
+      <type>: Ballot
+      <init>: true
+      max_num_voters: 50
+      min_num_voters: 10
+      max_num_candidates: 50
+      min_num_candidates: 2
+      one_hot_candidates: true
+      batch_size: 1
+      epoch_length: 2048
+      voting_rule:
+        <type>: get_borda
+        <init>: true
+      utility_distribution: "uniform"
+      return_graph: true
+    batch_size: 32
+    shuffle: false
+    num_workers: 0
+    collate_fn:
+      <type>: dgl_ballot_collate
+      <init>: false
+    worker_init_fn:
+      <type>: seed_workers
+      <init>: false
+
+# TestTube experiment.
+logger:
+  <type>: WandbLogger
+  <init>: false
+  project: "lte"
+  entity: "byol"
+  tags: ["gin", "mimic_borda", "load_and_test"]
+
+manage_checkpoint:
+  <type>: manage_checkpoint
+  <init>: true
+  save_checkpoint: false
+  root_path: "/scratch/hdd001/home/jennybao/projects/LTE"
+  experiment_name: "mimic"
+  load_version: "2021-01-31-003245/epoch=9999-step=79999.ckpt"    # an example checkpoint
+
+trainer:
+  <type>: Trainer
+  <init>: false
+  max_epochs: null   # shouldn't have an effect
+
+# Seed.
+seed: 0

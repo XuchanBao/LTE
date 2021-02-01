@@ -93,6 +93,18 @@ class MimickingClassification(pl.LightningModule, ABC):
                                 "inv_dist_histograms", f"epoch_{self.current_epoch}")
         histogram_overlayer(inv_distortion_values_dict, save_dir=save_dir)
 
+    def test_step(self, data_batch, batch_nb):
+        _, metric_logs, hist_logs = self.common_step(self.forward, data_batch, prepend_key="test/model")
+        return metric_logs, hist_logs
+
+    def test_epoch_end(self, outputs):
+        # First argument returned by validation_step is the dict of metrics.
+        metrics_dicts_list = [collected_tuple[0] for collected_tuple in outputs]
+
+        averaged_metrics = average_values_in_list_of_dicts(metrics_dicts_list)
+
+        self.log_dict(averaged_metrics)
+
     def common_step(self, forward_fn, data_batch, prepend_key=""):
         # ____ Unpack the data batch. ____
         xs, ys, utilities = self.unpack_data_batch(data_batch)
