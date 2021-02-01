@@ -41,3 +41,26 @@ def get_default_mimicking_loader(distribution, voting_rule, return_graph):
                          remove_ties=remove_ties)
         return DataLoader(dataset=dataset, batch_size=1, shuffle=False, num_workers=num_workers,
                           collate_fn=batched_ballot_collate, worker_init_fn=seed_workers)
+
+
+@quick_register
+def get_default_mlp_mimicking_loader(distribution, voting_rule):
+    max_num_voters = 51
+    min_num_voters = 50
+    max_num_candidates = 29
+    min_num_candidates = 29
+    batch_size = 64
+    epoch_len = 8
+    one_hot_candidates = True
+    one_hot_candidate_dim = None
+    remove_ties = True
+    num_workers = 0
+    dataset = Ballot(max_num_voters=max_num_voters, min_num_voters=min_num_voters,
+                     max_num_candidates=max_num_candidates, min_num_candidates=min_num_candidates,
+                     batch_size=batch_size, epoch_length=epoch_len, voting_rule=voting_rule,
+                     utility_distribution=distribution, one_hot_candidates=one_hot_candidates,
+                     one_hot_candidate_dim=one_hot_candidate_dim, return_graph=False,
+                     remove_ties=remove_ties)
+    return DataLoader(dataset=dataset, batch_size=1, shuffle=False, num_workers=num_workers,
+                      collate_fn=batched_ballot_collate, worker_init_fn=seed_workers)
+

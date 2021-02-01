@@ -6,27 +6,25 @@ system:
   <init>: true
   # Model.
   model:
-    <type>: get_default_nested_set_network
+    <type>: get_default_fully_connected
     <init>: true
 
   # Data loaders.
   train_loader:
-    <type>: get_default_mimicking_loader
+    <type>: get_default_mlp_mimicking_loader
     <init>: true
     distribution: "uniform"
     voting_rule:
       <type>: get_borda
       <init>: true
-    return_graph: true
 
   valid_loader:
-    <type>: get_default_mimicking_loader
+    <type>: get_default_mlp_mimicking_loader
     <init>: true
     distribution: "uniform"
     voting_rule:
       <type>: get_borda
       <init>: true
-    return_graph: true
 
 #  optimizer:
 #    <type>: Lookahead
@@ -53,9 +51,9 @@ system:
   optimizer|no_lookahead:
     <type>: Adam
     <init>: false
-    lr|lr_0_01: 0.001
-    lr|lr_0_001: 0.0001
-    lr|lr_0_0001: 0.00001
+    lr|lr_0_01: 0.01
+    lr|lr_0_001: 0.001
+    lr|lr_0_0001: 0.0001
 
   # Learning rate scheduler.
   scheduler_wrapper:
@@ -64,7 +62,7 @@ system:
     get_fn:
       <type>: get_cosine_schedule_with_warmup
       <init>: false
-    num_warmup_steps: 200 # in epochs
+    num_warmup_steps: 20 # in epochs
     num_training_steps: 20000
 
   # Loss functions.
@@ -78,7 +76,7 @@ logger:
   <init>: false
   project: "lte"
   entity: "byol"
-  tags: ["ca", "nsn", "mimic_borda", "finalizing", "ca-finalize-5", "take-1"]
+  tags: ["ca", "mlp", "mimic_borda", "finalizing", "ca-finalize-6", "take-1"]
 
 manage_checkpoint:
   <type>: manage_checkpoint
