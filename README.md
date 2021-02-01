@@ -58,7 +58,7 @@ cd -
 called "template". 
 * Run:
 ```
-EXP_DIR="runs/036_transformer_finalizing_2/002_trying_pre_layernorm"
+EXP_DIR="runs/037_resgin_finalizing_2/001_tuning_lr_and_lookahead"
 bash ./src/mains/generate_experiments.sh ${EXP_DIR}
 sbatch ${EXP_DIR}/batch_run.sh
 

@@ -171,8 +171,10 @@ class ResidualGIN(nn.Module):
         hidden_rep = [h]
 
         for i in range(self.num_layers - 1):
-            h_pre_gin = self.layer_norms[i](h) if i > 0 else h
-            h = h + self.ginlayers[i](g, h_pre_gin) if i > 0 else self.ginlayers[i](g, h_pre_gin)
+            h_pre_gin_layer = self.layer_norms[i](h) if i > 0 else h
+            h_post_gin_layer = h + self.ginlayers[i](g, h_pre_gin_layer) if i > 0 \
+                else self.ginlayers[i](g, h_pre_gin_layer)
+            h = h + h_post_gin_layer
             # h = self.layer_norms[i](h)
             # h = F.relu(h)
             hidden_rep.append(h)
