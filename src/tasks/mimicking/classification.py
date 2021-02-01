@@ -9,6 +9,7 @@ from src.dl.metrics.metrics import compute_distortion_ratios
 from src.visualizations import histogram_overlayer
 
 INV_DISTORTION_KEY = "inv_dist_ratios"
+EPSILON = 1e-8
 
 
 @quick_register
@@ -103,6 +104,12 @@ class MimickingClassification(pl.LightningModule, ABC):
 
     def test_step(self, data_batch, batch_nb):
         _, metric_logs, hist_logs = self.common_step(self.forward, data_batch, prepend_key="test/model")
+        # Run the validation for other voting rules for benchmarking.
+        for rule_name, rule_fn in self.benchmark_rules.items():
+            _, logs_bnchmk, hist_logs_bnchmk = self.common_step(rule_fn, data_batch,
+                                                                prepend_key="test/{}".format(rule_name))
+            metric_logs.update(logs_bnchmk)
+
         return metric_logs, hist_logs
 
     def test_epoch_end(self, outputs):
@@ -110,6 +117,7 @@ class MimickingClassification(pl.LightningModule, ABC):
         metrics_dicts_list = [collected_tuple[0] for collected_tuple in outputs]
 
         averaged_metrics = average_values_in_list_of_dicts(metrics_dicts_list)
+        averaged_metrics["total_test_sample_size"] = self._get_test_sample_size()
 
         self.log_dict(averaged_metrics)
 
@@ -123,23 +131,58 @@ class MimickingClassification(pl.LightningModule, ABC):
             preds = forward_fn(xs, utilities=utilities)
         else:
             # ____ Evaluate baseline. ____
-            rankings = torch.argsort(utilities, axis=2, descending=True)
-            preds, _ = forward_fn(rankings)
-            preds = preds.type_as(xs)
+            # utilities.shape = (bs, max_voters, max_cand)
 
-        # Since we have a logit per candidate in the end, we have to remove the last dimension.
-        preds = preds.squeeze(2) if (len(preds.shape) == 3) else preds
+            if torch.is_tensor(xs):     # not graph network
+                rankings = torch.argsort(utilities, axis=2, descending=True)
+                preds, _ = forward_fn(rankings)
+                preds = preds.float()
+                preds = preds.type_as(xs)
+            else:   # graph network
+                metrics_dicts_list = []
+                hist_dicts_list = []
+                losses_list = []
+                for batch_i in range(len(utilities)):
+                    # remove zero paddings
+                    row_sum = torch.sum(utilities[batch_i], dim=1)
+                    col_sum = torch.sum(utilities[batch_i], dim=0)
+                    # unpadded_util_i.shape = (1, num_voters, num_cand)
+                    unpadded_util_i = torch.unsqueeze(utilities[batch_i][row_sum > EPSILON][:, col_sum > EPSILON], 0)
+
+                    ranking_i = torch.argsort(unpadded_util_i, axis=2, descending=True)  # (1, num_voters, num_cand)
+                    pred_i = forward_fn(ranking_i)[0].float()     # (1, num_cand)
+
+                    y_i = torch.unsqueeze(ys[batch_i], 0)         # (1,)
+                    loss_i = self.loss_fn(pred_i, y_i)
+
+                    metric_logs_i, histogram_logs_i = self.log_forward_stats(
+                        y_i, pred_i, unpadded_util_i, loss_i, prepend_key)
+
+                    losses_list.append(loss_i)
+                    metrics_dicts_list.append(metric_logs_i)
+                    hist_dicts_list.append(histogram_logs_i)
+
+                # ____ Average metrics and concatenate histogram metrics. ____
+                loss = torch.mean(torch.tensor(losses_list))
+                metric_logs = average_values_in_list_of_dicts(metrics_dicts_list)
+                histogram_logs = concatenate_values_in_list_of_dicts(hist_dicts_list)
+
+                return loss, metric_logs, histogram_logs
+
+        # TODO: confirm and remove the following
+        # # Since we have a logit per candidate in the end, we have to remove the last dimension.
+        # preds = preds.squeeze(2) if (len(preds.shape) == 3) else preds
 
         # ____ Compute loss. ____
         loss = self.loss_fn(preds, ys)
 
         # ____ Log the metrics computed. ____
-        metric_logs, histogram_logs = self.log_forward_stats(xs, ys, preds, utilities, loss, prepend_key)
+        metric_logs, histogram_logs = self.log_forward_stats(ys, preds, utilities, loss, prepend_key)
 
         # ____ Return. ____
         return loss, metric_logs, histogram_logs
 
-    def log_forward_stats(self, xs, ys, preds, utilities, loss, prepend_key):
+    def log_forward_stats(self, ys, preds, utilities, loss, prepend_key):
         metric_logs = dict()
         hist_logs = dict()
 
@@ -188,3 +231,7 @@ class MimickingClassification(pl.LightningModule, ABC):
 
     def _get_sample_size(self):
         return self.trainer.total_batch_idx * self.train_loader.batch_size * self.train_loader.dataset.batch_size
+
+    def _get_test_sample_size(self):
+        test_loader = self.trainer.test_dataloaders[0]
+        return self.trainer.num_test_batches[0] * test_loader.batch_size * test_loader.dataset.batch_size

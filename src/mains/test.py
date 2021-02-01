@@ -28,7 +28,9 @@ if __name__ == "__main__":
     ckpt_callback = cfg.manage_checkpoint(
         model_type=system.model.name,
         voting_rule=test_loader.dataset.voting_rule.__name__,
-        template_path=args.cfg)
+        template_path=args.cfg,
+        utility_distribution=test_loader.dataset.utility_distribution
+    )
 
     if torch.cuda.is_available():
         trainer = cfg.trainer(logger=logger, gpus=1, callbacks=[ckpt_callback])
