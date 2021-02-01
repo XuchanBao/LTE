@@ -47,6 +47,6 @@ def get_default_nested_set_network():
 
 @quick_register
 def get_default_fully_connected():
-    num_voters = 50
+    num_voters = 99
     num_cand = 29
-    return FullyConnected(dim_input=num_voters*num_cand*num_cand, dim_output=29, num_layers=5, dim_hidden=235)
+    return FullyConnected(dim_input=num_voters*num_cand*num_cand, dim_output=29, num_layers=5, dim_hidden=237)
