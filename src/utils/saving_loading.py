@@ -14,7 +14,15 @@ def save_result_to_yaml(np_list, save_dir, filename):
     for np_dict in np_list:
         yml_dict = dict()
         for k, v in np_dict.items():
-            yml_dict[k] = v.tolist()
+            if "group" in k:
+                group_name = k.split('/')[-2]
+            else:
+                group_name = 'overall'
+
+            if group_name not in yml_dict:
+                yml_dict[group_name] = {}
+
+            yml_dict[group_name][k] = float(v)
         yml_list.append(yml_dict)
 
     with open(f'{save_dir}/{filename}.yaml', 'w') as yaml_file:
@@ -31,13 +39,22 @@ def load_numpy_array():
 
 
 @quick_register
-def manage_checkpoint(root_path, experiment_name, load_version=None, save_checkpoint=True):
-    def get_full_path_callback(model_type, voting_rule, template_path):
-        exp_path = f"{root_path}/{experiment_name}/{model_type}/{voting_rule}"
+def manage_checkpoint(root_path, experiment_name, log_utility_distribution=False,
+                      load_version=None, abs_load_path=False,
+                      save_checkpoint=True):
+    def get_full_path_callback(model_type, voting_rule, template_path, utility_distribution):
+        if log_utility_distribution:    # for social welfare experiments
+            exp_path = f"{root_path}/{experiment_name}/{utility_distribution}/{model_type}/{voting_rule}"
+        else:                           # for mimicking experiments
+            exp_path = f"{root_path}/{experiment_name}/{model_type}/{voting_rule}"
+
         if load_version is None:
             load_path = None
         else:
-            load_path= f"{exp_path}/{load_version}"
+            if abs_load_path:
+                load_path = load_version
+            else:
+                load_path= f"{exp_path}/{load_version}"
 
         if save_checkpoint:
             # new checkpoint directory

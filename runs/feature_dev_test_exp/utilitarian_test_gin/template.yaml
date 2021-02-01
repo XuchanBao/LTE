@@ -1,0 +1,74 @@
+<type>: Munch
+<init>: true
+# PyTorch Lightning System.
+
+system:
+  <type>: MimickingClassification
+  <init>: true
+  model:
+    <type>: get_default_gin
+    <init>: true
+  # No train or validation data loaders at testing time
+  train_loader: null
+  valid_loader: null
+  optimizer: null
+  loss_fn:
+    <type>: CrossEntropyLoss
+    <init>: true
+  save_checkpoint: false
+  # Other rules to benchmark against.
+  benchmark_rules:
+    <type>: Munch
+    <init>: true
+    plurality:
+      <type>: get_plurality
+      <init>: true
+      one_hot: true
+    borda:
+      <type>: get_borda
+      <init>: true
+      one_hot: true
+    copeland:
+      <type>: get_copeland
+      <init>: true
+      one_hot: true
+    maximin:
+      <type>: get_maximin
+      <init>: true
+      one_hot: true
+
+test_loader:
+  <type>: get_default_mimicking_loader
+  <init>: true
+  distribution: "uniform"
+  voting_rule:
+    <type>: get_copeland
+    <init>: true
+  return_graph: true
+  epoch_length: 2048
+
+# TestTube experiment.
+logger:
+  <type>: WandbLogger
+  <init>: false
+  project: "lte"
+  entity: "byol"
+  tags: ["gin", "utilitarian", "load_and_test"]
+
+manage_checkpoint:
+  <type>: manage_checkpoint
+  <init>: true
+  save_checkpoint: false
+  root_path: "/scratch/hdd001/home/jennybao/projects/LTE/dummy_models"
+  experiment_name: "social-welfare"
+  log_utility_distribution: true
+  load_version: "/scratch/hdd001/home/jennybao/projects/LTE/dummy_models/mimic/GIN/borda/2021-02-01-170119/epoch=159-step=159.ckpt"
+  abs_load_path: true   # ignore root_path when loading model
+
+trainer:
+  <type>: Trainer
+  <init>: false
+  max_epochs: null   # shouldn't have an effect
+
+# Seed.
+seed: 0
