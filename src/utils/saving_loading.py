@@ -41,7 +41,7 @@ def load_numpy_array():
 @quick_register
 def manage_checkpoint(root_path, experiment_name, log_utility_distribution=False,
                       load_version=None, abs_load_path=False,
-                      save_checkpoint=True):
+                      save_checkpoint=True, ckpt_frequency=500):
     def get_full_path_callback(model_type, voting_rule, template_path, utility_distribution):
         if log_utility_distribution:    # for social welfare experiments
             exp_path = f"{root_path}/{experiment_name}/{utility_distribution}/{model_type}/{voting_rule}"
@@ -68,7 +68,7 @@ def manage_checkpoint(root_path, experiment_name, log_utility_distribution=False
         else:
             new_ckpt_dir = None
 
-        return CustomCheckpointCallback(load_path=load_path, dirpath=new_ckpt_dir)
+        return CustomCheckpointCallback(load_path=load_path, dirpath=new_ckpt_dir, period=ckpt_frequency)
     return get_full_path_callback
 
 
