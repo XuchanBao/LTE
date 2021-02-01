@@ -14,17 +14,25 @@ INV_DISTORTION_KEY = "inv_dist_ratios"
 @quick_register
 class MimickingClassification(pl.LightningModule, ABC):
     def __init__(self, model, train_loader, valid_loader, optimizer, loss_fn, benchmark_rules=None,
-                 save_checkpoint=False, scheduler_wrapper=None, log_resolution=10, lookahead=None, **kwargs):
+                 save_checkpoint=False, scheduler_wrapper=None, log_resolution=10, lookahead=None, loaders=None,
+                 **kwargs):
         super().__init__()
         self.model = model
-        self.train_loader = train_loader
-        self.valid_loader = valid_loader
         self.optimizer = optimizer
         self.optimizer_obj = None
         self.loss_fn = loss_fn
         self.scheduler_wrapper = scheduler_wrapper
         self.log_resolution = log_resolution
         self.lookahead = lookahead
+
+        if loaders is None and train_loader is not None and valid_loader is not None:
+            self.train_loader = train_loader
+            self.valid_loader = valid_loader
+        elif loaders is not None and train_loader is None and valid_loader is None:
+            self.train_loader, self.valid_loader = loaders
+        else:
+            print("Either feed in train and valid loaders using the train_loader and valid_loader arguments, or "
+                  "pass both in loaders. ")
 
         if benchmark_rules is None:
             self.benchmark_rules = dict()
