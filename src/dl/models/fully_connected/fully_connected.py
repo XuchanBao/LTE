@@ -29,7 +29,6 @@ class FullyConnected(nn.Module):
         self.network = nn.Sequential(*layers)
 
     def forward(self, X, **kwargs):
-        breakpoint()
         # Add dummy voters and flatten.
         bs, num_voter, cand_sq = X.shape
         X_full = torch.zeros((bs, self.max_voter_num, cand_sq)).type_as(X)
