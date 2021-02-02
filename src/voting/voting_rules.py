@@ -179,3 +179,62 @@ def get_utilitarian(one_hot=False):
         return winner, np.ones((len(utilities_np), )).astype(np.bool)
 
     return utilitarian
+
+
+@quick_register
+def get_rawlsian(one_hot=False):
+    # W(u_1, ..., u_n) = min(u_i)
+
+    def rawlsian(votes, utilities, one_hot_repr=one_hot):
+        # Don't use votes, except for getting shape
+        bs, n_voters, n_cands = votes.shape
+
+        if isinstance(utilities, torch.Tensor):
+            utilities_np = utilities.detach().cpu().numpy()
+        else:
+            utilities_np = utilities
+
+        candidate_min_utilities = utilities_np.min(axis=1)
+
+        # Declare as winner the candidate that got the max mininum utility points.
+        winner = np.argmax(candidate_min_utilities, axis=1)
+
+        if isinstance(utilities, torch.Tensor):
+            winner = torch.from_numpy(winner).type_as(utilities)
+
+        winner = get_one_hot(winner, n_cands) if one_hot_repr else winner
+
+        return winner, np.ones((len(utilities_np), )).astype(np.bool)
+    return rawlsian
+
+
+@quick_register
+def get_egalitarian(one_hot=False, penalty_lambda=0.5):
+    # inequality penalized
+    # W(u_1, ..., u_n) = sum(u_i) - lambda * sum(u_i - min(u_i))
+
+    def egalitarian(votes, utilities, one_hot_repr=one_hot):
+        # Don't use votes, except for getting shape
+        bs, n_voters, n_cands = votes.shape
+
+        if isinstance(utilities, torch.Tensor):
+            utilities_np = utilities.detach().cpu().numpy()
+        else:
+            utilities_np = utilities
+
+        candidate_utilities = utilities_np.sum(axis=1)
+        candidate_min_utilities = utilities_np.min(axis=1)
+
+        candidate_penalized_utilities = (1 - penalty_lambda) * candidate_utilities \
+                                        + penalty_lambda * n_voters * candidate_min_utilities
+
+        # Declare as winner the candidate that got the most penalized utility points.
+        winner = np.argmax(candidate_penalized_utilities, axis=1)
+
+        if isinstance(utilities, torch.Tensor):
+            winner = torch.from_numpy(winner).type_as(utilities)
+
+        winner = get_one_hot(winner, n_cands) if one_hot_repr else winner
+
+        return winner, np.ones((len(utilities_np),)).astype(np.bool)
+    return egalitarian
