@@ -122,7 +122,7 @@ class DeepSetOriginal(nn.Module):
     def forward(self, X, **kwargs):
         X = self.enc(X).mean(-2)
         X = self.dec(X).reshape(-1, self.num_outputs, self.dim_output)
-        return X.squeeze()
+        return X.squeeze(1)
 
     @property
     def name(self):
