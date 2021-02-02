@@ -36,8 +36,17 @@ system:
       <type>: get_maximin
       <init>: true
       one_hot: true
+    egalitarian:
+      <type>: get_egalitarian
+      <init>: true
+      one_hot: true
+      penalty_lambda: 0.5
     utilitarian:
       <type>: get_utilitarian
+      <init>: true
+      one_hot: true
+    rawlsian:
+      <type>: get_rawlsian
       <init>: true
       one_hot: true
 
@@ -46,8 +55,9 @@ test_loader:
   <init>: true
   distribution: "uniform"
   voting_rule:
-    <type>: get_utilitarian
+    <type>: get_egalitarian
     <init>: true
+    penalty_lambda: 0.5
   return_graph: true
   epoch_length: 32
 
@@ -57,7 +67,7 @@ logger:
   <init>: false
   project: "lte"
   entity: "byol"
-  tags: ["gin", "utilitarian", "load_and_test"]
+  tags: ["gin", "egalitarian", "load_and_test"]
 
 manage_checkpoint:
   <type>: manage_checkpoint
@@ -66,8 +76,8 @@ manage_checkpoint:
   root_path: "/scratch/hdd001/home/jennybao/projects/LTE/dummy_models"
   experiment_name: "social-welfare"
   log_utility_distribution: true
+  abs_load_path: true
   load_version: "/scratch/hdd001/home/jennybao/projects/LTE/dummy_models/mimic/GIN/borda/2021-02-01-170119/epoch=159-step=159.ckpt"
-  abs_load_path: true   # ignore root_path when loading model
 
 trainer:
   <type>: Trainer

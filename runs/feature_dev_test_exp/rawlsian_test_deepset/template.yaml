@@ -6,7 +6,7 @@ system:
   <type>: MimickingClassification
   <init>: true
   model:
-    <type>: get_default_gin
+    <type>: get_default_deepset
     <init>: true
   # No train or validation data loaders at testing time
   train_loader: null
@@ -36,8 +36,8 @@ system:
       <type>: get_maximin
       <init>: true
       one_hot: true
-    utilitarian:
-      <type>: get_utilitarian
+    rawlsian:
+      <type>: get_rawlsian
       <init>: true
       one_hot: true
 
@@ -46,9 +46,9 @@ test_loader:
   <init>: true
   distribution: "uniform"
   voting_rule:
-    <type>: get_utilitarian
+    <type>: get_rawlsian
     <init>: true
-  return_graph: true
+  return_graph: false
   epoch_length: 32
 
 # TestTube experiment.
@@ -57,7 +57,7 @@ logger:
   <init>: false
   project: "lte"
   entity: "byol"
-  tags: ["gin", "utilitarian", "load_and_test"]
+  tags: ["deepset", "rawlsian", "load_and_test"]
 
 manage_checkpoint:
   <type>: manage_checkpoint
@@ -66,8 +66,9 @@ manage_checkpoint:
   root_path: "/scratch/hdd001/home/jennybao/projects/LTE/dummy_models"
   experiment_name: "social-welfare"
   log_utility_distribution: true
-  load_version: "/scratch/hdd001/home/jennybao/projects/LTE/dummy_models/mimic/GIN/borda/2021-02-01-170119/epoch=159-step=159.ckpt"
-  abs_load_path: true   # ignore root_path when loading model
+  abs_load_path: true
+  load_version: "/scratch/hdd001/home/jennybao/projects/LTE/dummy_models/mimic/DeepSetOriginal/borda/2021-02-01-165845/epoch=157-step=1263.ckpt"
+
 
 trainer:
   <type>: Trainer
