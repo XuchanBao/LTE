@@ -50,6 +50,7 @@ system:
   loss_fn:
     <type>: CrossEntropyLoss
     <init>: true
+  save_checkpoint: true
 
 # wandb experiment
 logger:
@@ -72,7 +73,6 @@ trainer:
   <init>: false
   max_epochs: 20000
   gradient_clip_val: 1.
-save_checkpoint: true
 
 # Seed.
 seed: 0
