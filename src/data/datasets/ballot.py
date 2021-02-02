@@ -97,8 +97,12 @@ class Ballot(Dataset):
                 utilities = np.delete(utilities, tied_rows, 0)
 
             # Declare success when not returning graph, or when the data point doesn't contain ties.
-            if unique.all() or not self.return_graph or not self.remove_ties:
-                success = True
+            if self.return_graph:
+                if unique.all() or not self.remove_ties:
+                    success = True
+            else:
+                if unique.any() or not self.remove_ties:
+                    success = True
 
         if not self.one_hot_candidates:
             # Add "dummy" rankings to make sure all rankings have the same dimensionality (i.e. max_num_candidates).
