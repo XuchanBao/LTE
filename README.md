@@ -58,8 +58,8 @@ cd -
 called "template". 
 * Run:
 ```
-EXP_DIR="runs/039_mlp_finalizing_2/001_tuning_lr_and_lookahead"
-bash ./src/mains/generate_experiments.sh ${EXP_DIR}
+EXP_DIR="runs/ICML/mimicking/set_transformer"
+bash ./src/mains/generate_experiments.sh ${EXP_DIR} t4v2
 sbatch ${EXP_DIR}/batch_run.sh
 
 ```
