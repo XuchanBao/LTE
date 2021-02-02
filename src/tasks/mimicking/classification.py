@@ -16,6 +16,7 @@ EPSILON = 1e-8
 class MimickingClassification(pl.LightningModule, ABC):
     def __init__(self, model, train_loader, valid_loader, optimizer, loss_fn, benchmark_rules=None,
                  save_checkpoint=False, scheduler_wrapper=None, log_resolution=10, lookahead=None, loaders=None,
+                 log_histogram=False,
                  **kwargs):
         super().__init__()
         self.model = model
@@ -25,6 +26,7 @@ class MimickingClassification(pl.LightningModule, ABC):
         self.scheduler_wrapper = scheduler_wrapper
         self.log_resolution = log_resolution
         self.lookahead = lookahead
+        self.log_histogram = log_histogram
 
         if loaders is None and train_loader is not None and valid_loader is not None:
             self.train_loader = train_loader
@@ -97,10 +99,11 @@ class MimickingClassification(pl.LightningModule, ABC):
         #     self.logger.experiment.add_histogram(tag=k, values=v, global_step=self.current_epoch)
 
         # ___ Run manual histogram plotter. ____
-        inv_distortion_values_dict = {k: v for k, v in concat_hist_metrics.items() if INV_DISTORTION_KEY in k}
-        save_dir = os.path.join(self.logger.save_dir, self.logger.name, "version_" + str(self.logger.version),
-                                "inv_dist_histograms", f"epoch_{self.current_epoch}")
-        histogram_overlayer(inv_distortion_values_dict, save_dir=save_dir)
+        if self.log_histogram:
+            inv_distortion_values_dict = {k: v for k, v in concat_hist_metrics.items() if INV_DISTORTION_KEY in k}
+            save_dir = os.path.join(self.logger.save_dir, self.logger.name, "version_" + str(self.logger.version),
+                                    "inv_dist_histograms", f"epoch_{self.current_epoch}")
+            histogram_overlayer(inv_distortion_values_dict, save_dir=save_dir)
 
     def test_step(self, data_batch, batch_nb):
         _, metric_logs, hist_logs = self.common_step(self.forward, data_batch, prepend_key="test/model")
