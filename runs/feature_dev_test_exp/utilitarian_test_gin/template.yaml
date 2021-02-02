@@ -36,16 +36,20 @@ system:
       <type>: get_maximin
       <init>: true
       one_hot: true
+    utilitarian:
+      <type>: get_utilitarian
+      <init>: true
+      one_hot: true
 
 test_loader:
   <type>: get_default_mimicking_loader
   <init>: true
   distribution: "uniform"
   voting_rule:
-    <type>: get_copeland
+    <type>: get_utilitarian
     <init>: true
   return_graph: true
-  epoch_length: 2048
+  epoch_length: 32
 
 # TestTube experiment.
 logger:

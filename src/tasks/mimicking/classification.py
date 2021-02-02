@@ -135,7 +135,7 @@ class MimickingClassification(pl.LightningModule, ABC):
 
             if torch.is_tensor(xs):     # not graph network
                 rankings = torch.argsort(utilities, axis=2, descending=True)
-                preds, _ = forward_fn(rankings)
+                preds, _ = forward_fn(rankings, utilities)
                 preds = preds.float()
                 preds = preds.type_as(xs)
             else:   # graph network
@@ -150,7 +150,7 @@ class MimickingClassification(pl.LightningModule, ABC):
                     unpadded_util_i = torch.unsqueeze(utilities[batch_i][row_sum > EPSILON][:, col_sum > EPSILON], 0)
 
                     ranking_i = torch.argsort(unpadded_util_i, axis=2, descending=True)  # (1, num_voters, num_cand)
-                    pred_i = forward_fn(ranking_i)[0].float()     # (1, num_cand)
+                    pred_i = forward_fn(ranking_i, unpadded_util_i)[0].float()     # (1, num_cand)
 
                     y_i = torch.unsqueeze(ys[batch_i], 0)         # (1,)
                     loss_i = self.loss_fn(pred_i, y_i)

@@ -154,20 +154,28 @@ def get_maximin(one_hot=False):
 
 
 @quick_register
-def get_oracle(one_hot=False):
-    def oracle(votes, utilities, one_hot_repr=one_hot):
-        # Don't use votes.
-        votes = None
+def get_utilitarian(one_hot=False):
+    def utilitarian(votes, utilities, one_hot_repr=one_hot):
+        # Don't use votes, except for getting shape
+        bs, n_voters, n_cands = votes.shape
+
+        if isinstance(utilities, torch.Tensor):
+            utilities_np = utilities.detach().cpu().numpy()
+        else:
+            utilities_np = utilities
 
         # Get the total amount of utility assigned to each candidate.
-        candidate_utilities = utilities.sum(axis=1)
+        candidate_utilities = utilities_np.sum(axis=1)
 
         # Declare as winner the candidate that got the most utility points.
         winner = np.argmax(candidate_utilities, axis=1)
 
+        if isinstance(utilities, torch.Tensor):
+            winner = torch.from_numpy(winner).type_as(utilities)
+
         # Get one hot representation is asked.
-        winner = get_one_hot(winner) if one_hot_repr else winner
+        winner = get_one_hot(winner, n_cands) if one_hot_repr else winner
 
-        return winner, np.ones((len(utilities), )).astype(np.bool)
+        return winner, np.ones((len(utilities_np), )).astype(np.bool)
 
-    return oracle
+    return utilitarian
