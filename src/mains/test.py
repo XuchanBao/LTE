@@ -18,12 +18,19 @@ if __name__ == "__main__":
     # Set the seed.
     set_seed(cfg.seed)
 
+    system = cfg.system
+    test_loader = cfg.test_loader
+
     # Get directory where results will be saved.
     save_dir = os.path.split(args.cfg)[0]
+    test_results_save_dir = cfg.manage_save_test_results(
+        model_type=system.model.name,
+        voting_rule=test_loader.dataset.voting_rule.__name__,
+        template_path=args.cfg,
+        utility_distribution=test_loader.dataset.utility_distribution
+    )
 
-    system = cfg.system
     logger = cfg.logger(save_dir=save_dir)
-    test_loader = cfg.test_loader
 
     ckpt_callback = cfg.manage_checkpoint(
         model_type=system.model.name,
@@ -40,4 +47,4 @@ if __name__ == "__main__":
     # Test
     test_result = trainer.test(system, test_loader)
 
-    save_result_to_yaml(test_result, save_dir, "test_result")
+    save_result_to_yaml(test_result, test_results_save_dir, "test_result", ckpt_callback.load_path)

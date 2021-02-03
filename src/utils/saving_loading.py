@@ -9,8 +9,8 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 from spaghettini import quick_register
 
 
-def save_result_to_yaml(np_list, save_dir, filename):
-    yml_list = []
+def save_result_to_yaml(np_list, save_dir, filename, ckpt_path):
+    yml_list = [{"ckpt_path": os.path.abspath(ckpt_path)}]
     for np_dict in np_list:
         yml_dict = dict()
         for k, v in np_dict.items():
@@ -39,6 +39,20 @@ def load_numpy_array():
 
 
 @quick_register
+def manage_save_test_results(save_test_results_root, experiment_name):
+    def get_test_results_save_dir(model_type, voting_rule, template_path, utility_distribution):
+        save_dir = f"{save_test_results_root}/{experiment_name}/{utility_distribution}/{model_type}/{voting_rule}"
+        os.makedirs(save_dir, exist_ok=True)
+        print(f">>> Saving test results to {os.path.abspath(save_dir)}.")
+
+        # copy the template file to the saving directory
+        copyfile(template_path, f"{save_dir}/template.yaml")
+
+        return save_dir
+    return get_test_results_save_dir
+
+
+@quick_register
 def manage_checkpoint(root_path, experiment_name, log_utility_distribution=False,
                       load_version=None, abs_load_path=False,
                       save_checkpoint=True, ckpt_frequency=500):
@@ -55,6 +69,12 @@ def manage_checkpoint(root_path, experiment_name, log_utility_distribution=False
                 load_path = load_version
             else:
                 load_path= f"{exp_path}/{load_version}"
+
+            if os.path.isdir(load_path):
+                ckpt_list = [file for file in os.listdir(load_path) if file.endswith('.ckpt')]
+                assert len(ckpt_list) == 1, \
+                    f"There should only be 1 *.ckpt file in the load directory. Found {len(ckpt_list)} in {load_path}."
+                load_path = os.path.join(load_path, ckpt_list[0])
 
         if save_checkpoint:
             # new checkpoint directory
