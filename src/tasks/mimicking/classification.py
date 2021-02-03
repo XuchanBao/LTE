@@ -233,7 +233,7 @@ class MimickingClassification(pl.LightningModule, ABC):
                 checkpoint[key] = None
 
     def _get_sample_size(self):
-        return self.trainer.total_batch_idx * self.train_loader.batch_size * self.train_loader.dataset.batch_size
+        return self.trainer.global_step * self.train_loader.batch_size * self.train_loader.dataset.batch_size
 
     def _get_test_sample_size(self):
         test_loader = self.trainer.test_dataloaders[0]

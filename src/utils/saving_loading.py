@@ -94,7 +94,7 @@ class CustomCheckpointCallback(ModelCheckpoint):
         # restore the lr schedulers
         lr_schedulers = ckpt['lr_schedulers']
         for scheduler, lrs_state in zip(trainer.lr_schedulers, lr_schedulers):
-            scheduler.load_state_dict(lrs_state)
+            scheduler['scheduler'].load_state_dict(lrs_state)
 
         pl_module.load_state_dict(ckpt['state_dict'])
 
