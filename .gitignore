@@ -138,7 +138,9 @@ media
 # Experiment results/configs
 default/
 results/
+test_runs/
 batch_run.sh
+test_batch_run.sh
 
 # wandb
 wandb/

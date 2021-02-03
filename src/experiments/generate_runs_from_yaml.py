@@ -71,7 +71,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     out_dir = args.dir
-    with open(os.path.join(out_dir, "template.yaml"), "r") as f:
+    with open(os.path.join(out_dir, args.template), "r") as f:
         s = safe_load(f)
 
     lst = walk(s)
