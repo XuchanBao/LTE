@@ -68,12 +68,21 @@ def manage_checkpoint(root_path, experiment_name, log_utility_distribution=False
             if abs_load_path:
                 load_path = load_version
             else:
-                load_path= f"{exp_path}/{load_version}"
+                if load_version == "only":
+                    version_list = [path for path in os.listdir(exp_path)]
+                    assert len(version_list) == 1, \
+                        f"When load_version == 'only', there must be exactly 1 version under the experiment dir. " \
+                        f"Found {len(version_list)} directories under {os.path.abspath(exp_path)}."
+                    # load_version = version_list[0]
+                    load_path = f"{exp_path}/{version_list[0]}"
+                else:   # load_version is a directory
+                    load_path= f"{exp_path}/{load_version}"
 
             if os.path.isdir(load_path):
                 ckpt_list = [file for file in os.listdir(load_path) if file.endswith('.ckpt')]
                 assert len(ckpt_list) == 1, \
-                    f"There should only be 1 *.ckpt file in the load directory. Found {len(ckpt_list)} in {load_path}."
+                    f"There should only be exactly 1 *.ckpt file in the load directory. " \
+                    f"Found {len(ckpt_list)} in {os.path.abspath(load_path)}."
                 load_path = os.path.join(load_path, ckpt_list[0])
 
         if save_checkpoint:
