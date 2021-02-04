@@ -2,6 +2,7 @@ import os
 import torch
 import argparse
 from spaghettini import load
+from src.utils.misc import set_hyperparams
 from src.utils.seed import set_seed
 from src.utils.saving_loading import save_result_to_yaml
 
@@ -31,6 +32,7 @@ if __name__ == "__main__":
     )
 
     logger = cfg.logger(save_dir=save_dir)
+    set_hyperparams(args.cfg, logger)
 
     ckpt_callback = cfg.manage_checkpoint(
         model_type=system.model.name,
