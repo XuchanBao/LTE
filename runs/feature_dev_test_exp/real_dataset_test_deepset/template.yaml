@@ -1,0 +1,69 @@
+<type>: Munch
+<init>: true
+# PyTorch Lightning System.
+
+system:
+  <type>: MimickingClassification
+  <init>: true
+  model:
+    <type>: get_default_deepset
+    <init>: true
+  # No train or validation data loaders at testing time
+  train_loader: null
+  valid_loader: null
+  optimizer: null
+  loss_fn:
+    <type>: CrossEntropyLoss
+    <init>: true
+  save_checkpoint: false
+  benchmark_rules:
+    <type>: Munch
+    <init>: true
+    plurality:
+      <type>: get_plurality
+      <init>: true
+      one_hot: true
+    borda:
+      <type>: get_borda
+      <init>: true
+      one_hot: true
+
+test_loader:
+  <type>: get_default_real_dataset_loader
+  <init>: true
+  filename: "ED-00004-00000001"
+  voting_rule:
+    <type>: get_borda
+    <init>: true
+  epoch_length: 256
+  return_graph: false
+
+
+logger:
+  <type>: WandbLogger
+  <init>: false
+  project: "lte"
+  entity: "byol"
+  tags: ["gin", "mimic_borda", "real_test"]
+
+manage_checkpoint:
+  <type>: manage_checkpoint
+  <init>: true
+  save_checkpoint: false
+  root_path: "/scratch/hdd001/home/jennybao/projects/LTE"
+  experiment_name: "mimic"
+  load_version: "only"    # an example checkpoint
+
+manage_save_test_results:
+  <type>: manage_save_test_results
+  <init>: true
+  save_test_results_root: "/scratch/hdd001/home/jennybao/projects/LTE/results"
+  experiment_name: "mimic"
+
+trainer:
+  <type>: Trainer
+  <init>: false
+  max_epochs: null   # shouldn't have an effect
+
+# Seed.
+seed: 0

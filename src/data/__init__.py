@@ -6,8 +6,44 @@ import src.data.data_loading
 import src.data.datasets
 
 from src.data.datasets.ballot import Ballot
+from src.data.datasets.real_dataset import RealDataset
 from src.data.data_loading.collates import dgl_ballot_collate, batched_ballot_collate
 from src.utils.misc import seed_workers
+
+
+@quick_register
+def get_default_real_dataset_loader(voting_rule, filename, return_graph, epoch_length=8):
+    max_num_voters = 99
+    min_num_voters = 2
+
+    batch_size = 64
+    epoch_len = epoch_length
+    one_hot_candidates = True
+    one_hot_candidate_dim = 29
+    remove_ties = True
+    num_workers = 10
+
+    path = "./datasets"
+    file_type = "soc"
+
+    if return_graph is True:
+        epoch_len = batch_size * epoch_len
+        batch_size = 1
+        collate_fn = dgl_ballot_collate
+    else:
+        collate_fn = batched_ballot_collate
+
+    dataset = RealDataset(path=path, filename=filename, file_type=file_type, voting_rule=voting_rule,
+                          one_hot_candidates=one_hot_candidates,
+                          batch_size=batch_size,
+                          epoch_length=epoch_len,
+                          max_num_voters=max_num_voters,
+                          min_num_voters=min_num_voters,
+                          one_hot_candidate_dim=one_hot_candidate_dim,
+                          return_graph=return_graph,
+                          remove_ties=remove_ties)
+    return DataLoader(dataset=dataset, batch_size=1, shuffle=False, num_workers=num_workers,
+                      collate_fn=collate_fn, worker_init_fn=seed_workers)
 
 
 @quick_register
