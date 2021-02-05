@@ -47,12 +47,10 @@ def get_default_real_dataset_loader(voting_rule, filename, return_graph, epoch_l
 
 
 @quick_register
-def get_default_mimicking_loader(distribution, voting_rule, return_graph, epoch_length=8):
-    max_num_voters = 99
-    min_num_voters = 2
+def get_default_mimicking_loader(distribution, voting_rule, return_graph, epoch_length=8,
+                                 max_num_voters=99, min_num_voters=2, batch_size=64):
     max_num_candidates = 29
     min_num_candidates = 2
-    batch_size = 64
     epoch_len = epoch_length
     one_hot_candidates = True
     one_hot_candidate_dim = None
