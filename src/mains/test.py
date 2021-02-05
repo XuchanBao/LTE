@@ -24,12 +24,22 @@ if __name__ == "__main__":
 
     # Get directory where results will be saved.
     save_dir = os.path.split(args.cfg)[0]
-    test_results_save_dir = cfg.manage_save_test_results(
-        model_type=system.model.name,
-        voting_rule=test_loader.dataset.voting_rule.__name__,
-        template_path=args.cfg,
-        utility_distribution=test_loader.dataset.utility_distribution
-    )
+
+    if hasattr(test_loader.dataset, "filename"):
+        test_results_save_dir = cfg.manage_save_test_results(
+            model_type=system.model.name,
+            voting_rule=test_loader.dataset.voting_rule.__name__,
+            template_path=args.cfg,
+            utility_distribution=test_loader.dataset.utility_distribution,
+            dataset_filename=test_loader.dataset.filename
+        )
+    else:
+        test_results_save_dir = cfg.manage_save_test_results(
+            model_type=system.model.name,
+            voting_rule=test_loader.dataset.voting_rule.__name__,
+            template_path=args.cfg,
+            utility_distribution=test_loader.dataset.utility_distribution
+        )
 
     logger = cfg.logger(save_dir=save_dir)
     set_hyperparams(args.cfg, logger)

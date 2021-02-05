@@ -39,9 +39,13 @@ def load_numpy_array():
 
 
 @quick_register
-def manage_save_test_results(save_test_results_root, experiment_name):
-    def get_test_results_save_dir(model_type, voting_rule, template_path, utility_distribution):
-        save_dir = f"{save_test_results_root}/{experiment_name}/{utility_distribution}/{model_type}/{voting_rule}"
+def manage_save_test_results(save_test_results_root, experiment_name, include_dataset_filename=False):
+    def get_test_results_save_dir(model_type, voting_rule, template_path, utility_distribution, dataset_filename=None):
+        if include_dataset_filename:
+            save_dir = f"{save_test_results_root}/{experiment_name}/{utility_distribution}/{model_type}/" \
+                       f"{voting_rule}/{dataset_filename}"
+        else:
+            save_dir = f"{save_test_results_root}/{experiment_name}/{utility_distribution}/{model_type}/{voting_rule}"
         os.makedirs(save_dir, exist_ok=True)
         print(f">>> Saving test results to {os.path.abspath(save_dir)}.")
 
