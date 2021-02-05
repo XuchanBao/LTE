@@ -6,7 +6,7 @@ system:
   <init>: true
   # Model.
   model:
-    <type>: get_default_gin
+    <type>: get_default_set_transformer
     <init>: true
 
   # No dataloaders, optimizer or scheduler at testing time
@@ -56,19 +56,19 @@ system:
 test_loader:
   <type>: get_default_mimicking_loader
   <init>: true
-  distribution: "polarized"
+  distribution: "indecisive"
   # Just as the training template, load and test models trained for each of these social welfare functions
   voting_rule|utilitarian:
     <type>: get_utilitarian
     <init>: true
-  voting_rule|rawlsian:
-    <type>: get_rawlsian
-    <init>: true
+#  voting_rule|rawlsian:
+#    <type>: get_rawlsian
+#    <init>: true
   voting_rule|egalitarian_0.5:
     <type>: get_egalitarian
     <init>: true
     penalty_lambda: 0.5
-  return_graph: true
+  return_graph: false
   epoch_length: 256       # 16384 datapoints
 
 # wandb experiment
@@ -77,7 +77,7 @@ logger:
   <init>: false
   project: "lte"
   entity: "byol"
-  tags: ["gin", "icml", "social-welfare", "test"]
+  tags: ["set-transformer", "icml", "social-welfare", "test"]
 
 manage_checkpoint:
   <type>: manage_checkpoint

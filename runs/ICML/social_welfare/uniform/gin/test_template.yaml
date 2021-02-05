@@ -56,18 +56,18 @@ system:
 test_loader:
   <type>: get_default_mimicking_loader
   <init>: true
-  distribution: "polarized"
+  distribution: "uniform"
   # Just as the training template, load and test models trained for each of these social welfare functions
   voting_rule|utilitarian:
     <type>: get_utilitarian
     <init>: true
-  voting_rule|rawlsian:
-    <type>: get_rawlsian
-    <init>: true
-  voting_rule|egalitarian_0.5:
-    <type>: get_egalitarian
-    <init>: true
-    penalty_lambda: 0.5
+#  voting_rule|rawlsian:
+#    <type>: get_rawlsian
+#    <init>: true
+#  voting_rule|egalitarian_0.5:
+#    <type>: get_egalitarian
+#    <init>: true
+#    penalty_lambda: 0.5
   return_graph: true
   epoch_length: 256       # 16384 datapoints
 
@@ -86,7 +86,7 @@ manage_checkpoint:
   root_path: "/scratch/hdd001/home/jennybao/projects/LTE"
   experiment_name: "social-welfare"
   load_version: "only"
-  log_utility_distribution: true  # true for social welfare (except for uniform for now)
+  log_utility_distribution: false  # true for social welfare (except for uniform for now)
 
 manage_save_test_results:
   <type>: manage_save_test_results

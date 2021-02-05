@@ -56,7 +56,7 @@ system:
 test_loader:
   <type>: get_default_mimicking_loader
   <init>: true
-  distribution: "polarized"
+  distribution: "indecisive"
   # Just as the training template, load and test models trained for each of these social welfare functions
   voting_rule|utilitarian:
     <type>: get_utilitarian
