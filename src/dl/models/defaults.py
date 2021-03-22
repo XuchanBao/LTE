@@ -1,5 +1,7 @@
 from spaghettini import quick_register
 
+import numpy as np
+
 from src.dl.models.deepsets.deepsets import DeepSetOriginal
 from src.dl.models.gnns.gin import GIN
 from src.dl.models.transformers.set_transformers import SetTransformer
@@ -50,3 +52,49 @@ def get_default_fully_connected():
     num_voters = 99
     num_cand = 29
     return FullyConnected(dim_input=num_voters*num_cand*num_cand, dim_output=29, num_layers=5, dim_hidden=237)
+
+
+def get_default_small_fully_connected():
+    num_voters = 99
+    num_cand = 29
+    return FullyConnected(dim_input=num_voters*num_cand*num_cand, dim_output=29, num_layers=5, dim_hidden=120)
+
+
+def _num_trainable_params(model):
+    model_parameters = filter(lambda p: p.requires_grad, model.parameters())
+    return sum([np.prod(p.size()) for p in model_parameters])
+
+
+if __name__ == "__main__":
+    """
+    Run from root. 
+    python -m src.dl.models.defaults
+    """
+    test_num = 0
+
+    if test_num == 0:
+        # Print the number of parameters of the default models.
+        ds = get_default_deepset()
+        num_params_ds = _num_trainable_params(ds)
+        print(f"Deepset has {num_params_ds:,} trainable params. ")
+
+        gin = get_default_gin()
+        num_params_gin = _num_trainable_params(gin)
+        print(f"GIN has {num_params_gin:,} trainable params. ")
+
+        st = get_default_set_transformer()
+        num_params_st = _num_trainable_params(st)
+        print(f"Set transformer has {num_params_st:,} trainable params. ")
+
+        fc = get_default_fully_connected()
+        num_params_fc = _num_trainable_params(fc)
+        print(f"Fully con. net. has {num_params_fc:,} trainable params. ")
+
+        fcs = get_default_small_fully_connected()
+        num_params_fcs = _num_trainable_params(fcs)
+        print(f"Small fully con. net. has {num_params_fcs:,} trainable params. ")
+
+
+
+
+
