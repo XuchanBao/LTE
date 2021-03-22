@@ -54,6 +54,7 @@ def get_default_fully_connected():
     return FullyConnected(dim_input=num_voters*num_cand*num_cand, dim_output=29, num_layers=5, dim_hidden=237)
 
 
+@quick_register
 def get_default_small_fully_connected():
     num_voters = 99
     num_cand = 29
