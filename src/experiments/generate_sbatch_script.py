@@ -60,8 +60,7 @@ if __name__ == '__main__':
     with open(out_dir, "w") as f:
         f.write("""#!/bin/bash
 #SBATCH --partition={}
-#SBATCH --qos="deadline"
-#SBATCH --account="deadline"
+#SBATCH --qos="high"
 #SBATCH --gres={}
 #SBATCH --mem={}
 #SBATCH --array=0-{}%{}
