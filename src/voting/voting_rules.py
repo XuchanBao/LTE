@@ -1,7 +1,15 @@
+"""
+Kemeny implementation based on https://vene.ro/blog/kemeny-young-optimal-rank-aggregation-in-python.html
+"""
+
 from spaghettini import quick_register
+import itertools
+
 import numpy as np
 from scipy.stats import mode
 import torch
+from lp_solve import lp_solve
+
 
 from src.utils.voting_utils import get_one_hot
 
@@ -83,7 +91,6 @@ def get_borda(one_hot=False):
 @quick_register
 def get_copeland(one_hot=False):
     def copeland(votes, utilities=None, one_hot_repr=one_hot):
-
         if isinstance(votes, torch.Tensor):
             votes_np = votes.detach().cpu().numpy()
         else:
@@ -238,3 +245,155 @@ def get_egalitarian(one_hot=False, penalty_lambda=0.5):
 
         return winner, np.ones((len(utilities_np),)).astype(np.bool)
     return egalitarian
+
+
+@quick_register
+def get_kemeny(one_hot=False):
+    def kemeny(votes, utilities=None, one_hot_repr=one_hot):
+        bs, n_voters, n_cands = votes.shape
+        if isinstance(votes, torch.Tensor):
+            votes_np = votes.detach().cpu().numpy()
+        else:
+            votes_np = votes
+
+        cand_position = np.argsort(votes_np, axis=2)
+
+        winners = list()
+        for i in range(bs):
+            (_, best_rank) = rankaggr_lp(ranks=cand_position[i])
+            winner = np.argsort(best_rank)[0]
+            winners.append(winner)
+
+        winner = np.array(winners)
+
+        if isinstance(votes, torch.Tensor):
+            winner = torch.from_numpy(winner).type_as(votes)
+        winner = get_one_hot(winner, n_cands) if one_hot_repr else winner
+
+        unique = np.ones((bs, )).astype(np.bool)
+
+        return winner, unique
+
+    return kemeny
+
+
+def kendalltau_dist(rank_a, rank_b):
+    tau = 0
+    n_candidates = len(rank_a)
+    for i, j in itertools.combinations(range(n_candidates), 2):
+        tau += (np.sign(rank_a[i] - rank_a[j]) ==
+                -np.sign(rank_b[i] - rank_b[j]))
+    return tau
+
+
+def rankaggr_brute(ranks):
+    min_dist = np.inf
+    best_rank = None
+    n_voters, n_candidates = ranks.shape
+    for candidate_rank in itertools.permutations(range(n_candidates)):
+        dist = np.sum(kendalltau_dist(candidate_rank, rank) for rank in ranks)
+        if dist < min_dist:
+            min_dist = dist
+            best_rank = candidate_rank
+    return min_dist, best_rank
+
+
+def _build_graph(ranks):
+    n_voters, n_candidates = ranks.shape
+    edge_weights = np.zeros((n_candidates, n_candidates))
+    for i, j in itertools.combinations(range(n_candidates), 2):
+        preference = ranks[:, i] - ranks[:, j]
+        h_ij = np.sum(preference < 0)  # prefers i to j
+        h_ji = np.sum(preference > 0)  # prefers j to i
+        if h_ij > h_ji:
+            edge_weights[i, j] = h_ij - h_ji
+        elif h_ij < h_ji:
+            edge_weights[j, i] = h_ji - h_ij
+    return edge_weights
+
+
+def rankaggr_lp(ranks):
+    """Kemeny-Young optimal rank aggregation"""
+
+    n_voters, n_candidates = ranks.shape
+
+    # maximize c.T * x
+    edge_weights = _build_graph(ranks)
+    c = -1 * edge_weights.ravel()
+
+    idx = lambda i, j: n_candidates * i + j
+
+    # constraints for every pair
+    assert n_candidates % 1 == 0
+    pairwise_constraints = np.zeros((int((n_candidates * (n_candidates - 1)) / 2), n_candidates ** 2))
+    for row, (i, j) in zip(pairwise_constraints,
+                           itertools.combinations(range(n_candidates), 2)):
+        row[[idx(i, j), idx(j, i)]] = 1
+
+    # and for every cycle of length 3
+    triangle_constraints = np.zeros(((n_candidates * (n_candidates - 1) *
+                                      (n_candidates - 2)),
+                                     n_candidates ** 2))
+    for row, (i, j, k) in zip(triangle_constraints,
+                              itertools.permutations(range(n_candidates), 3)):
+        row[[idx(i, j), idx(j, k), idx(k, i)]] = 1
+
+    constraints = np.vstack([pairwise_constraints, triangle_constraints])
+    constraint_rhs = np.hstack([np.ones(len(pairwise_constraints)),
+                                np.ones(len(triangle_constraints))])
+    constraint_signs = np.hstack([np.zeros(len(pairwise_constraints)),  # ==
+                                  np.ones(len(triangle_constraints))])  # >=
+
+    obj, x, duals = lp_solve(f=c, a=constraints, b=constraint_rhs, e=constraint_signs,
+                             xint=range(1, 1 + n_candidates ** 2))
+
+    x = np.array(x).reshape((n_candidates, n_candidates))
+    aggr_rank = x.sum(axis=1)
+
+    return obj, aggr_rank
+
+
+if __name__ == "__main__":
+    """
+    Run from root. 
+    python -m src.voting.voting_rules
+    """
+    test_num = 0
+
+    if test_num == 0:
+        from src.data import get_default_mimicking_loader
+        from src.data.datasets.ballot import Ballot
+        import time
+        import matplotlib.pyplot as plt
+        # Test get_kemeny().
+        voter_num = 99
+        times = list()
+        cand_nums = np.arange(5, 29)
+        for cand_num in cand_nums:
+            blt = Ballot(max_num_voters=voter_num, min_num_voters=voter_num-1, max_num_candidates=cand_num, min_num_candidates=cand_num-1,
+                         return_graph=False, remove_ties=False, batch_size=64, epoch_length=256,
+                         voting_rule=get_kemeny(), utility_distribution="uniform", one_hot_candidates=True)
+            start = time.time()
+            rankings, labels, utilities = blt[0]
+            end = time.time()
+            elapsed = end - start
+            times.append(elapsed)
+            print(f"Cand num: {cand_num}, voter num: {voter_num}, time elapsed: {elapsed:.4f}")
+
+        plt.plot(cand_nums, times, 'o-')
+        plt.xlabel("cand num")
+        plt.ylabel('time (seconds)')
+        plt.title(f"Runtime of Kemeny. num voter: {voter_num}. num cand: varying")
+        plt.show()
+    if test_num == 1:
+        # Test Kemeny results.
+        ranks = np.array([[0, 1, 2, 3, 4],
+                          [0, 1, 3, 2, 4],
+                          [4, 1, 2, 0, 3],
+                          [4, 1, 0, 2, 3],
+                          [4, 1, 3, 2, 0]])
+        votes = np.argsort(ranks, axis=1)[None, ...]
+        kemeny = get_kemeny()
+        winner, unique = kemeny(votes=votes)
+        breakpoint()
+

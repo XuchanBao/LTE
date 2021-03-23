@@ -22,6 +22,11 @@ pip install git+https://github.com/cemanil/spaghetti.git@master
 python setup.py install
 ```
 
+# Install lpsolve (for solving Kemeny elections).
+``` 
+conda install -c conda-forge lpsolve55 
+```
+
 * Install nbdev, to make sure ipython notebooks are commitable. 
 ``` 
 pip install nbdev
