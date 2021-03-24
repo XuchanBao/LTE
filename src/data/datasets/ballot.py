@@ -275,7 +275,7 @@ if __name__ == "__main__":
     if test_num == 4:
         # Check one_hot_candidate_dim functionality.
         blt = Ballot(max_num_voters=11, min_num_voters=10, max_num_candidates=5, min_num_candidates=4,
-                     return_graph=False, remove_ties=False, batch_size=1, epoch_length=256,
+                     return_graph=False, remove_ties=False, batch_size=32, epoch_length=256,
                      voting_rule=get_plurality(), utility_distribution="uniform", one_hot_candidates=True,
                      one_hot_candidate_dim=8)
         blt[0]

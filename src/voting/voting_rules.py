@@ -273,15 +273,15 @@ def get_kemeny(one_hot=False):
             winner = np.argsort(best_rank)[0]
             winners.append(winner)
 
-        winner = np.array(winners)
+        winners = np.array(winners)
 
         if isinstance(votes, torch.Tensor):
-            winner = torch.from_numpy(winner).type_as(votes)
-        winner = get_one_hot(winner, n_cands) if one_hot_repr else winner
+            winners = torch.from_numpy(winners).type_as(votes)
+        winners = get_one_hot(winners, n_cands) if one_hot_repr else winners
 
         unique = np.ones((bs,)).astype(np.bool)
 
-        return winner, unique
+        return winners, unique
 
     return kemeny
 

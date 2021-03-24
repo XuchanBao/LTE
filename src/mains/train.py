@@ -7,6 +7,8 @@ from spaghettini import load
 from src.utils.seed import set_seed
 from src.utils.misc import set_hyperparams
 
+os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
+
 
 if __name__ == "__main__":
     # Get the config.
