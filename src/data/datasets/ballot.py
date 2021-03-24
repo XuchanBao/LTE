@@ -126,8 +126,9 @@ class Ballot(Dataset):
         ys_torch = torch.tensor(winner).long()
 
         # Introduce hack to make sure the max class label matches the output dimensionality.
-        shift = int(self.one_hot_candidate_dim - ys_torch.max() - 1)
-        ys_torch = ys_torch + shift
+        max_idxs = (ys_torch == ys_torch.max()).float()
+        ys_torch = (1 - max_idxs) * ys_torch + max_idxs * (self.one_hot_candidate_dim - 1)
+        ys_torch = ys_torch.long()
 
         # Build a graph.
         if self.return_graph:
