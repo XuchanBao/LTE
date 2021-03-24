@@ -359,7 +359,7 @@ def rankaggr_lp(ranks):
     triangle_const = triangle_constraints @ x >= np.ones(len(triangle_constraints))
 
     # Define problem and solve.
-    prob = cp.Problem(cp.Minimize(objective), constraints=[pairwise_const, triangle_const, pos_const])
+    prob = cp.Problem(cp.Maximize(objective), constraints=[pairwise_const, triangle_const, pos_const])
     obj = prob.solve(solver=cp.GLPK_MI, verbose=False)
     soln = x.value
     aggr_rank = soln.reshape((n_candidates, n_candidates)).sum(axis=1)
@@ -383,7 +383,7 @@ if __name__ == "__main__":
         # Test get_kemeny().
         voter_num = 99
         times = list()
-        cand_nums = np.arange(10, 20)
+        cand_nums = np.arange(6, 20)
         for cand_num in cand_nums:
             blt = Ballot(max_num_voters=voter_num, min_num_voters=voter_num - 1, max_num_candidates=cand_num,
                          min_num_candidates=cand_num - 1,
