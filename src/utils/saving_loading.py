@@ -77,10 +77,13 @@ def manage_checkpoint(root_path, experiment_name, log_utility_distribution=False
                     assert len(version_list) == 1, \
                         f"When load_version == 'only', there must be exactly 1 version under the experiment dir. " \
                         f"Found {len(version_list)} directories under {os.path.abspath(exp_path)}."
-                    # load_version = version_list[0]
                     load_path = f"{exp_path}/{version_list[0]}"
                 else:   # load_version is a directory
-                    load_path= f"{exp_path}/{load_version}"
+                    version_list = [path for path in os.listdir(exp_path) if load_version in path]
+                    assert len(version_list) == 1, \
+                        f"There must be exactly 1 version under the experiment dir that contains '{load_version}'. " \
+                        f"Found {len(version_list)} directories under {os.path.abspath(exp_path)}."
+                    load_path = f"{exp_path}/{version_list[0]}"
 
             if os.path.isdir(load_path):
                 ckpt_list = [file for file in os.listdir(load_path) if file.endswith('.ckpt')]
