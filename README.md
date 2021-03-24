@@ -22,7 +22,7 @@ pip install git+https://github.com/cemanil/spaghetti.git@master
 python setup.py install
 ```
 
-# Install cvxpy with GLPK bindings (fro solving Kemeny elections efficiently)/
+# Install cvxpy with GLPK bindings (for solving Kemeny elections efficiently)/
 ``` 
 pip install cvxopt
 CVXOPT_BUILD_GLPK=1

@@ -4,6 +4,7 @@ Kemeny implementation based on https://vene.ro/blog/kemeny-young-optimal-rank-ag
 
 from spaghettini import quick_register
 import itertools
+import time
 
 import numpy as np
 from scipy.stats import mode
@@ -13,6 +14,7 @@ import cvxpy as cp
 from src.utils.voting_utils import get_one_hot
 
 import faulthandler
+
 faulthandler.enable()
 
 
@@ -54,6 +56,7 @@ def get_plurality(one_hot=False):
         winner = get_one_hot(winner, num_candidates) if one_hot_repr else winner
 
         return winner, np.array(unique)
+
     return plurality
 
 
@@ -122,6 +125,7 @@ def get_copeland(one_hot=False):
         unique = winner_uniqueness_given_scores(pairwise_wins)
 
         return winner, unique
+
     return copeland
 
 
@@ -159,6 +163,7 @@ def get_maximin(one_hot=False):
         unique = winner_uniqueness_given_scores(pairwise_min)
 
         return winner, unique
+
     return maximin
 
 
@@ -185,7 +190,7 @@ def get_utilitarian(one_hot=False):
         # Get one hot representation is asked.
         winner = get_one_hot(winner, n_cands) if one_hot_repr else winner
 
-        return winner, np.ones((len(utilities_np), )).astype(np.bool)
+        return winner, np.ones((len(utilities_np),)).astype(np.bool)
 
     return utilitarian
 
@@ -213,7 +218,8 @@ def get_rawlsian(one_hot=False):
 
         winner = get_one_hot(winner, n_cands) if one_hot_repr else winner
 
-        return winner, np.ones((len(utilities_np), )).astype(np.bool)
+        return winner, np.ones((len(utilities_np),)).astype(np.bool)
+
     return rawlsian
 
 
@@ -246,6 +252,7 @@ def get_egalitarian(one_hot=False, penalty_lambda=0.5):
         winner = get_one_hot(winner, n_cands) if one_hot_repr else winner
 
         return winner, np.ones((len(utilities_np),)).astype(np.bool)
+
     return egalitarian
 
 
@@ -272,7 +279,7 @@ def get_kemeny(one_hot=False):
             winner = torch.from_numpy(winner).type_as(votes)
         winner = get_one_hot(winner, n_cands) if one_hot_repr else winner
 
-        unique = np.ones((bs, )).astype(np.bool)
+        unique = np.ones((bs,)).astype(np.bool)
 
         return winner, unique
 
@@ -311,6 +318,7 @@ def _build_graph(ranks):
             edge_weights[i, j] = h_ij - h_ji
         elif h_ij < h_ji:
             edge_weights[j, i] = h_ji - h_ij
+
     return edge_weights
 
 
@@ -371,13 +379,14 @@ if __name__ == "__main__":
         from src.data.datasets.ballot import Ballot
         import time
         import matplotlib.pyplot as plt
+
         # Test get_kemeny().
         voter_num = 99
         times = list()
-        cand_nums = np.arange(20, 21)
+        cand_nums = np.arange(10, 20)
         for cand_num in cand_nums:
-            blt = Ballot(max_num_voters=voter_num, min_num_voters=voter_num-1, max_num_candidates=cand_num,
-                         min_num_candidates=cand_num-1,
+            blt = Ballot(max_num_voters=voter_num, min_num_voters=voter_num - 1, max_num_candidates=cand_num,
+                         min_num_candidates=cand_num - 1,
                          return_graph=False, remove_ties=False, batch_size=64, epoch_length=256,
                          voting_rule=get_kemeny(), utility_distribution="uniform", one_hot_candidates=True)
             start = time.time()
@@ -403,4 +412,3 @@ if __name__ == "__main__":
         kemeny = get_kemeny()
         winner, unique = kemeny(votes=votes)
         breakpoint()
-
