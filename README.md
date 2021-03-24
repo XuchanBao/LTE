@@ -22,11 +22,6 @@ pip install git+https://github.com/cemanil/spaghetti.git@master
 python setup.py install
 ```
 
-# Install lpsolve (for solving Kemeny elections).
-``` 
-conda install -c conda-forge lpsolve55 
-```
-
 # Install cvxpy with GLPK bindings (fro solving Kemeny elections efficiently)/
 ``` 
 CVXOPT_BUILD_GLPK=1

@@ -8,7 +8,6 @@ import itertools
 import numpy as np
 from scipy.stats import mode
 import torch
-from lp_solve import lp_solve
 import cvxpy as cp
 
 from src.utils.voting_utils import get_one_hot
@@ -263,7 +262,7 @@ def get_kemeny(one_hot=False):
 
         winners = list()
         for i in range(bs):
-            (_, best_rank) = rankaggr_lp_cvxpy(ranks=cand_position[i])
+            (_, best_rank) = rankaggr_lp(ranks=cand_position[i])
             winner = np.argsort(best_rank)[0]
             winners.append(winner)
 
@@ -316,46 +315,6 @@ def _build_graph(ranks):
 
 
 def rankaggr_lp(ranks):
-    """Kemeny-Young optimal rank aggregation"""
-
-    n_voters, n_candidates = ranks.shape
-
-    # maximize c.T * x
-    edge_weights = _build_graph(ranks)
-    c = -1 * edge_weights.ravel()
-
-    idx = lambda i, j: n_candidates * i + j
-
-    # constraints for every pair
-    assert n_candidates % 1 == 0
-    pairwise_constraints = np.zeros((int((n_candidates * (n_candidates - 1)) / 2), n_candidates ** 2))
-    for row, (i, j) in zip(pairwise_constraints,
-                           itertools.combinations(range(n_candidates), 2)):
-        row[[idx(i, j), idx(j, i)]] = 1
-
-    # and for every cycle of length 3
-    triangle_constraints = np.zeros(((n_candidates * (n_candidates - 1) *
-                                      (n_candidates - 2)),
-                                     n_candidates ** 2))
-    for row, (i, j, k) in zip(triangle_constraints,
-                              itertools.permutations(range(n_candidates), 3)):
-        row[[idx(i, j), idx(j, k), idx(k, i)]] = 1
-
-    constraints = np.vstack([pairwise_constraints, triangle_constraints])
-    constraint_rhs = np.hstack([np.ones(len(pairwise_constraints)),
-                                np.ones(len(triangle_constraints))])
-    constraint_signs = np.hstack([np.zeros(len(pairwise_constraints)),  # ==
-                                  np.ones(len(triangle_constraints))])  # >=
-    obj, x, duals = lp_solve(f=c, a=constraints, b=constraint_rhs, e=constraint_signs,
-                             xint=range(1, 1 + n_candidates ** 2))
-
-    x = np.array(x).reshape((n_candidates, n_candidates))
-    aggr_rank = x.sum(axis=1)
-
-    return obj, aggr_rank
-
-
-def rankaggr_lp_cvxpy(ranks):
     """Kemeny-Young optimal rank aggregation"""
 
     n_voters, n_candidates = ranks.shape
