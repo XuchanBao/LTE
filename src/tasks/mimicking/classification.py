@@ -201,8 +201,8 @@ class MimickingClassification(pl.LightningModule, ABC):
         metric_logs['{}/group{}/loss'.format(prepend_key, n_voters // self.log_resolution)] = float(loss)
 
         # ____ Log the distortion ratios. ____
-        inv_distortion_ratios = compute_distortion_ratios(logits=preds, utilities=utilities)
-        hist_logs[f"{prepend_key}/{INV_DISTORTION_KEY}"] = inv_distortion_ratios
+        # inv_distortion_ratios = compute_distortion_ratios(logits=preds, utilities=utilities)
+        # hist_logs[f"{prepend_key}/{INV_DISTORTION_KEY}"] = inv_distortion_ratios
 
         return metric_logs, hist_logs
 

@@ -125,11 +125,6 @@ class Ballot(Dataset):
         xs_torch = torch.tensor(rankings_full).float().view(rankings.shape[0], rankings.shape[1], -1)
         ys_torch = torch.tensor(winner).long()
 
-        # Introduce hack to make sure the max class label matches the output dimensionality.
-        max_idxs = (ys_torch == ys_torch.max()).float()
-        ys_torch = (1 - max_idxs) * ys_torch + max_idxs * (self.one_hot_candidate_dim - 1)
-        ys_torch = ys_torch.long()
-
         # Build a graph.
         if self.return_graph:
             # Build edges (2, n_voters * n_voters).
