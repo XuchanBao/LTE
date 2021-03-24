@@ -13,6 +13,9 @@ from lp_solve import lp_solve
 
 from src.utils.voting_utils import get_one_hot
 
+import faulthandler
+faulthandler.enable()
+
 
 def winner_uniqueness_given_scores(scores):
     score_diff = scores - np.max(scores, axis=1)[..., None]
