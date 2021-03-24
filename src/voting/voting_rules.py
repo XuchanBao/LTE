@@ -9,7 +9,7 @@ import numpy as np
 from scipy.stats import mode
 import torch
 from lp_solve import lp_solve
-
+import cvxpy as cp
 
 from src.utils.voting_utils import get_one_hot
 
@@ -263,7 +263,7 @@ def get_kemeny(one_hot=False):
 
         winners = list()
         for i in range(bs):
-            (_, best_rank) = rankaggr_lp(ranks=cand_position[i])
+            (_, best_rank) = rankaggr_lp_cvxpy(ranks=cand_position[i])
             winner = np.argsort(best_rank)[0]
             winners.append(winner)
 
@@ -346,12 +346,56 @@ def rankaggr_lp(ranks):
                                 np.ones(len(triangle_constraints))])
     constraint_signs = np.hstack([np.zeros(len(pairwise_constraints)),  # ==
                                   np.ones(len(triangle_constraints))])  # >=
-
     obj, x, duals = lp_solve(f=c, a=constraints, b=constraint_rhs, e=constraint_signs,
                              xint=range(1, 1 + n_candidates ** 2))
 
     x = np.array(x).reshape((n_candidates, n_candidates))
     aggr_rank = x.sum(axis=1)
+
+    return obj, aggr_rank
+
+
+def rankaggr_lp_cvxpy(ranks):
+    """Kemeny-Young optimal rank aggregation"""
+
+    n_voters, n_candidates = ranks.shape
+
+    # maximize c.T * x
+    edge_weights = _build_graph(ranks)
+    c = -1 * edge_weights.ravel()
+
+    idx = lambda i, j: n_candidates * i + j
+
+    # constraints for every pair
+    assert n_candidates % 1 == 0
+    pairwise_constraints = np.zeros((int((n_candidates * (n_candidates - 1)) / 2), n_candidates ** 2))
+    for row, (i, j) in zip(pairwise_constraints,
+                           itertools.combinations(range(n_candidates), 2)):
+        row[[idx(i, j), idx(j, i)]] = 1
+
+    # and for every cycle of length 3
+    triangle_constraints = np.zeros(((n_candidates * (n_candidates - 1) *
+                                      (n_candidates - 2)),
+                                     n_candidates ** 2))
+    for row, (i, j, k) in zip(triangle_constraints,
+                              itertools.permutations(range(n_candidates), 3)):
+        row[[idx(i, j), idx(j, k), idx(k, i)]] = 1
+
+    # ____ Solve using the CVXPY package. ____
+    # Define variable and objective.
+    x = cp.Variable(c.shape[0], integer=True)
+    objective = c.T @ x
+
+    # Define constraints.
+    pos_const = x >= 0
+    pairwise_const = pairwise_constraints @ x == np.ones(len(pairwise_constraints))
+    triangle_const = triangle_constraints @ x >= np.ones(len(triangle_constraints))
+
+    # Define problem and solve.
+    prob = cp.Problem(cp.Minimize(objective), constraints=[pairwise_const, triangle_const, pos_const])
+    obj = prob.solve(solver=cp.GLPK_MI, verbose=False)
+    soln = x.value
+    aggr_rank = soln.reshape((n_candidates, n_candidates)).sum(axis=1)
 
     return obj, aggr_rank
 
@@ -371,7 +415,7 @@ if __name__ == "__main__":
         # Test get_kemeny().
         voter_num = 99
         times = list()
-        cand_nums = np.arange(5, 29)
+        cand_nums = np.arange(5, 15)
         for cand_num in cand_nums:
             blt = Ballot(max_num_voters=voter_num, min_num_voters=voter_num-1, max_num_candidates=cand_num,
                          min_num_candidates=cand_num-1,

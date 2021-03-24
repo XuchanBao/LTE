@@ -27,6 +27,14 @@ python setup.py install
 conda install -c conda-forge lpsolve55 
 ```
 
+# Install cvxpy with GLPK bindings (fro solving Kemeny elections efficiently)/
+``` 
+CVXOPT_BUILD_GLPK=1
+CVXOPT_GLPK_LIB_DIR=/path/to/glpk-X.X/lib
+CVXOPT_GLPK_INC_DIR=/path/to/glpk-X.X/include
+pip install cvxopt
+```
+
 * Install nbdev, to make sure ipython notebooks are commitable. 
 ``` 
 pip install nbdev

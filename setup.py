@@ -20,5 +20,6 @@ setup(name='LTE',
       packages=find_packages(exclude=['tests/*']),
       setup_requires=["numpy", "torch", "torchvision", "spaghettini"],
       install_requires=["numpy", "scipy", "matplotlib", "test_tube", "tqdm", "munch", "imageio",
-                        "pytorch_lightning==1.1.5", "jupyter", "notebook", "wandb==0.10.14", "transformers==4.2.2"],
+                        "pytorch_lightning==1.1.5", "jupyter", "notebook", "wandb==0.10.14", "transformers==4.2.2",
+                        "cvxpy"],
       )
