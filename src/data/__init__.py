@@ -118,8 +118,8 @@ def get_both_default_mimicking_loaders(distribution, voting_rule, return_graph):
 def get_both_small_default_mimicking_loaders(distribution, voting_rule, return_graph):
     max_num_voters = 99
     min_num_voters = 2
-    max_num_candidates = 19
-    min_num_candidates = 2
+    max_num_candidates = 10
+    min_num_candidates = 3
     batch_size = 64
     epoch_len = 8
     one_hot_candidates = True

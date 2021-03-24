@@ -355,8 +355,8 @@ def rankaggr_lp(ranks):
 
     # Define constraints.
     pos_const = x >= 0
-    pairwise_const = pairwise_constraints @ x == np.ones(len(pairwise_constraints)).squeeze()
-    triangle_const = triangle_constraints @ x >= np.ones(len(triangle_constraints)).squeeze()
+    pairwise_const = pairwise_constraints @ x == np.ones(len(pairwise_constraints))
+    triangle_const = triangle_constraints @ x >= np.ones(len(triangle_constraints))
 
     # Define problem and solve.
     prob = cp.Problem(cp.Maximize(objective), constraints=[pairwise_const, triangle_const, pos_const])
