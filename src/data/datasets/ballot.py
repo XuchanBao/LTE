@@ -114,7 +114,7 @@ class Ballot(Dataset):
             ranking_onehot = np.array(rankings[..., None] == np.arange(self.one_hot_candidate_dim)[None, ...]).astype(
                 np.float)
             rankings_full = self.empty_token * np.ones(
-                (rankings.shape[0], rankings.shape[1], self.max_num_candidates, self.one_hot_candidate_dim))
+                (rankings.shape[0], rankings.shape[1], self.one_hot_candidate_dim, self.one_hot_candidate_dim))
             rankings_full[:, :, :num_candidates, :self.one_hot_candidate_dim] = ranking_onehot
 
         # Add "dummy" utilities to make sure all utilities have the same dimensionality.
@@ -225,7 +225,7 @@ if __name__ == "__main__":
     Run from root. 
     python -m src.data.datasets.ballot
     """
-    test_num = 3
+    test_num = 4
 
     if test_num == 0:
         def test_dirichlet():
@@ -271,5 +271,13 @@ if __name__ == "__main__":
             blt.one_hot_candidates = False
             blt.batch_size = 1
             _check_strong_pairwise_transitivity_in_ballot(ballot=blt, num_elections=1000)
+
+    if test_num == 4:
+        # Check one_hot_candidate_dim functionality.
+        blt = Ballot(max_num_voters=11, min_num_voters=10, max_num_candidates=5, min_num_candidates=4,
+                     return_graph=False, remove_ties=False, batch_size=1, epoch_length=256,
+                     voting_rule=get_plurality(), utility_distribution="uniform", one_hot_candidates=True,
+                     one_hot_candidate_dim=8)
+        blt[0]
 
 
