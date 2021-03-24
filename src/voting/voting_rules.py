@@ -370,7 +370,8 @@ if __name__ == "__main__":
         times = list()
         cand_nums = np.arange(5, 29)
         for cand_num in cand_nums:
-            blt = Ballot(max_num_voters=voter_num, min_num_voters=voter_num-1, max_num_candidates=cand_num, min_num_candidates=cand_num-1,
+            blt = Ballot(max_num_voters=voter_num, min_num_voters=voter_num-1, max_num_candidates=cand_num,
+                         min_num_candidates=cand_num-1,
                          return_graph=False, remove_ties=False, batch_size=64, epoch_length=256,
                          voting_rule=get_kemeny(), utility_distribution="uniform", one_hot_candidates=True)
             start = time.time()
