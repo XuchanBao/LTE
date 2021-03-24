@@ -24,6 +24,7 @@ python setup.py install
 
 # Install cvxpy with GLPK bindings (fro solving Kemeny elections efficiently)/
 ``` 
+pip install cvxopt
 CVXOPT_BUILD_GLPK=1
 CVXOPT_GLPK_LIB_DIR=/path/to/glpk-X.X/lib
 CVXOPT_GLPK_INC_DIR=/path/to/glpk-X.X/include

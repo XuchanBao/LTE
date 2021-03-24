@@ -374,7 +374,7 @@ if __name__ == "__main__":
         # Test get_kemeny().
         voter_num = 99
         times = list()
-        cand_nums = np.arange(5, 15)
+        cand_nums = np.arange(20, 21)
         for cand_num in cand_nums:
             blt = Ballot(max_num_voters=voter_num, min_num_voters=voter_num-1, max_num_candidates=cand_num,
                          min_num_candidates=cand_num-1,
