@@ -123,7 +123,7 @@ def get_both_small_default_mimicking_loaders(distribution, voting_rule, return_g
     batch_size = 64
     epoch_len = 8
     one_hot_candidates = True
-    one_hot_candidate_dim = None
+    one_hot_candidate_dim = 29
     remove_ties = True
     num_workers = 10
     if return_graph is True:

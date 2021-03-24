@@ -67,7 +67,7 @@ cd -
 called "template". 
 * Run:
 ```
-EXP_DIR="runs/ICML/mimicking/small_mlp"
+EXP_DIR="runs/ICML/mimicking_kemeny/deep_sets"
 bash ./src/mains/generate_experiments.sh ${EXP_DIR} t4v2
 sbatch ${EXP_DIR}/batch_run.sh
 
