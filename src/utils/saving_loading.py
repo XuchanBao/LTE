@@ -59,12 +59,15 @@ def manage_save_test_results(save_test_results_root, experiment_name, include_da
 @quick_register
 def manage_checkpoint(root_path, experiment_name, log_utility_distribution=False,
                       load_version=None, abs_load_path=False,
-                      save_checkpoint=True, ckpt_frequency=500):
+                      save_checkpoint=True, ckpt_frequency=500, additional_path_name=None):
     def get_full_path_callback(model_type, voting_rule, template_path, utility_distribution):
         if log_utility_distribution:    # for social welfare experiments
             exp_path = f"{root_path}/{experiment_name}/{utility_distribution}/{model_type}/{voting_rule}"
         else:                           # for mimicking experiments
             exp_path = f"{root_path}/{experiment_name}/{model_type}/{voting_rule}"
+
+        if additional_path_name is not None:
+            exp_path = f"{exp_path}/{additional_path_name}"
 
         if load_version is None:
             load_path = None
