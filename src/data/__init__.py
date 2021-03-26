@@ -115,12 +115,13 @@ def get_both_default_mimicking_loaders(distribution, voting_rule, return_graph):
 
 
 @quick_register
-def get_both_small_default_mimicking_loaders(distribution, voting_rule, return_graph, max_num_candidates=10):
+def get_both_small_default_mimicking_loaders(distribution, voting_rule, return_graph,
+                                             max_num_candidates=10, epoch_length=8):
     max_num_voters = 99
     min_num_voters = 2
     min_num_candidates = 3
     batch_size = 64
-    epoch_len = 8
+    epoch_len = epoch_length
     one_hot_candidates = True
     one_hot_candidate_dim = 29
     remove_ties = True
@@ -149,3 +150,34 @@ def get_both_small_default_mimicking_loaders(distribution, voting_rule, return_g
         dl2 = DataLoader(dataset=dataset, batch_size=1, shuffle=False, num_workers=num_workers,
                          collate_fn=batched_ballot_collate, worker_init_fn=seed_workers)
         return dl1, dl2
+
+
+@quick_register
+def get_small_default_mimicking_loaders(distribution, voting_rule, return_graph, max_num_candidates=10, epoch_length=8):
+    max_num_voters = 99
+    min_num_voters = 2
+    min_num_candidates = 3
+    batch_size = 64
+    epoch_len = epoch_length
+    one_hot_candidates = True
+    one_hot_candidate_dim = 29
+    remove_ties = True
+    num_workers = 10
+    if return_graph is True:
+        dataset = Ballot(max_num_voters=max_num_voters, min_num_voters=min_num_voters,
+                         max_num_candidates=max_num_candidates, min_num_candidates=min_num_candidates,
+                         batch_size=1, epoch_length=batch_size*epoch_len, voting_rule=voting_rule,
+                         utility_distribution=distribution, one_hot_candidates=one_hot_candidates,
+                         one_hot_candidate_dim=one_hot_candidate_dim, return_graph=True,
+                         remove_ties=remove_ties)
+        return DataLoader(dataset=dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers,
+                          collate_fn=dgl_ballot_collate, worker_init_fn=seed_workers)
+    else:
+        dataset = Ballot(max_num_voters=max_num_voters, min_num_voters=min_num_voters,
+                         max_num_candidates=max_num_candidates, min_num_candidates=min_num_candidates,
+                         batch_size=batch_size, epoch_length=epoch_len, voting_rule=voting_rule,
+                         utility_distribution=distribution, one_hot_candidates=one_hot_candidates,
+                         one_hot_candidate_dim=one_hot_candidate_dim, return_graph=False,
+                         remove_ties=remove_ties)
+        return DataLoader(dataset=dataset, batch_size=1, shuffle=False, num_workers=num_workers,
+                          collate_fn=batched_ballot_collate, worker_init_fn=seed_workers)
