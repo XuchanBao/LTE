@@ -57,6 +57,7 @@ manage_checkpoint:
   root_path: "/scratch/hdd001/home/jennybao/projects/LTE"
   experiment_name: "mimic"
   load_version: null
+  model_suffix: "Small"
 
 
 trainer:

@@ -6,7 +6,7 @@ system:
   <init>: true
   # Model.
   model:
-    <type>: get_default_fully_connected
+    <type>: get_default_small_fully_connected
     <init>: true
 
   # No dataloaders, optimizer or scheduler at testing time
@@ -69,7 +69,7 @@ logger:
   <init>: false
   project: "lte"
   entity: "byol"
-  tags: ["mlp", "icml", "mimic", "test"]
+  tags: ["small-mlp", "icml-rebuttal", "mimic", "test"]
 
 manage_checkpoint:
   <type>: manage_checkpoint
@@ -77,7 +77,7 @@ manage_checkpoint:
   save_checkpoint: false          # don't save new checkpoints
   root_path: "/scratch/hdd001/home/jennybao/projects/LTE"
   experiment_name: "mimic"
-  load_version: "2021-02"
+  load_version: "2021-03"
   log_utility_distribution: false  # true for social welfare (except for uniform for now)
 
 manage_save_test_results:
@@ -85,6 +85,7 @@ manage_save_test_results:
   <init>: true
   save_test_results_root: "/scratch/hdd001/home/jennybao/projects/LTE/results"
   experiment_name: "mimic"
+  model_suffix: "Small"
 
 trainer:
   <type>: Trainer

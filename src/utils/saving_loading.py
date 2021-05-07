@@ -39,13 +39,14 @@ def load_numpy_array():
 
 
 @quick_register
-def manage_save_test_results(save_test_results_root, experiment_name, include_dataset_filename=False):
+def manage_save_test_results(save_test_results_root, experiment_name, include_dataset_filename=False, model_suffix=""):
     def get_test_results_save_dir(model_type, voting_rule, template_path, utility_distribution, dataset_filename=None):
         if include_dataset_filename:
-            save_dir = f"{save_test_results_root}/{experiment_name}/{utility_distribution}/{model_type}/" \
-                       f"{voting_rule}/{dataset_filename}"
+            save_dir = f"{save_test_results_root}/{experiment_name}/{utility_distribution}/" \
+                       f"{model_type}{model_suffix}/{voting_rule}/{dataset_filename}"
         else:
-            save_dir = f"{save_test_results_root}/{experiment_name}/{utility_distribution}/{model_type}/{voting_rule}"
+            save_dir = f"{save_test_results_root}/{experiment_name}/{utility_distribution}/" \
+                       f"{model_type}{model_suffix}/{voting_rule}"
         os.makedirs(save_dir, exist_ok=True)
         print(f">>> Saving test results to {os.path.abspath(save_dir)}.")
 
@@ -59,12 +60,12 @@ def manage_save_test_results(save_test_results_root, experiment_name, include_da
 @quick_register
 def manage_checkpoint(root_path, experiment_name, log_utility_distribution=False,
                       load_version=None, abs_load_path=False,
-                      save_checkpoint=True, ckpt_frequency=500, additional_path_name=None):
+                      save_checkpoint=True, ckpt_frequency=500, additional_path_name=None, model_suffix=""):
     def get_full_path_callback(model_type, voting_rule, template_path, utility_distribution):
         if log_utility_distribution:    # for social welfare experiments
-            exp_path = f"{root_path}/{experiment_name}/{utility_distribution}/{model_type}/{voting_rule}"
+            exp_path = f"{root_path}/{experiment_name}/{utility_distribution}/{model_type}{model_suffix}/{voting_rule}"
         else:                           # for mimicking experiments
-            exp_path = f"{root_path}/{experiment_name}/{model_type}/{voting_rule}"
+            exp_path = f"{root_path}/{experiment_name}/{model_type}{model_suffix}/{voting_rule}"
 
         if additional_path_name is not None:
             exp_path = f"{exp_path}/{additional_path_name}"

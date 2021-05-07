@@ -81,7 +81,7 @@ manage_checkpoint:
   save_checkpoint: false          # don't save new checkpoints
   root_path: "/scratch/hdd001/home/jennybao/projects/LTE"
   experiment_name: "mimic"
-  load_version: "only"
+  load_version: "2021-02"
   log_utility_distribution: false  # true for social welfare (except for uniform for now)
 
 manage_save_test_results:

@@ -20,7 +20,9 @@ system:
       <type>: get_kemeny
       <init>: true
     return_graph: false
-    max_num_candidates: 15
+    max_num_candidates|max_num_candidates_16: 16
+    max_num_candidates|max_num_candidates_17: 17
+    max_num_candidates|max_num_candidates_18: 18
 
   # Optimizer.
   optimizer:
@@ -63,7 +65,7 @@ manage_checkpoint:
   root_path: "/scratch/hdd001/home/jennybao/projects/LTE"
   experiment_name: "mimic"
   load_version: null
-  additional_path_name: "cand15"
+  additional_path_name: "cand16-18"
 
 
 trainer:
