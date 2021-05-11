@@ -189,6 +189,9 @@ class MimickingClassification(pl.LightningModule, ABC):
         metric_logs = dict()
         hist_logs = dict()
 
+        # ____ Log batch size. ____
+        metric_logs[f"{prepend_key}/batch_size"] = len(ys)
+
         # ____ Log losses. ____
         metric_logs["{}/loss".format(prepend_key)] = float(loss)
 

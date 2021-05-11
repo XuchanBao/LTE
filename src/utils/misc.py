@@ -31,15 +31,23 @@ def set_seed(seed):
 
 def average_values_in_list_of_dicts(list_of_dicts):
     averaged_values_dict = dict()
+    bs_keyname = None
     for curr_output_dict in list_of_dicts:
         for k, v in curr_output_dict.items():
+
             if k not in averaged_values_dict:
                 averaged_values_dict[k] = [v]
             else:
                 averaged_values_dict[k].append(v)
+            if 'batch_size' in k:
+                bs_keyname = k
+    batch_size_arr = np.array(averaged_values_dict[bs_keyname])
+    bs_sum = np.sum(batch_size_arr)
     for k, v in averaged_values_dict.items():
-        averaged_values_dict[k] = np.array(v).mean()
+        if k != bs_keyname:
+            averaged_values_dict[k] = (np.array(v) * batch_size_arr).sum() / float(bs_sum)
 
+    averaged_values_dict[bs_keyname] = batch_size_arr.mean()
     return averaged_values_dict
 
 
