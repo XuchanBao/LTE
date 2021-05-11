@@ -16,6 +16,7 @@ system:
     <type>: get_both_default_mimicking_loaders
     <init>: true
     distribution|uniform: "uniform"
+    distribution|polarized: "polarized"
     distribution|indecisive: "indecisive"
     voting_rule|utilitarian:
       <type>: get_utilitarian
