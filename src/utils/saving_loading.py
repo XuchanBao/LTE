@@ -8,6 +8,8 @@ import numpy as np
 from pytorch_lightning.callbacks import ModelCheckpoint
 from spaghettini import quick_register
 
+DATETIME_STR_FORMAT = "%Y-%m-%d-%H%M%S"
+
 
 def save_result_to_yaml(np_list, save_dir, filename, ckpt_path):
     yml_list = [{"ckpt_path": os.path.abspath(ckpt_path)}]
@@ -82,6 +84,24 @@ def manage_checkpoint(root_path, experiment_name, log_utility_distribution=False
                         f"When load_version == 'only', there must be exactly 1 version under the experiment dir. " \
                         f"Found {len(version_list)} directories under {os.path.abspath(exp_path)}."
                     load_path = f"{exp_path}/{version_list[0]}"
+
+                elif load_version == "auto_resume":  # used for continue training after preemption
+
+                    # load the latest checkpoint if exists, otherwise skip
+                    if os.path.isdir(exp_path):
+                        try:
+                            all_versions_datetime = []
+                            for date_str in os.listdir(exp_path):
+                                all_versions_datetime.append(datetime.datetime.strptime(date_str, DATETIME_STR_FORMAT))
+                        except:
+                            raise ValueError(f"Failed converting directories to datetime objects. "
+                                             f"Directories = {os.listdir(exp_path)}")
+                        latest_time = max(all_versions_datetime)
+                        latest_dirname = latest_time.strftime(DATETIME_STR_FORMAT)
+                        load_path = f"{exp_path}/{latest_dirname}"
+                    else:
+                        load_path = None
+
                 else:   # load_version is a directory
                     version_list = [path for path in os.listdir(exp_path) if load_version in path]
                     assert len(version_list) == 1, \
@@ -89,7 +109,7 @@ def manage_checkpoint(root_path, experiment_name, log_utility_distribution=False
                         f"Found {len(version_list)} directories under {os.path.abspath(exp_path)}."
                     load_path = f"{exp_path}/{version_list[0]}"
 
-            if os.path.isdir(load_path):
+            if load_path is not None and os.path.isdir(load_path):
                 ckpt_list = [file for file in os.listdir(load_path) if file.endswith('.ckpt')]
                 assert len(ckpt_list) == 1, \
                     f"There should only be exactly 1 *.ckpt file in the load directory. " \
@@ -98,7 +118,7 @@ def manage_checkpoint(root_path, experiment_name, log_utility_distribution=False
 
         if save_checkpoint:
             # new checkpoint directory
-            time_str = datetime.datetime.now().strftime("%Y-%m-%d-%H%M%S")
+            time_str = datetime.datetime.now().strftime(DATETIME_STR_FORMAT)
             new_ckpt_dir = f"{exp_path}/{time_str}"
             os.makedirs(new_ckpt_dir, exist_ok=True)
             print(f"checkpoint directory set to {os.path.abspath(new_ckpt_dir)}")

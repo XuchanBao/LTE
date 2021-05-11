@@ -53,9 +53,10 @@ logger:
 manage_checkpoint:
   <type>: manage_checkpoint
   <init>: true
-  root_path: "/scratch/hdd001/home/jennybao/projects/LTE/dummy_models"
+#  root_path: "/scratch/hdd001/home/jennybao/projects/LTE/dummy_models"
+  root_path: "./test_exp"
   experiment_name: "mimic"
-  load_version: null
+  load_version: "auto_resume"
 
 trainer:
   <type>: Trainer
