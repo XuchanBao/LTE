@@ -1,0 +1,70 @@
+<type>: Munch
+<init>: true
+# PyTorch Lightning System.
+system:
+  <type>: MimickingClassification
+  <init>: true
+  # Model.
+  model:
+    <type>: get_default_set_transformer
+    <init>: true
+
+  # Data loaders.
+  train_loader: null
+  valid_loader: null
+  loaders:
+    <type>: get_both_small_default_mimicking_loaders
+    <init>: true
+    distribution: "uniform"
+    voting_rule|kemeny:
+      <type>: get_kemeny
+      <init>: true
+    return_graph: false
+
+  # Optimizer.
+  optimizer:
+    <type>: Adam
+    <init>: false
+    lr: 0.0001
+
+  # Learning rate scheduler.
+  scheduler_wrapper:
+    <type>: TransformerSchedulerWrapper
+    <init>: true
+    get_fn:
+      <type>: get_cosine_schedule_with_warmup
+      <init>: false
+    num_warmup_steps: 20 # in epochs
+    num_training_steps: 40000
+
+  # Loss functions.
+  loss_fn:
+    <type>: CrossEntropyLoss
+    <init>: true
+  save_checkpoint: true
+
+# wandb experiment
+logger:
+  <type>: WandbLogger
+  <init>: false
+  project: "lte"
+  entity: "byol"
+  tags: ["set-transformer", "neurips", "mimic", "v1"]
+
+manage_checkpoint:
+  <type>: manage_checkpoint
+  <init>: true
+  root_path: "/scratch/hdd001/home/jennybao/projects/LTE"
+  experiment_name: "mimic"
+  load_version: "auto_resume"
+  additional_path_name: "neurips/v1"
+
+
+trainer:
+  <type>: Trainer
+  <init>: false
+  max_epochs: 40000
+  gradient_clip_val: 1.
+
+# Seed.
+seed: 0
