@@ -44,7 +44,11 @@ def average_values_in_list_of_dicts(list_of_dicts):
     batch_size_arr = np.array(averaged_values_dict[bs_keyname])
     bs_sum = np.sum(batch_size_arr)
     for k, v in averaged_values_dict.items():
-        if k != bs_keyname:
+        if "group" in k:
+            # TODO: currently the per-group accuracy is not normalized by batch size.
+            averaged_values_dict[k] = np.array(v).mean()
+
+        elif k != bs_keyname:   # normalize by batch size
             averaged_values_dict[k] = (np.array(v) * batch_size_arr).sum() / float(bs_sum)
 
     averaged_values_dict[bs_keyname] = batch_size_arr.mean()

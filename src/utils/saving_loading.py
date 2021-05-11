@@ -96,9 +96,12 @@ def manage_checkpoint(root_path, experiment_name, log_utility_distribution=False
                         except:
                             raise ValueError(f"Failed converting directories to datetime objects. "
                                              f"Directories = {os.listdir(exp_path)}")
-                        latest_time = max(all_versions_datetime)
-                        latest_dirname = latest_time.strftime(DATETIME_STR_FORMAT)
-                        load_path = f"{exp_path}/{latest_dirname}"
+                        if len(all_versions_datetime) > 0:
+                            latest_time = max(all_versions_datetime)
+                            latest_dirname = latest_time.strftime(DATETIME_STR_FORMAT)
+                            load_path = f"{exp_path}/{latest_dirname}"
+                        else:
+                            load_path = None
                     else:
                         load_path = None
 
