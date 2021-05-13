@@ -26,7 +26,7 @@ class MimickingClassification(pl.LightningModule, ABC):
         self.scheduler_wrapper = scheduler_wrapper
         self.log_resolution = log_resolution
         self.lookahead = lookahead
-        self.log_histogram = log_histogram
+        self.log_histogram = log_histogram  # TODO: always False, remove this
 
         if loaders is None and train_loader is not None and valid_loader is not None:
             self.train_loader = train_loader
@@ -106,11 +106,11 @@ class MimickingClassification(pl.LightningModule, ABC):
             histogram_overlayer(inv_distortion_values_dict, save_dir=save_dir)
 
     def test_step(self, data_batch, batch_nb):
-        _, metric_logs, hist_logs = self.common_step(self.forward, data_batch, prepend_key="test/model")
+        _, metric_logs, hist_logs = self.common_step(self.forward, data_batch, prepend_key="test/model", log_hist=True)
         # Run the validation for other voting rules for benchmarking.
         for rule_name, rule_fn in self.benchmark_rules.items():
             _, logs_bnchmk, hist_logs_bnchmk = self.common_step(rule_fn, data_batch,
-                                                                prepend_key="test/{}".format(rule_name))
+                                                                prepend_key="test/{}".format(rule_name), log_hist=True)
             metric_logs.update(logs_bnchmk)
 
         return metric_logs, hist_logs
@@ -122,9 +122,16 @@ class MimickingClassification(pl.LightningModule, ABC):
         averaged_metrics = average_values_in_list_of_dicts(metrics_dicts_list)
         averaged_metrics["total_test_sample_size"] = self._get_test_sample_size()
 
-        self.log_dict(averaged_metrics)
+        # Second argument returned by validation_step is the dict of histogram metrics.
+        hist_dicts_list = [collected_tuple[1] for collected_tuple in outputs]
 
-    def common_step(self, forward_fn, data_batch, prepend_key=""):
+        # concat all iterations
+        concat_hist_metrics = concatenate_values_in_list_of_dicts(hist_dicts_list)
+
+        self.log_dict(averaged_metrics)
+        self.log_dict(concat_hist_metrics)
+
+    def common_step(self, forward_fn, data_batch, prepend_key="", log_hist=False):
         # ____ Unpack the data batch. ____
         xs, ys, utilities = self.unpack_data_batch(data_batch)
 
@@ -159,7 +166,7 @@ class MimickingClassification(pl.LightningModule, ABC):
                     loss_i = self.loss_fn(pred_i, y_i)
 
                     metric_logs_i, histogram_logs_i = self.log_forward_stats(
-                        y_i, pred_i, unpadded_util_i, loss_i, prepend_key)
+                        y_i, pred_i, unpadded_util_i, loss_i, prepend_key, log_hist=log_hist)
 
                     losses_list.append(loss_i)
                     metrics_dicts_list.append(metric_logs_i)
@@ -180,12 +187,12 @@ class MimickingClassification(pl.LightningModule, ABC):
         loss = self.loss_fn(preds, ys)
 
         # ____ Log the metrics computed. ____
-        metric_logs, histogram_logs = self.log_forward_stats(ys, preds, utilities, loss, prepend_key)
+        metric_logs, histogram_logs = self.log_forward_stats(ys, preds, utilities, loss, prepend_key, log_hist=log_hist)
 
         # ____ Return. ____
         return loss, metric_logs, histogram_logs
 
-    def log_forward_stats(self, ys, preds, utilities, loss, prepend_key):
+    def log_forward_stats(self, ys, preds, utilities, loss, prepend_key, log_hist=False):
         metric_logs = dict()
         hist_logs = dict()
 
@@ -204,8 +211,9 @@ class MimickingClassification(pl.LightningModule, ABC):
         metric_logs['{}/group{}/loss'.format(prepend_key, n_voters // self.log_resolution)] = float(loss)
 
         # ____ Log the distortion ratios. ____
-        # inv_distortion_ratios = compute_distortion_ratios(logits=preds, utilities=utilities)
-        # hist_logs[f"{prepend_key}/{INV_DISTORTION_KEY}"] = inv_distortion_ratios
+        if log_hist:
+            inv_distortion_ratios = compute_distortion_ratios(logits=preds, utilities=utilities)
+            hist_logs[f"{prepend_key}/{INV_DISTORTION_KEY}"] = inv_distortion_ratios
 
         return metric_logs, hist_logs
 

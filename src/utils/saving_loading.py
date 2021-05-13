@@ -13,23 +13,33 @@ DATETIME_STR_FORMAT = "%Y-%m-%d-%H%M%S"
 
 def save_result_to_yaml(np_list, save_dir, filename, ckpt_path):
     yml_list = [{"ckpt_path": os.path.abspath(ckpt_path)}]
-    for np_dict in np_list:
-        yml_dict = dict()
-        for k, v in np_dict.items():
-            if "group" in k:
-                group_name = k.split('/')[-2]
-            else:
-                group_name = 'overall'
+    inv_dist_ratio_dict = dict()
 
-            if group_name not in yml_dict:
-                yml_dict[group_name] = {}
+    assert len(np_list) == 1, f"Should test for only 1 epoch. Found len(np_list) == {len(np_list)}."
+    np_dict = np_list[0]
 
+    yml_dict = dict()
+    for k, v in np_dict.items():
+        if "group" in k:
+            group_name = k.split('/')[-2]
+        else:
+            group_name = 'overall'
+
+        if group_name not in yml_dict:
+            yml_dict[group_name] = {}
+
+        if np.size(v) == 1:
             yml_dict[group_name][k] = float(v)
-        yml_list.append(yml_dict)
+        else:   # inv distortion ratios
+            inv_dist_ratio_dict[k] = v
+    yml_list.append(yml_dict)
 
     with open(f'{save_dir}/{filename}.yaml', 'w') as yaml_file:
         yaml.dump(yml_list, yaml_file, default_flow_style=False)
-    print(f"Saved to {save_dir}/{filename}.yaml")
+    print(f"Metric data saved to {save_dir}/{filename}.yaml")
+
+    np.savez(f'{save_dir}/{filename}.npz', **inv_dist_ratio_dict)
+    print(f"Inverse distortion ratio data saved to {save_dir}/{filename}.npz")
 
 
 @quick_register
