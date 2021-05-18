@@ -265,7 +265,7 @@ def get_kemeny(one_hot=False):
         else:
             votes_np = votes
 
-        cand_position = np.argsort(votes_np, axis=2)
+        cand_position = np.argsort(votes_np, axis=2)    # (bs, n_voters, n_cands)
 
         winners = list()
         for i in range(bs):
@@ -322,7 +322,7 @@ def _build_graph(ranks):
     return edge_weights
 
 
-def rankaggr_lp(ranks):
+def rankaggr_lp(ranks, init_pairwise_pref=None):
     """Kemeny-Young optimal rank aggregation"""
 
     n_voters, n_candidates = ranks.shape
@@ -360,7 +360,12 @@ def rankaggr_lp(ranks):
 
     # Define problem and solve.
     prob = cp.Problem(cp.Maximize(objective), constraints=[pairwise_const, triangle_const, pos_const])
+
+    # Toggle comment the following 3 lines if use a different init value
     obj = prob.solve(solver=cp.GLPK_MI, verbose=False)
+    # x.value = init_pairwise_pref
+    # obj = prob.solve(solver=cp.GLPK_MI, verbose=False, warm_start=True)
+
     soln = x.value
     aggr_rank = soln.reshape((n_candidates, n_candidates)).sum(axis=1)
 
@@ -412,3 +417,23 @@ if __name__ == "__main__":
         kemeny = get_kemeny()
         winner, unique = kemeny(votes=votes)
         breakpoint()
+
+    if test_num == 2:
+        # Test if proper init can help reduce Kemeny solver time
+        num_voters = 10000
+        num_cands = 25
+        util_prof = np.random.dirichlet(alpha=np.ones(num_cands), size=(1, num_voters))
+        ranks = np.argsort(util_prof, axis=2)[:, :, ::-1]
+        start = time.time()
+        (_, best_rank) = rankaggr_lp(ranks=ranks[0])
+        end = time.time()
+        print(f"n_voters = {num_voters}, n_cands = {num_cands}, best_rank = {best_rank}\n"
+              f"Solve from scratch: {end - start} s")
+
+        best_rank = best_rank.astype(int)
+        init_pairwise_pref = np.tril(np.ones((num_cands, num_cands)), k=-1)[:, best_rank][best_rank, :]
+
+        start = time.time()
+        (_, best_rank) = rankaggr_lp(ranks=ranks[0], init_pairwise_pref=init_pairwise_pref.flatten())
+        end = time.time()
+        print(f"With pairwise preference initialization: {end - start} s")
