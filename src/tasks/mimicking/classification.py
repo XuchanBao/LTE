@@ -112,6 +112,7 @@ class MimickingClassification(pl.LightningModule, ABC):
             _, logs_bnchmk, hist_logs_bnchmk = self.common_step(rule_fn, data_batch,
                                                                 prepend_key="test/{}".format(rule_name), log_hist=True)
             metric_logs.update(logs_bnchmk)
+            hist_logs.update(hist_logs_bnchmk)
 
         return metric_logs, hist_logs
 

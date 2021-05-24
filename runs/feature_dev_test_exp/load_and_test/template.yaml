@@ -17,6 +17,26 @@ system:
     <init>: true
   save_checkpoint: false
 
+  benchmark_rules:
+    <type>: Munch
+    <init>: true
+    plurality:
+      <type>: get_plurality
+      <init>: true
+      one_hot: true
+    borda:
+      <type>: get_borda
+      <init>: true
+      one_hot: true
+    copeland:
+      <type>: get_copeland
+      <init>: true
+      one_hot: true
+    maximin:
+      <type>: get_maximin
+      <init>: true
+      one_hot: true
+
 test_loader:
     <type>: get_default_mimicking_loader
     <init>: true

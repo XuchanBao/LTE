@@ -24,3 +24,11 @@ python -m src.mains.generate_generalization_result_table --voting_rule=borda
 python -m src.mains.generate_generalization_result_table --voting_rule=copeland
 python -m src.mains.generate_generalization_result_table --voting_rule=maximin
 python -m src.mains.generate_generalization_result_table --voting_rule=kemeny
+
+# histograms
+python -m scripts.generate_histogram --distribution=uniform --voting_rule=utilitarian
+python -m scripts.generate_histogram --distribution=uniform --voting_rule=egalitarian
+python -m scripts.generate_histogram --distribution=indecisive --voting_rule=utilitarian
+python -m scripts.generate_histogram --distribution=indecisive --voting_rule=egalitarian
+python -m scripts.generate_histogram --distribution=polarized --voting_rule=utilitarian
+python -m scripts.generate_histogram --distribution=polarized --voting_rule=egalitarian
