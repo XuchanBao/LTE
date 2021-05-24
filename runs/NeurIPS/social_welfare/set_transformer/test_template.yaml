@@ -1,0 +1,104 @@
+<type>: Munch
+<init>: true
+# PyTorch Lightning System.
+system:
+  <type>: MimickingClassification
+  <init>: true
+  # Model.
+  model:
+    <type>: get_default_set_transformer
+    <init>: true
+
+  # No dataloaders, optimizer or scheduler at testing time
+  train_loader: null
+  valid_loader: null
+  optimizer: null
+  loss_fn:
+    <type>: CrossEntropyLoss
+    <init>: true
+  save_checkpoint: false
+
+  # benchmarks for testing
+  benchmark_rules:
+    <type>: Munch
+    <init>: true
+    plurality:
+      <type>: get_plurality
+      <init>: true
+      one_hot: true
+    borda:
+      <type>: get_borda
+      <init>: true
+      one_hot: true
+    copeland:
+      <type>: get_copeland
+      <init>: true
+      one_hot: true
+    maximin:
+      <type>: get_maximin
+      <init>: true
+      one_hot: true
+    # just for sanity check: one of the below should give 1.0 accuracy
+    utilitarian:
+      <type>: get_utilitarian
+      <init>: true
+      one_hot: true
+    rawlsian:
+      <type>: get_rawlsian
+      <init>: true
+      one_hot: true
+    egalitarian_0.5:
+      <type>: get_egalitarian
+      <init>: true
+      penalty_lambda: 0.5
+      one_hot: true
+
+test_loader:
+  <type>: get_default_mimicking_loader
+  <init>: true
+  distribution|uniform: "uniform"
+  distribution|polarized: "polarized"
+  distribution|indecisive: "indecisive"
+  # Just as the training template, load and test models trained for each of these social welfare functions
+  voting_rule|utilitarian:
+    <type>: get_utilitarian
+    <init>: true
+  voting_rule|egalitarian_0.5:
+    <type>: get_egalitarian
+    <init>: true
+    penalty_lambda: 0.5
+  return_graph: false
+  epoch_length: 256       # 16384 datapoints
+
+# wandb experiment
+logger:
+  <type>: WandbLogger
+  <init>: false
+  project: "lte"
+  entity: "byol"
+  tags: ["set-transformer", "neurips", "social-welfare", "test", "v1"]
+
+manage_checkpoint:
+  <type>: manage_checkpoint
+  <init>: true
+  save_checkpoint: false          # don't save new checkpoints
+  root_path: "/scratch/hdd001/home/jennybao/projects/LTE"
+  experiment_name: "social-welfare"
+  load_version: "latest"
+  additional_path_name: "neurips/v1"
+  log_utility_distribution: true  # true for social welfare
+
+manage_save_test_results:
+  <type>: manage_save_test_results
+  <init>: true
+  save_test_results_root: "/scratch/hdd001/home/jennybao/projects/LTE/results"
+  experiment_name: "social-welfare"
+  additional_path_name: "neurips/v1"
+
+trainer:
+  <type>: Trainer
+  <init>: false
+  max_epochs: null
+
+# Seed.
+seed: 0

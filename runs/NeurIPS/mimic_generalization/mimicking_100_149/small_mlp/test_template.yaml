@@ -1,0 +1,96 @@
+<type>: Munch
+<init>: true
+# PyTorch Lightning System.
+system:
+  <type>: MimickingClassification
+  <init>: true
+  # Model.
+  model:
+    <type>: get_default_small_fully_connected
+    <init>: true
+
+  # No dataloaders, optimizer or scheduler at testing time
+  train_loader: null
+  valid_loader: null
+  optimizer: null
+  loss_fn:
+    <type>: CrossEntropyLoss
+    <init>: true
+  save_checkpoint: false
+
+  # just for sanity check: one of the below should give 1.0 accuracy
+  benchmark_rules:
+    <type>: Munch
+    <init>: true
+    plurality:
+      <type>: get_plurality
+      <init>: true
+      one_hot: true
+    borda:
+      <type>: get_borda
+      <init>: true
+      one_hot: true
+    copeland:
+      <type>: get_copeland
+      <init>: true
+      one_hot: true
+    maximin:
+      <type>: get_maximin
+      <init>: true
+      one_hot: true
+
+test_loader:
+  <type>: get_default_mimicking_loader
+  <init>: true
+  distribution: "uniform"
+  min_num_voters: 100
+  max_num_voters: 149
+  # Just as the training template, load and test models trained for each of these social welfare functions
+  voting_rule|plurality:
+    <type>: get_plurality
+    <init>: true
+  voting_rule|borda:
+    <type>: get_borda
+    <init>: true
+  voting_rule|copeland:
+    <type>: get_copeland
+    <init>: true
+  voting_rule|maximin:
+    <type>: get_maximin
+    <init>: true
+  return_graph: false
+  epoch_length: 256       # 16384 datapoints
+
+# wandb experiment
+logger:
+  <type>: WandbLogger
+  <init>: false
+  project: "lte"
+  entity: "byol"
+  tags: ["small-mlp", "neurips", "mimic", "test", "v1", "generalization"]
+
+manage_checkpoint:
+  <type>: manage_checkpoint
+  <init>: true
+  save_checkpoint: false          # don't save new checkpoints
+  root_path: "/scratch/hdd001/home/jennybao/projects/LTE"
+  experiment_name: "mimic"
+  load_version: "latest"
+  model_suffix: "Small"
+  additional_path_name: "neurips/v1"
+
+manage_save_test_results:
+  <type>: manage_save_test_results
+  <init>: true
+  save_test_results_root: "/scratch/hdd001/home/jennybao/projects/LTE/results"
+  experiment_name: "mimic_generalization/100_149"
+  model_suffix: "Small"
+  additional_path_name: "neurips/v1"
+
+trainer:
+  <type>: Trainer
+  <init>: false
+  max_epochs: null
+
+# Seed.
+seed: 0

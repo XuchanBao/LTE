@@ -51,7 +51,8 @@ def load_numpy_array():
 
 
 @quick_register
-def manage_save_test_results(save_test_results_root, experiment_name, include_dataset_filename=False, model_suffix=""):
+def manage_save_test_results(save_test_results_root, experiment_name,
+                             include_dataset_filename=False, model_suffix="", additional_path_name=None):
     def get_test_results_save_dir(model_type, voting_rule, template_path, utility_distribution, dataset_filename=None):
         if include_dataset_filename:
             save_dir = f"{save_test_results_root}/{experiment_name}/{utility_distribution}/" \
@@ -59,6 +60,10 @@ def manage_save_test_results(save_test_results_root, experiment_name, include_da
         else:
             save_dir = f"{save_test_results_root}/{experiment_name}/{utility_distribution}/" \
                        f"{model_type}{model_suffix}/{voting_rule}"
+
+        if additional_path_name is not None:
+            save_dir = f"{save_dir}/{additional_path_name}"
+
         os.makedirs(save_dir, exist_ok=True)
         print(f">>> Saving test results to {os.path.abspath(save_dir)}.")
 
@@ -95,7 +100,7 @@ def manage_checkpoint(root_path, experiment_name, log_utility_distribution=False
                         f"Found {len(version_list)} directories under {os.path.abspath(exp_path)}."
                     load_path = f"{exp_path}/{version_list[0]}"
 
-                elif load_version == "auto_resume":  # used for continue training after preemption
+                elif load_version in ("auto_resume", "latest"):  # used for continue training after preemption
 
                     # load the latest checkpoint if exists, otherwise skip
                     if os.path.isdir(exp_path):
@@ -114,6 +119,10 @@ def manage_checkpoint(root_path, experiment_name, log_utility_distribution=False
                             load_path = None
                     else:
                         load_path = None
+
+                    if load_version == "latest" and load_path is None:
+                        raise ValueError(f"To load the latest checkpoint, there should be at least 1 version "
+                                         f"under the experiment dir, but found 0 under {exp_path}.")
 
                 else:   # load_version is a directory
                     version_list = [path for path in os.listdir(exp_path) if load_version in path]
