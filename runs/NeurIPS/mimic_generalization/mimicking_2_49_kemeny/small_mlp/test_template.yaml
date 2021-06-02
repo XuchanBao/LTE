@@ -47,7 +47,7 @@ test_loader:
   <type>: get_small_default_mimicking_loaders
   <init>: true
   distribution: "uniform"
-  min_num_voters: 3
+  min_num_voters: 2
   max_num_voters: 49
   # Just as the training template, load and test models trained for each of these social welfare functions
   voting_rule|kemeny:

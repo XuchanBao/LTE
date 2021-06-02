@@ -6,7 +6,7 @@ system:
   <init>: true
   # Model.
   model:
-    <type>: get_default_deepset
+    <type>: get_default_set_transformer
     <init>: true
 
   # No dataloaders, optimizer or scheduler at testing time
@@ -47,7 +47,7 @@ test_loader:
   <type>: get_small_default_mimicking_loaders
   <init>: true
   distribution: "uniform"
-  min_num_voters: 3
+  min_num_voters: 2
   max_num_voters: 49
   # Just as the training template, load and test models trained for each of these social welfare functions
   voting_rule|kemeny:
@@ -62,7 +62,7 @@ logger:
   <init>: false
   project: "lte"
   entity: "byol"
-  tags: ["deepsets", "neurips", "mimic", "test", "v1", "generalization"]
+  tags: ["set-transformer", "neurips", "mimic", "test", "v1", "generalization"]
 
 manage_checkpoint:
   <type>: manage_checkpoint

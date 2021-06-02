@@ -2,7 +2,7 @@ import os
 import yaml
 import argparse
 
-model_order_list = ['SetTransformer', 'GIN', 'DeepSetOriginal']
+model_order_list = ['SetTransformer', 'GIN', 'DeepSetOriginal', 'FullyConnectedSmall']
 generalization_order_list = ['_49', '50_99', '100_149', '150_199']
 
 parser = argparse.ArgumentParser()
