@@ -25,7 +25,7 @@ else:
 voting_rule = args.voting_rule
 sns.set_palette("muted")
 sns.set_theme()
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(figsize=(6, 4))
 
 baseline_data = {b: [] for b in baseline_list}
 
@@ -44,24 +44,21 @@ for model_type in model_list:
     for b in baseline_list:
         baseline_data[b].extend(test_result[f'test/{b}/inv_dist_ratios'])
 
-    count, bins = np.histogram(inv_dist_ratios, bins=100, density=True)
+    count, bins = np.histogram(inv_dist_ratios, bins=200, density=True)
 
-    # n, x, _ = plt.hist(inv_dist_ratios, bins=50, density=True, alpha=0.3, label=f"{model_type}")
     bin_centers = 0.5 * (bins[1:] + bins[:-1])
 
     label = "MLP" if model_type == "FullyConnectedSmall" else f"{model_type}"
     plt.plot(bin_centers, count, label=label)
-    # sns.histplot(inv_dist_ratios, bins=100, stat='density', kde=True, ax=ax, label=f"{model_type}")
 
 for b in baseline_list:
-    count, bins = np.histogram(baseline_data[b], bins=100, density=True)
+    count, bins = np.histogram(baseline_data[b], bins=200, density=True)
     bin_centers = 0.5 * (bins[1:] + bins[:-1])
-    plt.plot(bin_centers, count, label=f"{b}")
-    # sns.histplot(baseline_data[b], bins=100, stat='density', kde=True, ax=ax, label=f"{b}")
-    # plt.hist(baseline_data[b], bins=50, density=True, alpha=0.3, label=f"{b}")
+    plt.plot(bin_centers, count, label=f"{b}", alpha=0.6)
 
-plt.title(f'Histogram of the inverse distortion ratio, {args.distribution}, {voting_rule}')
 plt.yscale('log')
 plt.legend()
-# plt.show()
-plt.savefig(f"{exp_dir}/{voting_rule}_histogram.pdf")
+plt.xlabel('$\\frac{sw(\\hat{a},\\vec{u})}{max_a sw(a, \\vec{u})}$', fontsize=16)
+plt.ylabel('Density', fontsize=14)
+plt.tight_layout()
+plt.savefig(f"{exp_dir}/{args.distribution}-{voting_rule}-histogram.pdf")
