@@ -1,6 +1,18 @@
 # LTE
-Learning to Elect - Using Neural Networks to Represent Voting Rules
-
+Code for the paper ["Learning to Elect"](https://arxiv.org/abs/2108.02768).
+```
+@inproceedings{NEURIPS2021_42d6c7d6,
+ author = {Anil, Cem and Bao, Xuchan},
+ booktitle = {Advances in Neural Information Processing Systems},
+ editor = {M. Ranzato and A. Beygelzimer and Y. Dauphin and P.S. Liang and J. Wortman Vaughan},
+ pages = {8006--8017},
+ publisher = {Curran Associates, Inc.},
+ title = {Learning to Elect},
+ url = {https://proceedings.neurips.cc/paper_files/paper/2021/file/42d6c7d61481d1c21bd1635f59edae05-Paper.pdf},
+ volume = {34},
+ year = {2021}
+}
+```
 ## Installation
 * Create a new conda environment and activate it:
 ```
